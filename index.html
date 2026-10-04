@@ -155,6 +155,7 @@
     <div class="pill">⭐ <b id="stars">0</b></div>
     <button class="pausebtn" id="pause">⏸ 3</button>
     <button class="pausebtn" id="langBtn">EN</button>
+    <button class="pausebtn" id="quit">✕ 結束</button>
     <div class="doors" id="doors"></div>
   </div>
 
@@ -327,6 +328,8 @@ const T={
   loseT:'被大蛇追上了！',
   loseP:'你走到第 <b>{0}</b> 道門，一次就答對 <b>{1}</b> 題。<br>撿到的東西：{2}（{3} 分）',
   again:'再跑一次', retry:'再試一次', chSpeed:'調速度',
+  quit:'✕ 結束', quitT:'結束這一局？', quitP:'回到封面可以重新選難度和速度。<br>這一局的分數和寶物不會留著。',
+  quitYes:'結束這局', quitNo:'繼續玩',
   hAdd:'{0} 先加 {1} 變成 {2}，再加 {3}。個位滿 10 要進位。',
   hSub:'{0} 先減 {1} 變成 {2}，再減 {3}。個位不夠減就跟十位借 1。',
   hUp:'從 {0} 開始往上數 {1} 個。', hDown:'從 {0} 開始往下數 {1} 個。',
@@ -366,6 +369,8 @@ const T={
   loseT:'The snake caught you!',
   loseP:'You reached door <b>{0}</b> and nailed <b>{1}</b> on the first try.<br>Treasure found: {2} ({3} points)',
   again:'Run again', retry:'Try again', chSpeed:'Change speed',
+  quit:'✕ Quit', quitT:'End this run?', quitP:'You will go back to the cover and can pick a new level and speed.<br>This run\'s score and treasure will be lost.',
+  quitYes:'End it', quitNo:'Keep playing',
   hAdd:'{0} + {1} = {2}, then add {3}. Carry when the ones pass 10.',
   hSub:'{0} − {1} = {2}, then take away {3}. Borrow if the ones are too small.',
   hUp:'Count up {1} from {0}.', hDown:'Count down {1} from {0}.',
@@ -685,7 +690,7 @@ const MODES=()=>({easy:L('mEasy'),normal:L('mNormal'),boss:L('mBoss'),en:L('mEn'
 function newGame(){
   stopEN();
   G={dist:START_DIST,door:0,stars:0,tries:0,q:null,alive:true,t0:performance.now(),moving:false,
-     paused:false,pauses:PAUSES,snap:null,loot:{}};
+     paused:false,pauses:PAUSES,snap:null,loot:{},frozen:false};
   $('loot').innerHTML=''; $('spin').hidden=true;
   $('scene').classList.remove('paused'); updatePause();
   $('doors').innerHTML=Array.from({length:TOTAL},()=>'<i></i>').join('');
@@ -772,6 +777,16 @@ function setPaused(p){
   $('tip').textContent = p ? L('pausedTip',G.pauses) : '';
   updatePause();
 }
+function quitAsk(){
+  if(!G||!G.alive||$('over').classList.contains('on')) return;
+  G.frozen=true; stopEN();
+  panel('<div class="em">🚪</div><h1>'+L('quitT')+'</h1><p>'+L('quitP')+'</p>'+
+    '<div class="row"><button class="btn" id="qNo">'+L('quitNo')+'</button>'+
+    '<button class="btn go" id="qYes">'+L('quitYes')+'</button></div>');
+  $('qNo').onclick=()=>{ G.frozen=false; $('over').classList.remove('on'); };
+  $('qYes').onclick=()=>{ G.alive=false; G.frozen=false; stopEN();
+    $('scene').classList.remove('paused'); updatePause(); goHome(); };
+}
 function togglePause(){
   if(!G||!G.alive||G.moving) return;
   if(G.paused) setPaused(false);
@@ -781,7 +796,7 @@ function loop(now){
   raf=requestAnimationFrame(loop);
   const dt=Math.min(.1,(now-last)/1000); last=now;
   const t=now/1000;
-  if(G&&G.alive&&!G.moving&&!G.paused) G.dist-=dt*rate;
+  if(G&&G.alive&&!G.moving&&!G.paused&&!G.frozen) G.dist-=dt*rate;
   const d=G?Math.max(0,G.dist):START_DIST;
   drawSnake(Math.min(d,16),t);
   runPlayer(t,G&&G.moving);
@@ -819,6 +834,7 @@ function applyLang(){
   document.documentElement.setAttribute('lang', lang==='zh'?'zh-Hant-TW':'en');
   document.title=L('title');
   if($('langBtn')) $('langBtn').textContent = lang==='zh'?'EN':'中';
+  if($('quit')) $('quit').textContent=L('quit');
   $('pDist').innerHTML=L('hudDist');
   if($('meName')) $('meName').textContent=L('stMe');
   const lbl={hint:'kHint',clear:'kClear',go:'kGo'};
@@ -913,9 +929,11 @@ function showInstall(){
 }
 
 if($('langBtn')) $('langBtn').onclick=toggleLang;
+if($('quit')) $('quit').onclick=quitAsk;
 applyLang();
 goHome();
 document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ quitAsk(); return; }
   if(e.key===' '){ e.preventDefault(); togglePause(); return; }
   const i='1234'.indexOf(e.key);
   if(i>=0&&G&&G.alive){ const b=$('opts').children[i]; if(b&&!b.disabled) b.click(); }
