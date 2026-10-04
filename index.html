@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>大蛇走廊 · 九九村</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#150F0C">
+<meta name="description" content="算對數學題就能開門，趕在大蛇追上前逃出走廊。">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="九九村">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" href="./icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#150F0C; --stone:#2C2521; --stone2:#3B322C;
+    --torch:#FFB23A; --ember:#FF7A3D; --danger:#F04438; --snake:#7BD25A;
+    --paper:#F6EDDF;
+    --mist:#B9A894;
+    --num:"Baloo 2","Noto Sans TC",system-ui,sans-serif;
+    --body:"Noto Sans TC",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{-webkit-user-select:none;user-select:none;touch-action:manipulation}
+  input,.q{-webkit-user-select:text;user-select:text}
+  html,body{margin:0;padding:0;overscroll-behavior:none}
+  body{font-family:var(--body);color:var(--paper);min-height:100vh;
+    background:radial-gradient(120% 55% at 50% 0%,#4A342310 0%,transparent 60%),
+      linear-gradient(180deg,#241A14 0%,#150F0C 55%,#0D0908 100%);
+    background-attachment:fixed;padding:10px 12px calc(18px + env(safe-area-inset-bottom))}
+  .wrap{max-width:560px;margin:0 auto}
+
+  /* HUD */
+  .hud{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .pausebtn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:var(--paper);
+    border-radius:999px;padding:5px 12px;font-size:12.5px;font-family:var(--body);cursor:pointer}
+  .pausebtn:disabled{opacity:.35;cursor:default}
+  .pausebtn.on{background:rgba(255,178,58,.22);border-color:var(--torch);color:var(--torch);font-weight:700}
+  .scene.paused{filter:grayscale(.7) brightness(.6)}
+  .pill{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:999px;
+    padding:5px 12px;font-size:12.5px;display:flex;align-items:center;gap:5px}
+  .pill b{font-family:var(--num);font-size:15px;font-weight:700}
+  .pill.dist b{color:var(--torch)}
+  .pill.dist.warn{border-color:var(--danger);background:rgba(240,68,56,.16)}
+  .pill.dist.warn b{color:var(--danger)}
+  .doors{margin-left:auto;display:flex;gap:3px}
+  .doors i{width:9px;height:9px;border-radius:2px;background:rgba(255,255,255,.16);display:block}
+  .doors i.on{background:var(--torch)}
+
+  /* 走廊 */
+  .scene{margin:9px 0 0;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.1);
+    background:linear-gradient(180deg,#241B16,#171110);box-shadow:inset 0 -18px 30px rgba(0,0,0,.5)}
+  svg.corridor{display:block;width:100%;height:auto}
+  .scenewrap{position:relative}
+  .spin{position:absolute;inset:0;border-radius:16px;background:rgba(12,7,5,.88);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:5}
+  .reelwrap{position:relative;width:100%;height:70px;overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
+  .reel{display:flex;height:70px}
+  .reel i{flex:0 0 64px;width:64px;display:flex;align-items:center;justify-content:center;font-size:34px;font-style:normal}
+  .marker{position:absolute;left:50%;top:6px;width:60px;height:58px;margin-left:-30px;border-radius:12px;
+    border:2px solid var(--torch);box-shadow:0 0 16px rgba(255,178,58,.55);pointer-events:none}
+  .prize{font-size:15px;color:var(--paper);min-height:22px;font-weight:500}
+  .prize b{color:var(--torch);font-family:var(--body)}
+  .prize .pop{display:inline-block;animation:pop .5s cubic-bezier(.2,.9,.3,1)}
+  @keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+  .spin[hidden],.enbar[hidden]{display:none}
+  .spin{animation:fadein .2s}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  .loot{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:7px;min-height:20px;font-size:15px}
+  .loot span{display:flex;align-items:center;gap:2px}
+  .loot b{font-family:var(--num);font-size:13px;color:var(--torch)}
+  .flame{transform-box:fill-box;transform-origin:50% 100%;animation:flame 1s ease-in-out infinite alternate}
+  @keyframes flame{from{transform:scale(1.06,.86)}to{transform:scale(.9,1.16)}}
+  .flash{animation:flash .35s}
+  @keyframes flash{0%,100%{filter:none}40%{filter:brightness(1.7) saturate(1.4)}}
+  .hitshake{animation:hs .4s}
+  @keyframes hs{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}60%{transform:translateX(6px)}}
+
+  /* 題目 */
+  .qbox{margin-top:10px;text-align:center}
+  .qlabel{font-size:12px;color:var(--mist);letter-spacing:.1em}
+  .q{font-family:var(--num);font-weight:800;font-size:clamp(38px,12vw,58px);line-height:1.1;margin:2px 0 3px;
+    color:var(--paper);text-shadow:0 3px 0 rgba(0,0,0,.35)}
+  .q small{font-size:.5em;color:var(--mist);font-weight:600}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
+  .opts button{font-family:var(--num);font-weight:800;font-size:clamp(26px,7.5vw,34px);
+    padding:16px 0;border-radius:16px;border:1px solid rgba(255,255,255,.16);
+    background:linear-gradient(180deg,#3E342D,#2A231F);color:var(--paper);cursor:pointer;
+    box-shadow:0 4px 0 rgba(0,0,0,.45)}
+  .opts button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.45)}
+  .opts button.ok{background:linear-gradient(180deg,#63C24A,#3E9A2E);border-color:transparent}
+  .opts button.no{background:linear-gradient(180deg,#8A3B36,#5E2723);color:#E9B4B0;opacity:.75}
+  .opts button:disabled{cursor:default}
+
+  .enbar{display:flex;gap:8px;justify-content:center;margin-top:6px}
+  .enbar button{border-radius:999px;padding:7px 15px;font-size:12.5px;font-family:var(--body);cursor:pointer;
+    border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:var(--paper)}
+  .enbar button:active{background:rgba(255,255,255,.16)}
+  .hear{display:inline-block;font-size:.9em;color:var(--torch);cursor:pointer;animation:beat 1.6s ease-in-out infinite}
+  @keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+  .tip{margin-top:10px;font-size:12px;color:var(--mist);text-align:center;line-height:1.7;min-height:34px}
+
+  /* 覆蓋畫面 */
+  .over{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:20px;
+    background:rgba(10,6,5,.78);backdrop-filter:blur(4px)}
+  .over.on{display:flex}
+  .panel{width:100%;max-width:380px;text-align:center;border-radius:22px;padding:24px 20px;
+    background:linear-gradient(180deg,#33271F,#1A1210);border:1px solid rgba(255,255,255,.13);
+    box-shadow:0 20px 50px rgba(0,0,0,.6)}
+  .panel h1{font-family:var(--num);font-size:26px;margin:8px 0 6px}
+  .panel .em{font-size:46px}
+  .panel p{font-size:13.5px;color:var(--mist);line-height:1.85;margin:8px 0}
+  .panel b{font-family:var(--num);color:var(--torch);font-size:18px}
+  .row{display:flex;gap:8px;margin-top:14px}
+  .btn{flex:1;border-radius:13px;padding:12px;font-family:var(--body);font-size:14px;font-weight:700;cursor:pointer;
+    border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:var(--paper)}
+  .btn.go{background:linear-gradient(180deg,#FFC153,#F2932A);color:#3A2409;border-color:transparent}
+  .speeds{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .speeds button{display:flex;flex-direction:column;gap:2px;padding:9px 4px;border-radius:11px;font-size:12.5px;font-family:var(--body);cursor:pointer;
+    border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--mist)}
+  .speeds button.sel{background:rgba(255,178,58,.2);border-color:var(--torch);color:var(--torch);font-weight:700}
+  .speeds button span{font-family:var(--num);font-size:11px;opacity:.8;font-weight:600}
+  .installtip{margin-top:12px;font-size:11.5px;color:var(--mist);line-height:1.7}
+  .roomin{width:100%;padding:12px;border-radius:12px;text-align:center;font-family:var(--num);
+    font-size:26px;font-weight:800;letter-spacing:.2em;background:rgba(0,0,0,.3);color:var(--torch);
+    border:1px solid rgba(255,255,255,.2)}
+  .roomin.bad{border-color:var(--danger)}
+  .pickcap{font-size:11.5px;color:var(--mist);letter-spacing:.14em;margin:14px 0 6px}
+  .langsel{display:flex;gap:6px;justify-content:center;margin-bottom:10px}
+  .langsel button{padding:6px 16px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;
+    font-family:var(--body);border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:var(--mist)}
+  .langsel button.sel{background:rgba(255,178,58,.22);border-color:var(--torch);color:var(--torch)}
+  .levels{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .levels button{padding:10px 6px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;
+    font-family:var(--body);border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);
+    color:var(--paper);display:flex;flex-direction:column;gap:3px;line-height:1.25}
+  .levels button span{font-size:10.5px;font-weight:400;opacity:.7}
+  .levels button.sel{background:rgba(255,178,58,.2);border-color:var(--torch);color:var(--torch)}
+  .opts button.small{font-size:clamp(20px,5.6vw,27px)}
+  .opts button.word{font-family:var(--body);font-weight:700;font-size:clamp(14px,4.2vw,19px);padding:19px 4px;line-height:1.2}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hud">
+    <div class="pill dist" id="pDist">大蛇還有 <b id="dist">10</b> 格</div>
+    <div class="pill">⭐ <b id="stars">0</b></div>
+    <button class="pausebtn" id="pause">⏸ 3</button>
+    <button class="pausebtn" id="langBtn">EN</button>
+    <div class="doors" id="doors"></div>
+  </div>
+
+  <div class="scenewrap"><div class="scene" id="scene">
+    <svg class="corridor" viewBox="0 0 400 132" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3A2C23"/><stop offset="1" stop-color="#1D1512"/>
+        </linearGradient>
+        <radialGradient id="glow"><stop offset="0" stop-color="#FFB23A" stop-opacity=".55"/><stop offset="1" stop-color="#FFB23A" stop-opacity="0"/></radialGradient>
+        <linearGradient id="snakeG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#8FE06A"/><stop offset="55%" stop-color="#5CB544"/><stop offset="1" stop-color="#3B7E2C"/>
+        </linearGradient>
+        <linearGradient id="sackG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#D9B24C"/><stop offset="1" stop-color="#A07B1E"/>
+        </linearGradient>
+        <clipPath id="torso"><path d="M-7.5 -25.5 C-3 -27.6 3 -27.6 7.5 -25.5 L9 -11.5 C3 -9.3 -3 -9.3 -9 -11.5 Z"/></clipPath>
+        <clipPath id="cap"><path d="M-6.6 -33.6 a7.9 7.9 0 0 1 15.8 0 Z"/></clipPath>
+      </defs>
+      <rect x="0" y="0" width="400" height="132" fill="url(#wall)"/>
+      <g id="bricks" opacity=".5"></g>
+      <g id="torches"></g>
+      <rect x="0" y="104" width="400" height="28" fill="#171110"/>
+      <line x1="0" y1="104" x2="400" y2="104" stroke="#5B4534" stroke-width="1.5"/>
+      <g id="ticks" opacity=".5"></g>
+      <!-- 門 -->
+      <g id="door">
+        <rect x="352" y="34" width="40" height="70" rx="3" fill="#4A3A2C" stroke="#6E543D" stroke-width="2"/>
+        <rect x="358" y="40" width="28" height="58" rx="2" fill="#3A2C22"/>
+        <circle cx="366" cy="70" r="3.2" fill="#FFB23A"/>
+        <text id="doorNo" x="372" y="30" font-size="11" fill="#B9A894" text-anchor="middle" font-family="Baloo 2, sans-serif">門 1</text>
+      </g>
+      <!-- 玩家：小偷 -->
+      <g id="player" transform="translate(300,104)">
+        <ellipse id="shadow" cx="0" cy="1.5" rx="12" ry="2.6" fill="#000" opacity=".38"/>
+        <g id="pbob" transform="rotate(-4)">
+          <!-- 後腿 -->
+          <path id="legB" d="M-1 -11 L-6 -1" stroke="#33465C" stroke-width="4.6" stroke-linecap="round"/>
+          <g id="shoeB"><ellipse cx="0" cy="0" rx="4.2" ry="2.2" fill="#12181F"/><ellipse cx="1" cy="-0.7" rx="2.4" ry="0.8" fill="#39485A"/></g>
+          <!-- 贓物袋 -->
+          <g id="sack">
+            <path d="M-11 -27 C-19 -22 -20 -12 -13 -10 C-7 -8.5 -3.5 -12 -4.5 -18 C-5.2 -22 -8 -25 -11 -27 Z"
+                  fill="url(#sackG)" stroke="#6E520F" stroke-width="1"/>
+            <path d="M-12.4 -27.6 C-10 -29.4 -7.6 -28.6 -6.6 -26.6" fill="none" stroke="#6E520F" stroke-width="1.6" stroke-linecap="round"/>
+            <text x="-11.5" y="-16" font-size="7" fill="#6E520F" font-family="Baloo 2, sans-serif" font-weight="700">$</text>
+          </g>
+          <!-- 後手（抓袋子） -->
+          <path d="M-3 -23 L-9 -19" stroke="#1E2A36" stroke-width="3.6" stroke-linecap="round"/>
+          <!-- 身體：條紋衫 -->
+          <g clip-path="url(#torso)">
+            <rect x="-12" y="-28" width="24" height="20" fill="#2E3E4E"/>
+            <rect x="-12" y="-24.6" width="24" height="2.4" fill="#EFE7DA" opacity=".92"/>
+            <rect x="-12" y="-20.2" width="24" height="2.4" fill="#EFE7DA" opacity=".92"/>
+            <rect x="-12" y="-15.8" width="24" height="2.4" fill="#EFE7DA" opacity=".92"/>
+          </g>
+          <path d="M-7.5 -25.5 C-3 -27.6 3 -27.6 7.5 -25.5 L9 -11.5 C3 -9.3 -3 -9.3 -9 -11.5 Z"
+                fill="none" stroke="#18222C" stroke-width="1.1"/>
+          <!-- 腰帶 -->
+          <path d="M-8.6 -13 C-3 -10.9 3 -10.9 8.7 -13" fill="none" stroke="#12181F" stroke-width="3"/>
+          <!-- 頭 -->
+          <g id="head">
+            <circle cx="1" cy="-32.5" r="7.6" fill="#F2CBA6"/>
+            <path d="M-4 -27.6 C-1 -26 3 -26 6 -27.6" fill="none" stroke="#C99B72" stroke-width="1" opacity=".7"/>
+            <g clip-path="url(#cap)">
+              <path d="M-6.6 -33.6 a7.9 7.9 0 0 1 15.8 0 Z" fill="#2B3A47"/>
+              <rect x="-8" y="-38.4" width="18" height="1.7" fill="#3E5163"/>
+              <rect x="-8" y="-35.6" width="18" height="1.7" fill="#3E5163"/>
+            </g>
+            <rect x="-7" y="-34.4" width="16.2" height="2.6" rx="1.3" fill="#1F2B36"/>
+            <rect x="-6.4" y="-32.6" width="15" height="3.3" rx="1.4" fill="#171E26"/>
+            <circle cx="-1.6" cy="-31" r="1.25" fill="#fff"/>
+            <circle cx="3.9" cy="-31" r="1.25" fill="#fff"/>
+            <circle cx="-1.2" cy="-31" r=".62" fill="#101418"/>
+            <circle cx="4.3" cy="-31" r=".62" fill="#101418"/>
+            <path d="M0.2 -27.2 C2 -26.2 3.6 -26.6 4.6 -27.6" fill="none" stroke="#8C5F3E" stroke-width="1" stroke-linecap="round"/>
+          </g>
+          <!-- 前手 -->
+          <path id="armA" d="M4 -23 L12 -18" stroke="#2E3E4E" stroke-width="4" stroke-linecap="round"/>
+          <circle id="handA" cx="12" cy="-18" r="2.3" fill="#F2CBA6"/>
+          <!-- 前腿 -->
+          <path id="legA" d="M1 -11 L7 -1" stroke="#3E5570" stroke-width="4.8" stroke-linecap="round"/>
+          <g id="shoeA"><ellipse cx="0" cy="0" rx="4.4" ry="2.3" fill="#1A222B"/><ellipse cx="1" cy="-0.8" rx="2.5" ry="0.85" fill="#48586B"/></g>
+        </g>
+      </g>
+      <!-- 蛇 -->
+      <g id="snake">
+        <path id="sbody" fill="url(#snakeG)" stroke="#2F6B24" stroke-width="1"/>
+        <path id="sbelly" fill="none" stroke="#C8EFA8" stroke-width="2.4" stroke-linecap="round" opacity=".5"/>
+        <g id="spots"></g>
+        <g id="shead">
+          <path d="M-14 -7.2 C0 -10.6 12.8 -6.4 12.8 0 C12.8 6.4 0 10.6 -14 7.2 Z" fill="url(#snakeG)"/>
+          <path d="M-9 -8.3 C1 -10.5 12.8 -6.4 12.8 0 C12.8 6.4 1 10.5 -9 8.3" fill="none" stroke="#2F6B24" stroke-width="1" stroke-linecap="round" opacity=".85"/>
+          <path d="M6 3.4 C9.4 3.4 11.6 2.2 12.4 0.8" fill="none" stroke="#2A5F20" stroke-width="1.1" stroke-linecap="round"/>
+          <circle cx="4.6" cy="-3.2" r="2.9" fill="#F5E27A"/>
+          <ellipse cx="5.2" cy="-3.2" rx="1.1" ry="2.4" fill="#151A0F"/>
+          <circle cx="4" cy="-4.4" r=".9" fill="#fff" opacity=".9"/>
+          <circle cx="10.4" cy="-1.6" r=".7" fill="#2A5F20"/>
+          <g id="tongue">
+            <path d="M0 0 L7.5 0 M7.5 0 L11.5 2.2 M7.5 0 L11.5 -2.2"
+                  fill="none" stroke="#F04438" stroke-width="1.5" stroke-linecap="round"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+    <div class="spin" id="spin" hidden>
+      <div class="reelwrap" id="reelwrap"><div class="reel" id="reel"></div><div class="marker"></div></div>
+      <div class="prize" id="prize"></div>
+    </div>
+  </div>
+  <div class="loot" id="loot"></div>
+
+  <div class="qbox">
+    <div class="qlabel" id="qlabel">第 1 道門</div>
+    <div class="q" id="q">— <small>＝ ？</small></div>
+    <div class="enbar" id="enbar" hidden>
+      <button id="replay">🔊 再聽一次</button>
+      <button id="showtxt">👀 看文字</button>
+    </div>
+    <div class="opts" id="opts">
+      <button></button><button></button><button></button><button></button>
+    </div>
+    <div class="tip" id="tip"></div>
+  </div>
+</div>
+
+<div class="over on" id="over">
+  <div class="panel" id="panel"></div>
+</div>
+
+<script>
+/* 亂數來源可切換：對戰時換成種子亂數，兩台裝置就會出到同一組題目 */
+let RND=Math.random;
+function mulberry32(a){ return function(){
+  a|=0; a=a+0x6D2B79F5|0;
+  let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;
+  return ((t^t>>>14)>>>0)/4294967296; }; }
+function hashCode(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+/* ---------- 語言 ---------- */
+let lang='zh';
+const T={
+ zh:{
+  title:'大蛇走廊 · 算對就開門', site:'九九村',
+  homeTitle:'大蛇走廊',
+  homeDesc:'走廊上有 <b>10</b> 道門，每道門一題數學（加減法都要進位、借位）。<br>按下正確答案，門就開，大蛇被嚇退 <b>5</b> 格。<br>大蛇一開始在你後面 <b>10</b> 格，會一路追過來。<br>答錯不會結束，但大蛇會再逼近 1 格。<br>每局有 <b>3</b> 次暫停可以用來思考。<br>每開一道門會抽一次寶物。',
+  pickLevel:'選難度', pickSpeed:'選速度',
+  mEasy:'簡易', mEasyS:'個位數加減',
+  mNormal:'普通', mNormalS:'兩位數加減・九九乘法',
+  mBoss:'魔王', mBossS:'三四位數加減・兩位數乘法',
+  mEn:'外國魔王', mEnS:'英文語音出題',
+  sLearn:'學習', sNormal:'普通', sFast:'一般', sWild:'刺激', perSec:'格/秒',
+  start:'開始逃跑',
+  instIOS:'想像 App 一樣玩？按 Safari 下方的<b>分享</b>圖示 → 加入主畫面。',
+  instOther:'想像 App 一樣玩？用瀏覽器選單的<b>加入主畫面</b>。',
+  instBtn:'📲 安裝到手機',
+  hudDist:'大蛇還有 <b id="dist">10</b> 格', hudTime:'用時 <b id="tsec">0.0</b> 秒',
+  pause:'⏸ {0}', resume:'▶ 繼續',
+  door:'第 {0} 道門', noVoice:'（此裝置不支援語音，改用文字）',
+  listen:'🔊 聽題目', replay:'🔊 再聽一次', showTxt:'👀 看文字',
+  kHint:'提示', kClear:'清除', kGo:'送出',
+  doorOpen:'門開了！大蛇退後 {0} 格。',
+  wrongTip:'不對喔，再看一次！大蛇逼近 1 格。',
+  pausedTip:'⏸ 暫停中，想好了再按「繼續」。剩下 {0} 次。',
+  got:'獲得 <span class="pop">{0}</span> <b>{1}</b>',
+  it1:'金幣', it2:'寶石戒指', it3:'水晶球', it4:'鑽石', it5:'皇冠', it6:'傳說獎盃',
+  winT:'逃出走廊了！',
+  winP:'{0}難度，十道門全開，大蛇被甩在後面。<br>一次就答對 <b>{1}</b>／10 題，花了 <b>{2}</b> 秒。',
+  lootP:'這趟的戰利品：{0}<br>總價值 <b>{1}</b> 分', vaultP:'　｜　累計收藏 <b>{0}</b> 分',
+  loseT:'被大蛇追上了！',
+  loseP:'你走到第 <b>{0}</b> 道門，一次就答對 <b>{1}</b> 題。<br>撿到的東西：{2}（{3} 分）',
+  again:'再跑一次', retry:'再試一次', chSpeed:'調速度',
+  hAdd:'{0} 先加 {1} 變成 {2}，再加 {3}。個位滿 10 要進位。',
+  hSub:'{0} 先減 {1} 變成 {2}，再減 {3}。個位不夠減就跟十位借 1。',
+  hUp:'從 {0} 開始往上數 {1} 個。', hDown:'從 {0} 開始往下數 {1} 個。',
+  hMul:'先想 {0}，再加一個 {1}。',
+  hSplit:'拆開算：{0} × {1} ＝ {2}×{3} ＋ {4}×{5}。',
+  hSplit10:'拆開算：{0} × {1} ＝ {0}×{2} 再乘 10。',
+  hEn:'英文的意思是：{0} {1} {2} ＝ ？',
+  tryAgain:'再算一次，答案不太對。', slow:'慢慢算，別急。'
+ },
+ en:{
+  title:'Snake Escape · Mathville', site:'Mathville',
+  homeTitle:'Snake Escape',
+  homeDesc:'There are <b>10</b> doors ahead, each with a math question.<br>Tap the right answer and the door opens — the snake backs off <b>5</b> steps.<br>It starts <b>10</b> steps behind you and keeps coming.<br>A wrong answer costs 1 step, not the game.<br>You get <b>3</b> pauses to think, and a treasure spin at every door.',
+  pickLevel:'DIFFICULTY', pickSpeed:'SNAKE SPEED',
+  mEasy:'Easy', mEasyS:'single-digit + and −',
+  mNormal:'Normal', mNormalS:'2-digit + −, times tables',
+  mBoss:'Boss', mBossS:'3–4 digit + −, 2-digit ×',
+  mEn:'Listening', mEnS:'questions read aloud',
+  sLearn:'Learning', sNormal:'Calm', sFast:'Normal', sWild:'Rush', perSec:'steps/s',
+  start:'Start running',
+  instIOS:'Want it like an app? Tap <b>Share</b> in Safari → Add to Home Screen.',
+  instOther:'Want it like an app? Use <b>Add to Home screen</b> in your browser menu.',
+  instBtn:'📲 Install on this phone',
+  hudDist:'Snake <b id="dist">10</b> steps away', hudTime:'Time <b id="tsec">0.0</b>s',
+  pause:'⏸ {0}', resume:'▶ Resume',
+  door:'Door {0}', noVoice:' (no speech on this device — showing text)',
+  listen:'🔊 Listen', replay:'🔊 Again', showTxt:'👀 Show text',
+  kHint:'Hint', kClear:'Clear', kGo:'Enter',
+  doorOpen:'Door open! The snake falls back {0} steps.',
+  wrongTip:'Not quite — try again. The snake gains 1 step.',
+  pausedTip:'⏸ Paused. Tap Resume when you are ready. {0} left.',
+  got:'You got <span class="pop">{0}</span> <b>{1}</b>',
+  it1:'Gold coin', it2:'Jewel ring', it3:'Crystal orb', it4:'Diamond', it5:'Crown', it6:'Legendary trophy',
+  winT:'You made it out!',
+  winP:'{0} level — all ten doors open, the snake left behind.<br>First try on <b>{1}</b>/10 questions, in <b>{2}</b> seconds.',
+  lootP:'Treasure this run: {0}<br>Worth <b>{1}</b> points', vaultP:'　|　Collected so far: <b>{0}</b>',
+  loseT:'The snake caught you!',
+  loseP:'You reached door <b>{0}</b> and nailed <b>{1}</b> on the first try.<br>Treasure found: {2} ({3} points)',
+  again:'Run again', retry:'Try again', chSpeed:'Change speed',
+  hAdd:'{0} + {1} = {2}, then add {3}. Carry when the ones pass 10.',
+  hSub:'{0} − {1} = {2}, then take away {3}. Borrow if the ones are too small.',
+  hUp:'Count up {1} from {0}.', hDown:'Count down {1} from {0}.',
+  hMul:'Think {0}, then add one more {1}.',
+  hSplit:'Split it: {0} × {1} = {2}×{3} + {4}×{5}.',
+  hSplit10:'Split it: {0} × {1} = {0}×{2}, then ×10.',
+  hEn:'In numbers: {0} {1} {2} = ?',
+  tryAgain:'Not quite — have another go.', slow:'Take your time.'
+ }
+};
+function L(k){
+  let s=(T[lang]&&T[lang][k])!==undefined?T[lang][k]:T.zh[k];
+  for(let i=1;i<arguments.length;i++) s=s.split('{'+(i-1)+'}').join(arguments[i]);
+  return s;
+}
+const ri=(a,b)=>a+Math.floor(RND()*(b-a+1));
+const pk=a=>a[Math.floor(RND()*a.length)];
+
+/* ---------- 出題：兩位數加減法 + 九九乘法 ---------- */
+const ONES=['zero','one','two','three','four','five','six','seven','eight','nine','ten',
+ 'eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+const TENS=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+function numWord(n){
+  if(n<20) return ONES[n];
+  if(n<100){ const t=Math.floor(n/10),o=n%10; return TENS[t]+(o?'-'+ONES[o]:''); }
+  const h=Math.floor(n/100), r=n%100;
+  return ONES[h]+' hundred'+(r?' '+numWord(r):'');
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=ri(0,i);[a[i],a[j]]=[a[j],a[i]];} return a; }
+function pack(ans,wrongs,extra){
+  const set=new Set([ans]);
+  const pool=wrongs.filter(w=>w>0&&w!==ans);
+  while(set.size<4&&pool.length) set.add(pool.splice(Math.floor(RND()*pool.length),1)[0]);
+  const span=extra||12;
+  while(set.size<4){ const w=ans+ri(-span,span); if(w>0&&w!==ans) set.add(w); }
+  return shuffle([...set]);
+}
+
+function makeQuestion(level,mode){
+  const hard=level>=3, veryHard=level>=6;
+
+  /* 簡易：加減都是個位數 */
+  if(mode==='easy'){
+    if(RND()<0.5){
+      const a=ri(2,9), b=ri(2,9);
+      const ans=a+b;
+      return {text:a+' ＋ '+b,ans,options:pack(ans,[ans-1,ans+1,ans-2,ans+2,a*b],4),kind:'add'};
+    }
+    const a=ri(3,9), b=ri(1,a-1), ans=a-b;
+    return {text:a+' － '+b,ans,options:pack(ans,[ans+1,ans-1,ans+2,a+b],4),kind:'sub'};
+  }
+
+  /* 魔王：三～四位數加減、兩位數乘法 */
+  if(mode==='boss'){
+    const kind=pk(['add','sub','mul']);
+    if(kind==='add'){
+      const dig=hard?4:3;
+      const lo=dig===3?120:1050, hi=dig===3?880:4800;
+      let a=ri(lo,hi), b=ri(lo,hi);
+      if((a%10)+(b%10)<10) b=b-(b%10)+ri(10-(b%10),9);   // 個位一定進位
+      const ans=a+b;
+      return {text:a+' ＋ '+b,ans,options:pack(ans,[ans-100,ans+100,ans-10,ans+10,ans-1],20),kind:'add'};
+    }
+    if(kind==='sub'){
+      const a=hard?ri(1200,9800):ri(320,980);
+      let b=hard?ri(150,a-120):ri(120,a-50);
+      if((a%10)>=(b%10)) b=b-(b%10)+ri((a%10)+1,9);       // 個位一定借位
+      if(b>=a) b=Math.floor(a/2);
+      const ans=a-b;
+      return {text:a+' － '+b,ans,options:pack(ans,[ans+100,ans-100,ans+10,ans-10,ans+1],20),kind:'sub'};
+    }
+    if(RND()<0.65){                                // 兩位數 × 一位數
+      const a=ri(12,89), b=ri(3,9), ans=a*b;
+      return {text:a+' × '+b,ans,options:pack(ans,[a*(b+1),a*(b-1),ans+10,ans-10,ans+a],15),kind:'mul'};
+    }
+    const a=ri(12,49), b=ri(11,29), ans=a*b;              // 兩位數 × 兩位數
+    return {text:a+' × '+b,ans,options:pack(ans,[a*(b+1),a*(b-1),ans+a,ans-a,ans+100],25),kind:'mul'};
+  }
+
+  /* 普通 & 外國魔王：兩位數加減（一定進位借位）＋ 九九乘法 */
+  const kind=pk(veryHard?['add','sub','mul','mul']:['add','sub','mul']);
+  let text,ans,wrongs;
+  if(kind==='add'){
+    const o1=ri(2,9), o2=ri(11-o1,9);
+    const cap=hard?8:5;
+    const t1=ri(1,cap-1), t2=ri(1,cap-t1);
+    const a=t1*10+o1, b=t2*10+o2;
+    ans=a+b; text=a+' ＋ '+b;
+    wrongs=[ans-10,ans+10,ans-1,ans+1,ans-9];
+    if(mode==='en') text=numWord(a)+' plus '+numWord(b);
+  }else if(kind==='sub'){
+    const oa=ri(0,8), ob=ri(oa+1,9);
+    const ta=hard?ri(3,9):ri(2,5), tb=ri(1,ta-1);
+    const a=ta*10+oa, b=tb*10+ob;
+    ans=a-b; text=a+' － '+b;
+    wrongs=[ans+10,ans-10,ans+1,ans-1,ans+9];
+    if(mode==='en') text=numWord(a)+' minus '+numWord(b);
+  }else{
+    const x=ri(2,9), y=veryHard?ri(4,9):ri(2,9);
+    ans=x*y; text=x+' × '+y;
+    wrongs=[x*(y+1),x*(y-1),(x+1)*y,ans+x,ans-x,x+y];
+    if(mode==='en') text=numWord(x)+' times '+numWord(y);
+  }
+  return {text,ans,options:pack(ans,wrongs),kind,words:mode==='en'};
+}
+
+function hintFor(q,mode){
+  const m=q.text.match(/(\d+) (.) (\d+)/);
+  if(mode==='en'){
+    const parts=q.text.split(/ plus | minus | times /);
+    const op=q.text.includes(' plus ')?'＋':q.text.includes(' minus ')?'－':'×';
+    return L('hEn',wordNum(parts[0]),op,wordNum(parts[1]));
+  }
+  if(!m) return L('slow');
+  const a=+m[1], b=+m[3];
+  if(q.kind==='mul'){
+    if(a>9&&b>9){ const t=Math.floor(b/10)*10,o=b%10;
+      return o? L('hSplit',a,b,a,t,a,o) : L('hSplit10',a,b,b/10); }
+    if(a>9){ const t=Math.floor(a/10)*10,o=a%10; return L('hSplit',a,b,t,b,o,b); }
+    const CN=['零','一','二','三','四','五','六','七','八','九'];
+    const ch=n=>n<10?CN[n]:(Math.floor(n/10)===1?'十':CN[Math.floor(n/10)]+'十')+(n%10?CN[n%10]:'');
+    const say = lang==='zh' ? ch(a)+ch(b-1)+ch(a*(b-1)) : (a+'×'+(b-1)+'='+a*(b-1));
+    return L('hMul',say,a);
+  }
+  if(a<10&&b<10) return q.kind==='add'?L('hUp',a,b):L('hDown',a,b);
+  const step=b>=1000?1000:b>=100?100:10;
+  const big=Math.floor(b/step)*step, rest=b-big;
+  return q.kind==='add' ? L('hAdd',a,big,a+big,rest) : L('hSub',a,big,a-big,rest);
+}
+function wordNum(w){                       // 英文數字轉回阿拉伯數字（給提示用）
+  w=w.trim().toLowerCase();
+  if(w.includes(' hundred')){
+    const [h,r]=w.split(' hundred');
+    return ONES.indexOf(h)*100+(r.trim()?wordNum(r):0);
+  }
+  const i=ONES.indexOf(w); if(i>=0) return i;
+  const [t,o]=w.split('-');
+  return TENS.indexOf(t)*10+(o?ONES.indexOf(o):0);
+}
+
+/* ---------- 場景 ---------- */
+const NS='http://www.w3.org/2000/svg';
+const CELL=18, PX=300, GY=104;          // 一格 18px，玩家站在 x=300
+(function decor(){
+  const br=document.getElementById('bricks');
+  for(let y=6;y<100;y+=17) for(let x=(y/17%2?0:-14);x<400;x+=46){
+    const r=document.createElementNS(NS,'rect');
+    r.setAttribute('x',x);r.setAttribute('y',y);r.setAttribute('width',42);r.setAttribute('height',14);
+    r.setAttribute('rx',2);r.setAttribute('fill','none');r.setAttribute('stroke','#4A382C');r.setAttribute('stroke-width','1');
+    br.appendChild(r);
+  }
+  const t=document.getElementById('torches');
+  [60,160,260].forEach((x,i)=>{
+    const add=(tag,attrs)=>{const e=document.createElementNS(NS,tag);
+      for(const k in attrs) e.setAttribute(k,attrs[k]); t.appendChild(e); return e;};
+    add('circle',{cx:x,cy:36,r:36,fill:'url(#glow)'});
+    add('rect',{x:x-1.6,y:38,width:3.2,height:13,rx:1.4,fill:'#3B2A1C'});      // 火把柄
+    add('rect',{x:x-4,y:36,width:8,height:4,rx:1.6,fill:'#54402C'});           // 托座
+    add('ellipse',{cx:x,cy:30,rx:4.6,ry:8,fill:'#FF8A2B',class:'flame',style:'animation-delay:'+(i*.27)+'s'});
+    add('ellipse',{cx:x,cy:31,rx:2.4,ry:5,fill:'#FFE07A',class:'flame',style:'animation-delay:'+(i*.27+.13)+'s'});
+  });
+  const tk=document.getElementById('ticks');
+  for(let i=0;i<=16;i++){
+    const x=PX-i*CELL;
+    if(x<0)break;
+    const l=document.createElementNS(NS,'line');
+    l.setAttribute('x1',x);l.setAttribute('y1',106);l.setAttribute('x2',x);l.setAttribute('y2',i%5?110:114);
+    l.setAttribute('stroke','#6B523E');l.setAttribute('stroke-width',i%5?1:1.8);
+    tk.appendChild(l);
+  }
+  const sp=document.getElementById('spots');           // 蛇背花紋
+  for(let i=0;i<7;i++){
+    const e=document.createElementNS(NS,'ellipse');
+    e.setAttribute('rx',3.4);e.setAttribute('ry',2.2);e.setAttribute('fill','#2F6B24');e.setAttribute('opacity','.5');
+    sp.appendChild(e);
+  }
+})();
+const SEG=7.2, NSEG=22;
+function snakePts(hx,hy,t){
+  const p=[];
+  for(let i=0;i<=NSEG;i++){
+    const x=hx-i*SEG;
+    const amp=5.2*Math.min(1,i/2.2);
+    p.push([x, hy+Math.sin(t*5-i*.55)*amp]);
+  }
+  return p;
+}
+function drawSnake(dist,t){
+  const hx=PX-dist*CELL, hy=GY-13;
+  const p=snakePts(hx,hy,t);
+  const hw=i=>8.4*Math.max(0.07,1-Math.pow(i/NSEG,1.7));
+  let top='',bot='';
+  p.forEach(([x,y],i)=>{ top+=(i?' L':'M')+x.toFixed(1)+' '+(y-hw(i)).toFixed(1); });
+  for(let i=p.length-1;i>=0;i--){ bot+=' L'+p[i][0].toFixed(1)+' '+(p[i][1]+hw(i)).toFixed(1); }
+  document.getElementById('sbody').setAttribute('d',top+bot+' Z');
+  let belly='';
+  p.forEach(([x,y],i)=>{ if(i>=1&&i<=NSEG-3) belly+=(belly?' L':'M')+x.toFixed(1)+' '+(y+hw(i)*0.45).toFixed(1); });
+  document.getElementById('sbelly').setAttribute('d',belly);
+  const sp=document.getElementById('spots').childNodes;
+  for(let k=0;k<sp.length;k++){
+    const i=2+k*2.6, i0=Math.floor(i), f=i-i0;
+    if(i0+1>NSEG) continue;
+    const x=p[i0][0]+(p[i0+1][0]-p[i0][0])*f, y=p[i0][1]+(p[i0+1][1]-p[i0][1])*f;
+    sp[k].setAttribute('cx',x.toFixed(1)); sp[k].setAttribute('cy',(y-1.6).toFixed(1));
+    sp[k].setAttribute('rx',(3.4*Math.max(.3,1-i/NSEG)).toFixed(2));
+  }
+  const tilt=Math.sin(t*5)*6;
+  document.getElementById('shead').setAttribute('transform','translate('+hx.toFixed(1)+','+hy.toFixed(1)+') rotate('+tilt.toFixed(1)+')');
+  // 舌頭：每 1.6 秒吐一次
+  const ph=(t/1.6)%1;
+  const out=ph<0.26 ? Math.sin(ph/0.26*Math.PI) : 0;
+  const g=document.getElementById('tongue');
+  g.setAttribute('transform','translate(12.2,1.2) scale('+(0.15+out*0.95).toFixed(2)+',1)');
+  g.setAttribute('opacity',out>0.05?1:0);
+}
+function runPlayer(t,moving){
+  const sp=moving?15:6.5, amp=moving?1:0.45;
+  const s=Math.sin(t*sp)*amp, c=Math.cos(t*sp)*amp;
+  const set=(id,a)=>{const e=document.getElementById(id);for(const k in a)e.setAttribute(k,a[k]);};
+  const fx=1+s*7.6, fy=-1-Math.max(0,s)*4.2;
+  const bx=-1-s*7.6, by=-1-Math.max(0,-s)*4.2;
+  set('legA',{d:'M1 -11 L'+fx.toFixed(1)+' '+fy.toFixed(1)});
+  set('legB',{d:'M-1 -11 L'+bx.toFixed(1)+' '+by.toFixed(1)});
+  set('shoeA',{transform:'translate('+fx.toFixed(1)+','+(fy+0.6).toFixed(1)+')'});
+  set('shoeB',{transform:'translate('+bx.toFixed(1)+','+(by+0.6).toFixed(1)+')'});
+  const ax=4+8*(0.55-s*0.5), ay=-20-s*2.6;
+  set('armA',{d:'M4 -23 L'+ax.toFixed(1)+' '+ay.toFixed(1)});
+  set('handA',{cx:ax.toFixed(1),cy:ay.toFixed(1)});
+  set('pbob',{transform:'translate(0,'+(-Math.abs(s)*1.3).toFixed(2)+') rotate('+(moving?-5:-1.5)+')'});
+  set('sack',{transform:'rotate('+(s*5).toFixed(1)+',-11,-18)'});
+  set('shadow',{rx:(12-Math.abs(s)*1.4).toFixed(1),opacity:(0.38-Math.abs(s)*0.06).toFixed(2)});
+}
+
+/* ---------- 英文語音 ---------- */
+let voiceOK=('speechSynthesis' in window);
+function pickVoice(){
+  if(!voiceOK) return null;
+  const vs=speechSynthesis.getVoices();
+  return vs.find(v=>/^en[-_]US/i.test(v.lang)) || vs.find(v=>/^en/i.test(v.lang)) || null;
+}
+if(voiceOK && speechSynthesis.onvoiceschanged!==undefined) speechSynthesis.onvoiceschanged=pickVoice;
+function speakEN(text){
+  if(!voiceOK) return false;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='en-US'; u.rate=0.82; u.pitch=1.05;
+    const v=pickVoice(); if(v) u.voice=v;
+    speechSynthesis.speak(u);
+    return true;
+  }catch(e){ voiceOK=false; return false; }
+}
+function stopEN(){ if(voiceOK){ try{speechSynthesis.cancel();}catch(e){} } }
+
+/* ---------- 抽獎 ---------- */
+const ITEMS=[
+  {k:'coin', e:'🪙', t:'it1', w:36, v:1},
+  {k:'ring', e:'💍', t:'it2', w:22, v:3},
+  {k:'orb',  e:'🔮', t:'it3', w:16, v:5},
+  {k:'gem',  e:'💎', t:'it4', w:14, v:10},
+  {k:'crown',e:'👑', t:'it5', w:8,  v:25},
+  {k:'cup',  e:'🏆', t:'it6', w:4,  v:50},
+];
+const VAULT={};                                    // 這次開網頁以來的總收藏
+function rollItem(){
+  let t=Math.random()*ITEMS.reduce((s,i)=>s+i.w,0);
+  for(const i of ITEMS){ t-=i.w; if(t<=0) return i; }
+  return ITEMS[0];
+}
+function lootValue(bag){ return ITEMS.reduce((s,i)=>s+(bag[i.k]||0)*i.v,0); }
+function lootLine(bag){
+  return ITEMS.filter(i=>bag[i.k]).map(i=>i.e+'×'+bag[i.k]).join('  ')||'—';
+}
+function renderLoot(){
+  $('loot').innerHTML=ITEMS.filter(i=>G.loot[i.k])
+    .map(i=>'<span>'+i.e+'<b>'+G.loot[i.k]+'</b></span>').join('');
+}
+function runSpin(done){
+  const prize=rollItem(), IW=64, N=34, LAND=28;
+  const reel=$('reel'), wrap=$('reelwrap');
+  let html='';
+  for(let i=0;i<N;i++) html+='<i>'+(i===LAND?prize:rollItem()).e+'</i>';
+  reel.innerHTML=html;
+  $('prize').textContent='';
+  $('spin').hidden=false;
+  const slow = typeof window!=='undefined' && window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const width = wrap.clientWidth || 320;
+  const off = LAND*IW + IW/2 - width/2;
+  if(slow){
+    reel.style.transition='none';
+    reel.style.transform='translateX('+(-off)+'px)';
+    show();
+  }else{
+    reel.style.transition='none';
+    reel.style.transform='translateX(0px)';
+    void reel.offsetWidth;
+    reel.style.transition='transform 1.15s cubic-bezier(.12,.85,.25,1)';
+    reel.style.transform='translateX('+(-off)+'px)';
+    setTimeout(show,1180);
+  }
+  function show(){
+    $('prize').innerHTML=L('got',prize.e,L(prize.t));
+    G.loot[prize.k]=(G.loot[prize.k]||0)+1;
+    VAULT[prize.k]=(VAULT[prize.k]||0)+1;
+    renderLoot();
+    setTimeout(()=>{ $('spin').hidden=true; done(); }, slow?300:750);
+  }
+}
+
+/* ---------- 遊戲 ---------- */
+const $=id=>document.getElementById(id);
+const TOTAL=10, START_DIST=10, BACK=5, MAXD=16, PAUSES=3;
+let G=null, rate=0.5, mode='normal', last=0, raf=null;   // rate：大蛇每秒前進幾格
+const MODES=()=>({easy:L('mEasy'),normal:L('mNormal'),boss:L('mBoss'),en:L('mEn')});
+
+function newGame(){
+  stopEN();
+  G={dist:START_DIST,door:0,stars:0,tries:0,q:null,alive:true,t0:performance.now(),moving:false,
+     paused:false,pauses:PAUSES,snap:null,loot:{}};
+  $('loot').innerHTML=''; $('spin').hidden=true;
+  $('scene').classList.remove('paused'); updatePause();
+  $('doors').innerHTML=Array.from({length:TOTAL},()=>'<i></i>').join('');
+  $('stars').textContent=0;
+  nextDoor();
+  $('over').classList.remove('on');
+  last=performance.now();
+  if(!raf) raf=requestAnimationFrame(loop);
+}
+function nextDoor(){
+  G.q=makeQuestion(G.door,mode);
+  G.tries=0;
+  $('qlabel').textContent=L('door',G.door+1)+' · '+MODES()[mode];
+  $('doorNo').textContent='門 '+(G.door+1);
+  if(G.q.words){
+    $('enbar').hidden=false;
+    const ok=speakEN(G.q.text);
+    if(ok){ $('q').innerHTML='<span class="hear">'+L('listen')+'</span>'; $('q').style.fontSize='clamp(22px,6.5vw,32px)'; }
+    else  { $('q').innerHTML=G.q.text+' <small>＝ ？</small>'; $('q').style.fontSize='clamp(19px,5.6vw,28px)';
+            $('qlabel').textContent+=L('noVoice'); $('enbar').hidden=true; }
+  }else{
+    $('enbar').hidden=true;
+    $('q').innerHTML=G.q.text+' <small>＝ ？</small>';
+    $('q').style.fontSize = G.q.text.length>10 ? 'clamp(27px,8.5vw,42px)' : '';
+  }
+  $('tip').textContent='';
+  const bs=$('opts').children;
+  G.q.options.forEach((v,i)=>{ const b=bs[i];
+    b.textContent = G.q.words ? numWord(v) : v;
+    b.disabled=false;
+    b.className = G.q.words ? 'word' : (v>999 ? 'small' : '');
+    b.onclick=()=>answer(v,b); });
+  const ds=$('doors').children;
+  for(let i=0;i<TOTAL;i++) ds[i].className=i<G.door?'on':'';
+}
+function answer(v,btn){
+  if(!G||!G.alive||G.moving||G.paused) return;
+  if(v===G.q.ans){
+    btn.className='ok';
+    if(G.tries===0){ G.stars++; $('stars').textContent=G.stars; }
+    G.dist=Math.min(MAXD,G.dist+BACK);
+    G.door++;
+    G.moving=true;
+    $('scene').classList.add('flash');
+    $('door').setAttribute('transform','translate(0,-80)');
+    $('tip').textContent=L('doorOpen',BACK);
+    for(const b of $('opts').children) b.disabled=true;
+    setTimeout(()=>{
+      $('scene').classList.remove('flash');
+      runSpin(()=>{
+        $('door').setAttribute('transform','translate(0,0)');
+        G.moving=false;
+        if(G.door>=TOTAL) win(); else nextDoor();
+      });
+    },420);
+  }else{
+    btn.className='no'; btn.disabled=true;
+    G.tries++; G.dist=Math.max(0,G.dist-1);
+    $('scene').classList.add('hitshake');
+    setTimeout(()=>$('scene').classList.remove('hitshake'),400);
+    if(G.tries>=2&&G.q.words) revealEN();
+    $('tip').textContent = G.tries>=2 ? '💡 '+hintFor(G.q,mode) : L('wrongTip');
+    if(G.dist<=0) lose();
+  }
+}
+function revealEN(){
+  if(!G||!G.q||!G.q.words) return;
+  $('q').innerHTML=G.q.text+' <small>＝ ？</small>';
+  $('q').style.fontSize='clamp(19px,5.6vw,28px)';
+}
+function updatePause(){
+  const b=$('pause');
+  if(!G||!G.alive){ b.textContent=L('pause',PAUSES); b.disabled=true; b.className='pausebtn'; return; }
+  b.textContent = G.paused ? L('resume') : L('pause',G.pauses);
+  b.className = 'pausebtn'+(G.paused?' on':'');
+  b.disabled = !G.paused && G.pauses<=0;
+}
+function setPaused(p){
+  const bs=$('opts').children;
+  if(p){ G.snap=[...bs].map(b=>b.disabled); for(const b of bs) b.disabled=true; stopEN(); }
+  else { [...bs].forEach((b,i)=>{ b.disabled = G.snap?G.snap[i]:false; }); }
+  G.paused=p;
+  $('scene').classList.toggle('paused',p);
+  $('tip').textContent = p ? L('pausedTip',G.pauses) : '';
+  updatePause();
+}
+function togglePause(){
+  if(!G||!G.alive||G.moving) return;
+  if(G.paused) setPaused(false);
+  else { if(G.pauses<=0) return; G.pauses--; setPaused(true); }
+}
+function loop(now){
+  raf=requestAnimationFrame(loop);
+  const dt=Math.min(.1,(now-last)/1000); last=now;
+  const t=now/1000;
+  if(G&&G.alive&&!G.moving&&!G.paused) G.dist-=dt*rate;
+  const d=G?Math.max(0,G.dist):START_DIST;
+  drawSnake(Math.min(d,16),t);
+  runPlayer(t,G&&G.moving);
+  const shown=Math.max(0,Math.ceil(d));
+  if($('dist').textContent!=shown) $('dist').textContent=shown;
+  $('pDist').className='pill dist'+(d<=4?' warn':'');
+  if(G&&G.alive&&G.dist<=0) lose();
+}
+function homeHTML(){
+  return '<div class="langsel" id="langSel">'+
+      '<button data-l="zh"'+(lang==='zh'?' class="sel"':'')+'>中文</button>'+
+      '<button data-l="en"'+(lang==='en'?' class="sel"':'')+'>English</button>'+
+    '</div>'+
+    '<div class="em">🐍</div><h1>'+L('homeTitle')+'</h1>'+
+    '<p>'+L('homeDesc')+'</p>'+
+    '<div class="pickcap">'+L('pickLevel')+'</div>'+
+    '<div class="levels" id="levels">'+
+      lvBtn('easy','mEasy','mEasyS')+lvBtn('normal','mNormal','mNormalS')+
+      lvBtn('boss','mBoss','mBossS')+lvBtn('en','mEn','mEnS')+
+    '</div>'+
+    '<div class="pickcap">'+L('pickSpeed')+'</div>'+
+    '<div class="speeds" id="speeds">'+
+      spBtn(0.1,'sLearn')+spBtn(0.5,'sNormal')+spBtn(1,'sFast')+spBtn(2,'sWild')+
+    '</div>'+
+    '<div class="row"><button class="btn go" id="start" style="flex:1">'+L('start')+'</button></div>'+
+    '<div class="installtip" id="installTip"></div>';
+}
+function lvBtn(m,k,sub){
+  return '<button data-m="'+m+'"'+(mode===m?' class="sel"':'')+'>'+L(k)+'<span>'+L(sub)+'</span></button>';
+}
+function spBtn(v,k){
+  return '<button data-s="'+v+'"'+(rate===v?' class="sel"':'')+'>'+L(k)+'<span>'+v+' '+L('perSec')+'</span></button>';
+}
+function applyLang(){
+  document.documentElement.setAttribute('lang', lang==='zh'?'zh-Hant-TW':'en');
+  document.title=L('title');
+  if($('langBtn')) $('langBtn').textContent = lang==='zh'?'EN':'中';
+  $('pDist').innerHTML=L('hudDist');
+  if($('meName')) $('meName').textContent=L('stMe');
+  const lbl={hint:'kHint',clear:'kClear',go:'kGo'};
+  document.querySelectorAll('.pad button').forEach(b=>{
+    if(lbl[b.dataset.k]) b.textContent=L(lbl[b.dataset.k]);
+  });
+  if($('replay')) $('replay').textContent=L('replay');
+  if($('showtxt')) $('showtxt').textContent=L('showTxt');
+  if(G&&G.q) $('qlabel').textContent=L('door',G.door+1)+' · '+MODES()[mode];
+  else $('qlabel').textContent=L('door',1);
+  updatePause();
+  if($('over').classList.contains('on')) goHome();
+}
+function toggleLang(){ lang = lang==='zh'?'en':'zh'; applyLang(); }
+function bindHome(){
+  if($('langSel')) $('langSel').onclick=e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    if(b.dataset.l===lang) return;
+    lang=b.dataset.l; applyLang();
+  };
+  $('speeds').onclick=e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    rate=+b.dataset.s;
+    for(const x of $('speeds').children) x.className=x===b?'sel':'';
+  };
+
+  $('levels').onclick=e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    mode=b.dataset.m;
+    for(const x of $('levels').children) x.className=x===b?'sel':'';
+  };
+
+  $('start').onclick=newGame;
+}
+$('pause').onclick=togglePause;
+$('replay').onclick=()=>{ if(G&&G.q&&G.q.words) speakEN(G.q.text); };
+$('showtxt').onclick=revealEN;
+$('q').onclick=()=>{ if(G&&G.alive&&G.q&&G.q.words) speakEN(G.q.text); };
+function panel(html){ $('panel').innerHTML=html; $('over').classList.add('on'); }
+
+function goHome(){ panel(homeHTML()); bindHome(); showInstall(); }
+
+function win(){
+  G.alive=false; stopEN(); $('scene').classList.remove('paused'); updatePause();
+  const sec=((performance.now()-G.t0)/1000).toFixed(1);
+  panel('<div class="em">🏆</div><h1>'+L('winT')+'</h1>'+
+    '<p>'+L('winP',MODES()[mode],G.stars,sec)+'</p>'+
+    '<p>'+L('lootP',lootLine(G.loot),lootValue(G.loot))+
+    (lootValue(VAULT)>lootValue(G.loot)?L('vaultP',lootValue(VAULT)):'')+'</p>'+
+    '<div class="row"><button class="btn" id="home">'+L('chSpeed')+'</button>'+
+    '<button class="btn go" id="again">'+L('again')+'</button></div>');
+  $('again').onclick=newGame; $('home').onclick=goHome;
+}
+function lose(){
+  if(!G.alive) return;
+  G.alive=false; stopEN(); $('scene').classList.remove('paused'); updatePause();
+  panel('<div class="em">🐍</div><h1>'+L('loseT')+'</h1>'+
+    '<p>'+L('loseP',G.door+1,G.stars,lootLine(G.loot),lootValue(G.loot))+'</p>'+
+    '<div class="row"><button class="btn" id="home">'+L('chSpeed')+'</button>'+
+    '<button class="btn go" id="again">'+L('retry')+'</button></div>');
+  $('again').onclick=newGame; $('home').onclick=goHome;
+}
+
+/* ---------- 安裝成 App ---------- */
+let deferredPrompt=null;
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; showInstall(); });
+window.addEventListener('appinstalled',()=>{ deferredPrompt=null; showInstall(); });
+function standalone(){
+  return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)
+      || navigator.standalone===true;
+}
+function showInstall(){
+  const el=document.getElementById('installTip');
+  if(!el) return;
+  if(standalone()){ el.innerHTML=''; return; }
+  if(deferredPrompt){
+    el.innerHTML='<button class="btn" id="installBtn" style="width:100%">📲 安裝到手機</button>';
+    document.getElementById('installBtn').onclick=async()=>{
+      const p=deferredPrompt; deferredPrompt=null;
+      try{ await p.prompt(); }catch(e){}
+      showInstall();
+    };
+  }else{
+    const ios=/iPad|iPhone|iPod/.test(navigator.userAgent);
+    el.innerHTML = ios
+      ? '想像 App 一樣玩？按 Safari 下方的<b>分享</b>圖示 → 加入主畫面。'
+      : '想像 App 一樣玩？用瀏覽器選單的<b>加入主畫面</b>。';
+  }
+}
+
+if($('langBtn')) $('langBtn').onclick=toggleLang;
+applyLang();
+goHome();
+document.addEventListener('keydown',e=>{
+  if(e.key===' '){ e.preventDefault(); togglePause(); return; }
+  const i='1234'.indexOf(e.key);
+  if(i>=0&&G&&G.alive){ const b=$('opts').children[i]; if(b&&!b.disabled) b.click(); }
+});
+drawSnake(10,0); runPlayer(0,false);
+raf=requestAnimationFrame(loop);
+</script>
+</body>
+</html>
