@@ -130,6 +130,26 @@
   .speeds button.sel{background:rgba(255,178,58,.2);border-color:var(--torch);color:var(--torch);font-weight:700}
   .speeds button span{font-family:var(--num);font-size:11px;opacity:.8;font-weight:600}
   .installtip{margin-top:12px;font-size:11.5px;color:var(--mist);line-height:1.7}
+  /* 封面排緊一點：itch.io 嵌入 420×760 也能一眼看到「開始」 */
+  .panel.home{padding:14px 14px 12px}
+  .panel.home h1{margin:0 0 2px;font-size:23px;display:flex;align-items:center;justify-content:center;gap:6px}
+  .panel.home .hem{font-size:28px;line-height:1}
+  .panel.home p{font-size:12.5px;line-height:1.55;margin:4px 0 2px}
+  .panel.home p b{font-size:15px}
+  .panel.home .langsel{margin-bottom:6px}
+  .panel.home .langsel button{padding:4px 14px}
+  .panel.home .pickcap{margin:7px 0 4px}
+  .panel.home .catsel button{padding:7px 6px;font-size:14px}
+  .panel.home .levels{gap:6px}
+  .panel.home .levels button{padding:6px 6px;font-size:13.5px;gap:1px}
+  .panel.home .levels button span{font-size:10px}
+  .panel.home .speeds{grid-template-columns:repeat(4,1fr);gap:5px}
+  .panel.home .speeds button{padding:6px 2px;font-size:12px}
+  .panel.home .speeds button span{font-size:10px}
+  .panel.home .row{margin-top:10px}
+  .panel.home .btn{padding:11px}
+  .panel.home .installtip{margin-top:8px;line-height:1.5}
+  .panel.home .installtip b{font-family:var(--body);font-size:inherit}
   .roomin{width:100%;padding:12px;border-radius:12px;text-align:center;font-family:var(--num);
     font-size:26px;font-weight:800;letter-spacing:.2em;background:rgba(0,0,0,.3);color:var(--torch);
     border:1px solid rgba(255,255,255,.2)}
@@ -329,7 +349,7 @@ const T={
  zh:{
   title:'大蛇走廊 · 算對就開門', site:'九九村',
   homeTitle:'大蛇走廊',
-  homeDesc:'走廊上有 <b>10</b> 道門，每道門一題<b>數學</b>或<b>邏輯</b>題。<br>答對門就開，大蛇被嚇退 <b>5</b> 格；答錯大蛇逼近 1 格。<br>同一道門答錯 <b>2</b> 次就輸了，別用猜的！<br>大蛇從後面 <b>10</b> 格追來。每局 <b>3</b> 次暫停，每開一道門抽一次寶物。',
+  homeDesc:'走廊上有 <b>10</b> 道門，每道門一題<b>數學</b>或<b>邏輯</b>題。<br>答對門就開，大蛇被嚇退 <b>5</b> 格；答錯大蛇逼近 1 格。<br>同一道門答錯 <b>2</b> 次就輸了，別用猜的！<br>大蛇從後面 <b>10</b> 格追來。每局 <b>3</b> 次暫停，開門還能抽寶物。',
   pickCat:'選分類', cMath:'🔢 數學類', cLogic:'🧩 邏輯類', logicName:'邏輯',
   mPlain:'入門', mPlainS:'兩位數加減・不進位',
   lv1:'簡易', lv1S:'圖形規律・找不同', lv2:'普通', lv2S:'數列・類比・九宮格',
@@ -1437,7 +1457,7 @@ function homeHTML(){
       '<button data-l="zh"'+(lang==='zh'?' class="sel"':'')+'>中文</button>'+
       '<button data-l="en"'+(lang==='en'?' class="sel"':'')+'>English</button>'+
     '</div>'+
-    '<div class="em">🐍</div><h1>'+L('homeTitle')+'</h1>'+
+    '<h1><span class="hem">🐍</span>'+L('homeTitle')+'</h1>'+
     '<p>'+L('homeDesc')+'</p>'+
     '<div class="pickcap">'+L('pickCat')+'</div>'+
     '<div class="catsel" id="catSel">'+
@@ -1520,9 +1540,9 @@ $('pause').onclick=togglePause;
 $('replay').onclick=()=>{ if(G&&G.q&&G.q.words) speakEN(G.q.text); };
 $('showtxt').onclick=revealEN;
 $('q').onclick=()=>{ if(G&&G.alive&&G.q&&G.q.words) speakEN(G.q.text); };
-function panel(html){ $('panel').innerHTML=html; $('over').classList.add('on'); }
+function panel(html,cls){ $('panel').className='panel'+(cls?' '+cls:''); $('panel').innerHTML=html; $('over').classList.add('on'); }
 
-function goHome(){ panel(homeHTML()); bindHome(); showInstall(); }
+function goHome(){ panel(homeHTML(),'home'); bindHome(); showInstall(); }
 
 function win(){
   G.alive=false; saveHistory(); stopEN(); $('scene').classList.remove('paused'); updatePause();
@@ -1563,7 +1583,7 @@ function showInstall(){
   if(!el) return;
   if(standalone()){ el.innerHTML=''; return; }
   if(deferredPrompt){
-    el.innerHTML='<button class="btn" id="installBtn" style="width:100%">📲 安裝到手機</button>';
+    el.innerHTML='<button class="btn" id="installBtn" style="width:100%">'+L('instBtn')+'</button>';
     document.getElementById('installBtn').onclick=async()=>{
       const p=deferredPrompt; deferredPrompt=null;
       try{ await p.prompt(); }catch(e){}
@@ -1572,8 +1592,8 @@ function showInstall(){
   }else{
     const ios=/iPad|iPhone|iPod/.test(navigator.userAgent);
     el.innerHTML = ios
-      ? '想像 App 一樣玩？按 Safari 下方的<b>分享</b>圖示 → 加入主畫面。'
-      : '想像 App 一樣玩？用瀏覽器選單的<b>加入主畫面</b>。';
+      ? L('instIOS')
+      : L('instOther');
   }
 }
 
