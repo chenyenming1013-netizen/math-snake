@@ -26,9 +26,9 @@
     --body:"Noto Sans TC",system-ui,-apple-system,sans-serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{-webkit-user-select:none;user-select:none;touch-action:manipulation}
+  body{-webkit-user-select:none;user-select:none;touch-action:pan-y pinch-zoom}
   input,.q{-webkit-user-select:text;user-select:text}
-  html,body{margin:0;padding:0;overscroll-behavior:none}
+  html,body{margin:0;padding:0;overscroll-behavior:contain}
   body{font-family:var(--body);color:var(--paper);min-height:100vh;
     background:radial-gradient(120% 55% at 50% 0%,#4A342310 0%,transparent 60%),
       linear-gradient(180deg,#241A14 0%,#150F0C 55%,#0D0908 100%);
@@ -108,15 +108,16 @@
   .tip{margin-top:10px;font-size:12px;color:var(--mist);text-align:center;line-height:1.7;min-height:34px}
 
   /* 覆蓋畫面 */
-  .over{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:20px;
+  .over{position:fixed;inset:0;z-index:40;display:none;align-items:flex-start;justify-content:center;
+    padding:16px 18px calc(24px + env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch;
     background:rgba(10,6,5,.78);backdrop-filter:blur(4px)}
   .over.on{display:flex}
-  .panel{width:100%;max-width:380px;text-align:center;border-radius:22px;padding:24px 20px;
+  .panel{width:100%;max-width:380px;margin:auto;text-align:center;border-radius:22px;padding:22px 18px;
     background:linear-gradient(180deg,#33271F,#1A1210);border:1px solid rgba(255,255,255,.13);
     box-shadow:0 20px 50px rgba(0,0,0,.6)}
-  .panel h1{font-family:var(--num);font-size:26px;margin:8px 0 6px}
-  .panel .em{font-size:46px}
-  .panel p{font-size:13.5px;color:var(--mist);line-height:1.85;margin:8px 0}
+  .panel h1{font-family:var(--num);font-size:24px;margin:4px 0 4px}
+  .panel .em{font-size:38px}
+  .panel p{font-size:13px;color:var(--mist);line-height:1.72;margin:7px 0}
   .panel b{font-family:var(--num);color:var(--torch);font-size:18px}
   .row{display:flex;gap:8px;margin-top:14px}
   .btn{flex:1;border-radius:13px;padding:12px;font-family:var(--body);font-size:14px;font-weight:700;cursor:pointer;
@@ -132,7 +133,7 @@
     font-size:26px;font-weight:800;letter-spacing:.2em;background:rgba(0,0,0,.3);color:var(--torch);
     border:1px solid rgba(255,255,255,.2)}
   .roomin.bad{border-color:var(--danger)}
-  .pickcap{font-size:11.5px;color:var(--mist);letter-spacing:.14em;margin:14px 0 6px}
+  .pickcap{font-size:11.5px;color:var(--mist);letter-spacing:.14em;margin:11px 0 5px}
   .langsel{display:flex;gap:6px;justify-content:center;margin-bottom:10px}
   .langsel button{padding:6px 16px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;
     font-family:var(--body);border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:var(--mist)}
@@ -143,6 +144,31 @@
     color:var(--paper);display:flex;flex-direction:column;gap:3px;line-height:1.25}
   .levels button span{font-size:10.5px;font-weight:400;opacity:.7}
   .levels button.sel{background:rgba(255,178,58,.2);border-color:var(--torch);color:var(--torch)}
+  .levels button:last-child:nth-child(odd){grid-column:1/-1}
+  .catsel{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .catsel button{padding:10px 6px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--body);
+    border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--paper)}
+  .catsel button.sel{background:rgba(255,178,58,.2);border-color:var(--torch);color:var(--torch)}
+  /* 邏輯題 */
+  .lprompt{font-family:var(--body);font-size:15px;font-weight:700;color:var(--torch);margin:2px 0 8px;text-shadow:none}
+  .lseq{display:flex;flex-wrap:wrap;justify-content:center;gap:5px}
+  .lseq span,.lgrid span,.lana span{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:40px;
+    padding:0 6px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+    font-size:22px;font-family:var(--num);font-weight:800;text-shadow:none;box-sizing:border-box}
+  .lseq.dots span{font-size:11px;letter-spacing:1px;max-width:58px;line-height:1.1;word-break:break-all;color:#FFE07A}
+  .lseq.arw span{font-size:26px;font-family:system-ui,sans-serif}
+  .lseq .qm,.lgrid .qm,.lana .qm{border:1.5px dashed var(--torch);color:var(--torch);background:rgba(255,178,58,.1)}
+  .lgrid{display:inline-grid;grid-template-columns:repeat(3,50px);gap:5px}
+  .lgrid span{height:44px}
+  .lana{font-size:20px;line-height:2.3}
+  .lana em{font-style:normal;color:var(--mist);margin:0 8px;font-size:18px}
+  .lana.num span{min-width:44px}
+  .ltext{font-family:var(--body);font-size:16px;font-weight:600;line-height:1.75;text-shadow:none}
+  .ltext i{font-style:normal;color:#FFE07A}
+  .ltext b.qm{color:var(--torch);font-family:var(--num)}
+  .ltext.eq{font-family:var(--num);font-size:21px;font-weight:800;line-height:1.6}
+  .opts button.emo{font-size:clamp(28px,8vw,36px);font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",system-ui,sans-serif;padding:13px 0}
+  .opts button.arw{font-size:clamp(30px,8.5vw,38px);font-family:system-ui,sans-serif;padding:12px 0}
   .opts button.small{font-size:clamp(20px,5.6vw,27px)}
   .opts button.word{font-family:var(--body);font-weight:700;font-size:clamp(14px,4.2vw,19px);padding:19px 4px;line-height:1.2}
   @media (prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -301,7 +327,13 @@ const T={
  zh:{
   title:'大蛇走廊 · 算對就開門', site:'九九村',
   homeTitle:'大蛇走廊',
-  homeDesc:'走廊上有 <b>10</b> 道門，每道門一題數學（加減法都要進位、借位）。<br>按下正確答案，門就開，大蛇被嚇退 <b>5</b> 格。<br>大蛇一開始在你後面 <b>10</b> 格，會一路追過來。<br>答錯不會結束，但大蛇會再逼近 1 格。<br>每局有 <b>3</b> 次暫停可以用來思考。<br>每開一道門會抽一次寶物。',
+  homeDesc:'走廊上有 <b>10</b> 道門，每道門一題<b>數學</b>或<b>邏輯</b>題。<br>答對門就開，大蛇被嚇退 <b>5</b> 格；答錯大蛇逼近 1 格。<br>大蛇從後面 <b>10</b> 格追來。每局 <b>3</b> 次暫停，每開一道門抽一次寶物。',
+  pickCat:'選分類', cMath:'🔢 數學類', cLogic:'🧩 邏輯類', logicName:'邏輯',
+  mPlain:'入門', mPlainS:'兩位數加減・不進位',
+  lv1:'簡易', lv1S:'圖形規律・找不同', lv2:'普通', lv2S:'數列・類比・九宮格',
+  lv3:'困難', lv3S:'旋轉・推理・字母規律', lv4:'魔王', lv4S:'符號算式・多步推理',
+  hPAdd:'個位 {0}＋{1}＝{2}，十位 {3}＋{4}＝{5}，合起來就是答案。',
+  hPSub:'個位 {0}－{1}＝{2}，十位 {3}－{4}＝{5}，合起來就是答案。',
   pickLevel:'選難度', pickSpeed:'選速度',
   mEasy:'簡易', mEasyS:'個位數加減',
   mNormal:'普通', mNormalS:'兩位數加減・九九乘法',
@@ -342,7 +374,13 @@ const T={
  en:{
   title:'Snake Escape · Mathville', site:'Mathville',
   homeTitle:'Snake Escape',
-  homeDesc:'There are <b>10</b> doors ahead, each with a math question.<br>Tap the right answer and the door opens — the snake backs off <b>5</b> steps.<br>It starts <b>10</b> steps behind you and keeps coming.<br>A wrong answer costs 1 step, not the game.<br>You get <b>3</b> pauses to think, and a treasure spin at every door.',
+  homeDesc:'<b>10</b> doors ahead, each with a <b>math</b> or <b>logic</b> puzzle.<br>Right answer: the door opens and the snake backs off <b>5</b> steps. Wrong: it gains 1.<br>It starts <b>10</b> steps behind you. <b>3</b> pauses per run, a treasure spin at every door.',
+  pickCat:'CATEGORY', cMath:'🔢 Math', cLogic:'🧩 Logic', logicName:'Logic',
+  mPlain:'Starter', mPlainS:'2-digit + −, no carrying',
+  lv1:'Easy', lv1S:'patterns, odd one out', lv2:'Normal', lv2S:'series, analogies, grids',
+  lv3:'Hard', lv3S:'rotation, reasoning, letters', lv4:'Boss', lv4S:'symbol sums, multi-step logic',
+  hPAdd:'Ones: {0} + {1} = {2}. Tens: {3} + {4} = {5}. Put them together.',
+  hPSub:'Ones: {0} − {1} = {2}. Tens: {3} − {4} = {5}. Put them together.',
   pickLevel:'DIFFICULTY', pickSpeed:'SNAKE SPEED',
   mEasy:'Easy', mEasyS:'single-digit + and −',
   mNormal:'Normal', mNormalS:'2-digit + −, times tables',
@@ -423,6 +461,23 @@ function makeQuestion(level,mode){
     return {text:a+' － '+b,ans,options:pack(ans,[ans+1,ans-1,ans+2,a+b],4),kind:'sub'};
   }
 
+  /* 入門：兩位數加減，不進位、不借位 */
+  if(mode==='plain'){
+    if(RND()<0.5){
+      const o1=ri(0,8), o2=ri(0,9-o1);           // 個位相加 ≤ 9
+      const t1=ri(1,hard?7:5), t2=ri(1,Math.min(hard?8:5,9-t1));   // 十位相加 ≤ 9
+      const a=t1*10+o1, b=t2*10+o2, ans=a+b;
+      return {text:a+' ＋ '+b,ans,options:pack(ans,[ans+10,ans-10,ans+1,ans-1,ans+11]),kind:'add',plain:[a,b]};
+    }
+    const oa=ri(1,9), ob=ri(0,oa);                // 個位夠減
+    const ta=ri(hard?4:2,9), tb=ri(1,ta-1);
+    const a=ta*10+oa, b=tb*10+ob, ans=a-b;
+    return {text:a+' － '+b,ans,options:pack(ans,[ans+10,ans-10,ans+1,ans-1,ans-11]),kind:'sub',plain:[a,b]};
+  }
+
+  /* 邏輯類 */
+  if(/^l[1-4]$/.test(mode)) return makeLogic(+mode[1]);
+
   /* 魔王：三～四位數加減、兩位數乘法 */
   if(mode==='boss'){
     const kind=pk(['add','sub','mul']);
@@ -478,6 +533,11 @@ function makeQuestion(level,mode){
 }
 
 function hintFor(q,mode){
+  if(q.logic) return tx(q.hint);
+  if(q.plain){
+    const [a,b]=q.plain, ao=a%10, bo=b%10, at=Math.floor(a/10), bt=Math.floor(b/10);
+    return q.kind==='add' ? L('hPAdd',ao,bo,ao+bo,at,bt,at+bt) : L('hPSub',ao,bo,ao-bo,at,bt,at-bt);
+  }
   const m=q.text.match(/(\d+) (.) (\d+)/);
   if(mode==='en'){
     const parts=q.text.split(/ plus | minus | times /);
@@ -500,6 +560,303 @@ function hintFor(q,mode){
   const big=Math.floor(b/step)*step, rest=b-big;
   return q.kind==='add' ? L('hAdd',a,big,a+big,rest) : L('hSub',a,big,a-big,rest);
 }
+/* ---------- 邏輯類：仿兒童智力測驗常見題型 ----------
+   圖形規律／數列（CogAT、Otis-Lennon 的 series）
+   找不同類（分類 classification）、類比（analogies，WISC 類同／CogAT 類比）
+   九宮格矩陣（Raven 漸進矩陣）、方向旋轉、排序推理、符號算式 */
+const Z=(zh,en)=>({zh,en});
+const tx=o=>(o&&typeof o==='object')?(o[lang]!==undefined?o[lang]:o.zh):o;
+const keyOf=o=>(o&&typeof o==='object')?o.zh:String(o);
+let lastLogic='';
+
+function LQ(type,prompt,body,ans,wrongs,hint,cls){
+  const labels=[ans], seen=new Set([keyOf(ans)]);
+  for(const w of shuffle(wrongs.slice())){
+    if(labels.length>=4) break;
+    if(typeof w==='number'&&!(w>=0)) continue;
+    const k=keyOf(w); if(seen.has(k)) continue;
+    seen.add(k); labels.push(w);
+  }
+  return {logic:true,kind:'logic',type,prompt,body,labels,ans:0,
+          options:shuffle(labels.map((_,i)=>i)),hint,cls:cls||''};
+}
+const span=(x,c)=>'<span'+(c?' class="'+c+'"':'')+'>'+x+'</span>';
+const seqHTML=(items,c)=>'<div class="lseq'+(c?' '+c:'')+'">'+items.map(x=>span(tx(x))).join('')+span('?','qm')+'</div>';
+const gridHTML=cells=>'<div class="lgrid">'+cells.map(x=>x===null?span('?','qm'):span(x)).join('')+'</div>';
+const PR={
+  next:Z('下一個是什麼？','What comes next?'),
+  odd:Z('哪一個和其他三個不同類？','Which one does not belong?'),
+  oddN:Z('哪一個數字和其他三個不同類？','Which number does not belong?'),
+  grid:Z('九宮格裡的 ？ 是什麼？','What goes in the ? square?'),
+  ana:Z('照著上面的關係，？ 是什麼？','Follow the same rule. What is ?'),
+};
+
+/* 1. 圖形循環 */
+const EMO_SETS=[['🔴','🔵','🟡','🟢','🟣'],['⭐','🌙','☀️','☁️','⚡'],['🍎','🍌','🍇','🍓','🍊'],
+                ['🐶','🐱','🐰','🐼','🐸'],['▲','●','■','◆','★']];
+function qPattern(units){
+  const u=pk(units), n=u.length, set=shuffle(pk(EMO_SETS).slice());
+  const map={A:set[0],B:set[1],C:set[2],D:set[3]};
+  const shown=Math.min(10,Math.max(6,n*2+ri(0,n-1)));
+  const seq=[]; for(let i=0;i<=shown;i++) seq.push(map[u[i%n]]);
+  const ans=seq.pop(), unit=[...u].map(c=>map[c]).join(' ');
+  return LQ('pat',PR.next,()=>seqHTML(seq),ans,set.filter(x=>x!==ans),
+    Z('每 '+n+' 個一組重複：'+unit,'It repeats every '+n+': '+unit),'emo');
+}
+
+/* 2. 點點增加 */
+function qDots(){
+  const st=ri(1,2), d=pk([1,1,2]), arr=[0,1,2].map(i=>st+i*d), ans=st+3*d;
+  return LQ('dots',Z('下一格有幾個點？','How many dots come next?'),
+    ()=>seqHTML(arr.map(k=>'●'.repeat(k)),'dots'),ans,[ans-1,ans+1,ans+2,ans-2,ans+d+1],
+    Z('每次多 '+d+' 個點','Each step adds '+d+(d>1?' dots':' dot')));
+}
+
+/* 3. 找不同類（圖） */
+const CATS=[
+  [Z('水果','fruits'),['🍎','🍌','🍇','🍓','🍉','🍑','🍍']],
+  [Z('動物','animals'),['🐶','🐱','🐰','🐼','🐯','🐸','🐵']],
+  [Z('交通工具','vehicles'),['🚗','🚌','🚲','✈️','🚂','🚀','⛵']],
+  [Z('球','balls'),['⚽','🏀','🏈','⚾','🎾','🏐']],
+  [Z('樂器','instruments'),['🎸','🎹','🥁','🎺','🎻']],
+  [Z('花','flowers'),['🌸','🌻','🌹','🌷','🌼']],
+  [Z('衣服','clothes'),['👕','👖','👗','🧢','🧦','🧣']],
+];
+const CATS_HARD=[
+  [Z('會飛的','things that fly'),['🐦','🦋','🐝','🦅','🦇','✈️'],['🐧','🐢','🐘','🐌','🚗']],
+  [Z('住在水裡的','water animals'),['🐟','🐙','🐬','🦀','🐳','🦈'],['🐫','🐘','🦒','🐒','🐿️']],
+  [Z('熱的東西','hot things'),['🔥','☀️','🌶️','☕','🌋'],['❄️','🧊','🍦','⛄']],
+  [Z('圓的東西','round things'),['⚽','🌕','🍊','🏀','🍩','💿'],['📦','🎲','📕','📱']],
+  [Z('有輪子的','things with wheels'),['🚗','🚲','🚌','🛴','🚜'],['⛵','🚀','🛶']],
+  [Z('植物長出來的','things from plants'),['🍎','🌽','🥕','🍇','🍅'],['🥚','🧀','🍗','🥛']],
+];
+function qOddEmoji(hard){
+  let cat,three,odd;
+  if(hard){ const c=pk(CATS_HARD); cat=c[0]; three=shuffle(c[1].slice()).slice(0,3); odd=pk(c[2]); }
+  else{ const [A,B]=shuffle(CATS.slice()); cat=A[0]; three=shuffle(A[1].slice()).slice(0,3); odd=pk(B[1]); }
+  return LQ('odd',PR.odd,null,odd,three,
+    Z('其他三個都是'+cat.zh,'The other three are all '+cat.en),'emo');
+}
+
+/* 4. 找不同類（數字） */
+function qOddNum(lv){
+  const RULES={
+    2:[[Z('雙數','even numbers'),n=>n%2===0,2,40],[Z('單數','odd numbers'),n=>n%2===1,1,39]],
+    3:[[Z('5 的倍數','multiples of 5'),n=>n%5===0,5,60],[Z('3 的倍數','multiples of 3'),n=>n%3===0,3,36],
+       [Z('10 的倍數','multiples of 10'),n=>n%10===0,10,90]],
+    4:[[Z('平方數（1×1、2×2、3×3…）','square numbers (1×1, 2×2, 3×3…)'),n=>Number.isInteger(Math.sqrt(n)),1,64],
+       [Z('兩個數字一樣的數','numbers with matching digits'),n=>n>10&&n%11===0,11,99],
+       [Z('4 的倍數','multiples of 4'),n=>n%4===0,4,48]],
+  };
+  const [name,ok,lo,hi]=pk(RULES[lv]);
+  const yes=[],no=[];
+  for(let n=lo;n<=hi;n++) (ok(n)?yes:no).push(n);
+  const three=shuffle(yes).slice(0,3), odd=pk(no.filter(n=>n>=Math.min(...three)-6&&n<=Math.max(...three)+6));
+  return LQ('oddN',PR.oddN,null,odd,three,Z('其他三個都是'+name.zh,'The other three are all '+name.en));
+}
+
+/* 5. 數列 */
+function qSeries(lv){
+  const G1=[
+    ()=>{const d=pk([1,2,5,10]),a=ri(1,d===10?30:12);return [5,i=>a+i*d,Z('每次加 '+d,'Add '+d+' each time'),[d]];},
+    ()=>{const d=pk([1,2]),a=ri(12,20);return [5,i=>a-i*d,Z('每次減 '+d,'Take away '+d+' each time'),[d]];}];
+  const G2=[
+    ()=>{const d=ri(3,9),a=ri(1,20);return [5,i=>a+i*d,Z('每次加 '+d,'Add '+d+' each time'),[d]];},
+    ()=>{const d=ri(3,9),a=ri(50,90);return [5,i=>a-i*d,Z('每次減 '+d,'Take away '+d+' each time'),[d]];}];
+  const G3=[
+    ()=>{const a=ri(1,3);return [5,i=>a*2**i,Z('每次乘 2（變兩倍）','Double it each time'),[a*8]];},
+    ()=>{const a=ri(1,10);return [6,i=>a+i*(i+1)/2,Z('加的數一次比一次多 1：+1、+2、+3…','Add 1, then 2, then 3…'),[5,4]];},
+    ()=>{const x=ri(3,6),y=ri(1,2),a=ri(1,9);return [7,i=>a+Math.ceil(i/2)*x-Math.floor(i/2)*y,
+          Z('加 '+x+'、減 '+y+' 輪流','Add '+x+', take away '+y+', and repeat'),[x,y]];},
+    ()=>{const k=pk([10,5,2]);return [7,i=>i%2?Math.ceil(i/2)*k:i/2+1,
+          Z('兩條數列交錯：1、2、3… 和 '+k+'、'+2*k+'、'+3*k+'…','Two series take turns: 1, 2, 3… and '+k+', '+2*k+', '+3*k+'…'),[k]];}];
+  const G4=[
+    ()=>{const p=pk([[1,1],[1,2],[2,3]]);const f=[p[0],p[1]];for(let i=2;i<7;i++)f.push(f[i-1]+f[i-2]);
+          return [7,i=>f[i],Z('前兩個數加起來就是下一個','Add the two before to get the next'),[f[5],f[4]]];},
+    ()=>{const o=ri(1,3);return [5,i=>(i+o)*(i+o),Z('1×1、2×2、3×3…','1×1, 2×2, 3×3…'),[o+4,2*(o+4)]];},
+    ()=>{const a=ri(1,2);let v=a;const f=[a];for(let i=1;i<6;i++){v=v*2+1;f.push(v);}
+          return [5,i=>f[i],Z('乘 2 再加 1','Double it, then add 1'),[f[4]-f[3],1]];},
+    ()=>{const a=ri(1,9);return [6,i=>a+2**i-1,Z('加的數每次變兩倍：+1、+2、+4、+8…','The jump doubles: +1, +2, +4, +8…'),[16,8]];},
+    ()=>{const a=pk([1,2]);return [5,i=>a*3**i,Z('每次乘 3','Times 3 each time'),[a*27]];}];
+  const [n,f,hint,extra]=pk({1:G1,2:G2,3:G3,4:G4}[lv])();
+  const seq=Array.from({length:n},(_,i)=>f(i)), ans=seq.pop();
+  const last=seq[seq.length-1], d=last-seq[seq.length-2];
+  return LQ('ser',PR.next,()=>seqHTML(seq),ans,
+    [ans+1,ans-1,ans+2,ans-2,last+d,ans+10,ans-10,...extra.map(e=>ans+e),...extra.map(e=>ans-e)].filter(w=>w>0&&w!==ans),hint);
+}
+
+/* 6. 方向旋轉 */
+const ARW=['↑','↗','→','↘','↓','↙','←','↖'];
+function qArrow(lv){
+  const step=lv===2?pk([2,-2]):pk([1,-1,3,-3]), st=ri(0,7);
+  const at=i=>ARW[((st+i*step)%8+8)%8];
+  const seq=[0,1,2,3,4].map(at), ans=at(5);
+  const deg=Math.abs(step)*45, cw=step>0;
+  return LQ('arw',PR.next,()=>seqHTML(seq,'arw'),ans,[at(4),at(6),ARW[((st-5*step)%8+8)%8],...ARW],
+    Z('每次'+(cw?'順':'逆')+'時針轉 '+deg+'°','It turns '+deg+'° '+(cw?'clockwise':'counter-clockwise')+' each time'),'arw');
+}
+
+/* 7. 圖像類比 */
+const ANA_EMO=[['🐔','🥚','🐄','🥛',['🍯','🌽','🐟']],['☀️','🕶️','🌧️','☂️',['🧤','🎈','🔥']],
+  ['🐒','🍌','🐰','🥕',['🦴','🐟','🍯']],['🐶','🦴','🐱','🐟',['🥕','🍌','🌽']],
+  ['👟','🦶','🧤','🖐️',['👂','👃','👀']],['🔑','🔒','✂️','📄',['🔨','🥄','🎈']],
+  ['🥚','🐣','🐛','🦋',['🐝','🐞','🐜']],['🔥','🚒','🤒','🚑',['🚓','🚌','🚲']],
+  ['📖','👀','🎵','👂',['👃','🖐️','👄']],['🌱','🌳','🐣','🐔',['🥚','🐟','🐶']],
+  ['🐟','🌊','🐦','🌳',['🏜️','🔥','🧊']]];
+function qAnaEmo(){
+  const [a,b,c,d,w]=pk(ANA_EMO);
+  return LQ('anaE',PR.ana,()=>'<div class="lana">'+span(a)+'<em>→</em>'+span(b)+'<br>'+span(c)+'<em>→</em>'+span('?','qm')+'</div>',
+    d,w,Z(a+' 和 '+b+' 是什麼關係？'+c+' 也一樣','How are '+a+' and '+b+' linked? '+c+' works the same way'),'emo');
+}
+
+/* 8. 文字類比 */
+const ANA_WORD=[
+  [Z('熱','hot'),Z('冷','cold'),Z('高','tall'),Z('矮','short'),[Z('大','big'),Z('長','long'),Z('胖','wide')],Z('意思相反','They are opposites')],
+  [Z('快','fast'),Z('慢','slow'),Z('重','heavy'),Z('輕','light'),[Z('大','big'),Z('硬','hard'),Z('強','strong')],Z('意思相反','They are opposites')],
+  [Z('早上','morning'),Z('晚上','night'),Z('夏天','summer'),Z('冬天','winter'),[Z('春天','spring'),Z('太陽','sun'),Z('熱','hot')],Z('意思相反','They are opposites')],
+  [Z('手套','glove'),Z('手','hand'),Z('襪子','sock'),Z('腳','foot'),[Z('頭','head'),Z('鞋子','shoe'),Z('腿','leg')],Z('東西穿戴在哪裡','What it is worn on')],
+  [Z('醫生','doctor'),Z('醫院','hospital'),Z('老師','teacher'),Z('學校','school'),[Z('書','book'),Z('學生','student'),Z('公園','park')],Z('在哪裡工作','Where they work')],
+  [Z('眼睛','eyes'),Z('看','see'),Z('耳朵','ears'),Z('聽','hear'),[Z('說','speak'),Z('聞','smell'),Z('吃','eat')],Z('身體部位能做什麼','What the body part does')],
+  [Z('書','book'),Z('讀','read'),Z('歌','song'),Z('唱','sing'),[Z('寫','write'),Z('跳','dance'),Z('畫','draw')],Z('拿來做什麼','What you do with it')],
+  [Z('小狗','puppy'),Z('狗','dog'),Z('蝌蚪','tadpole'),Z('青蛙','frog'),[Z('魚','fish'),Z('烏龜','turtle'),Z('蛇','snake')],Z('小時候和長大後','Baby and grown-up')],
+  [Z('鳥','bird'),Z('鳥巢','nest'),Z('蜜蜂','bee'),Z('蜂窩','hive'),[Z('花','flower'),Z('蜂蜜','honey'),Z('樹','tree')],Z('住在哪裡','Where it lives')],
+  [Z('白天','day'),Z('太陽','sun'),Z('晚上','night'),Z('月亮','moon'),[Z('雲','cloud'),Z('床','bed'),Z('黑','dark')],Z('天上看到什麼','What you see in the sky')],
+  [Z('筆','pen'),Z('寫','write'),Z('剪刀','scissors'),Z('剪','cut'),[Z('畫','draw'),Z('黏','glue'),Z('摺','fold')],Z('拿來做什麼','What you do with it')],
+];
+function qAnaWord(){
+  const [a,b,c,d,w,h]=pk(ANA_WORD);
+  return LQ('anaW',Z('「？」應該填什麼？','Which word fits?'),
+    ()=>'<div class="ltext">'+(lang==='zh'
+      ? '「'+a.zh+'」對「'+b.zh+'」<br>就像「'+c.zh+'」對「<b class="qm">？</b>」'
+      : '<i>'+a.en+'</i> is to <i>'+b.en+'</i><br>as <i>'+c.en+'</i> is to <b class="qm">?</b>')+'</div>',
+    d,w,Z('想想看：'+h.zh,'Think: '+h.en),'word');
+}
+
+/* 9. 數字類比 */
+function qAnaNum(lv){
+  const R=lv===3
+    ? [[n=>n*2,Z('乘 2','times 2')],[n=>n+5,Z('加 5','add 5')],[n=>n*3,Z('乘 3','times 3')],[n=>n+10,Z('加 10','add 10')]]
+    : [[n=>n*n,Z('自己乘自己','times itself')],[n=>n*2+1,Z('乘 2 再加 1','times 2, then add 1')],
+       [n=>Math.floor(n/10)+n%10,Z('十位加個位','tens digit + ones digit')],[n=>n*10-n,Z('乘 9','times 9')]];
+  const k=ri(0,R.length-1), [f,name]=R[k], two=k===2&&lv===4;
+  const xs=shuffle(two?[21,34,52,43,25,61,17,44]:[2,3,4,5,6,7]).slice(0,3);
+  const ans=f(xs[2]);
+  return LQ('anaN',PR.ana,()=>'<div class="lana num">'+span(xs[0])+'<em>→</em>'+span(f(xs[0]))+'<br>'+
+      span(xs[1])+'<em>→</em>'+span(f(xs[1]))+'<br>'+span(xs[2])+'<em>→</em>'+span('?','qm')+'</div>',
+    ans,[ans+1,ans-1,ans+2,ans-2,ans+xs[2],ans-xs[2],ans+10].filter(w=>w>=0),Z('規則是：'+name.zh,'The rule: '+name.en));
+}
+
+/* 10. 字母規律 */
+const ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+function qLetters(lv){
+  let seq,ans,hint;
+  if(lv===3){
+    const st=pk([1,2,3,-1,-2]), n=5;
+    const s0=st>0?ri(0,25-st*n):ri(-st*n,25);
+    const all=Array.from({length:n+1},(_,i)=>ABC[s0+i*st]);
+    ans=all.pop(); seq=all;
+    hint=st>0?Z('每次往後跳 '+st+' 個字母','Skip ahead '+st+' letter'+(st>1?'s':'')):Z('每次往前退 '+(-st)+' 個字母','Go back '+(-st)+' letter'+(st<-1?'s':''));
+  }else if(RND()<0.5){
+    const s0=ri(0,3), idx=[0,1,3,6,10,15].map(x=>s0+x);
+    ans=ABC[idx.pop()]; seq=idx.map(i=>ABC[i]);
+    hint=Z('跳的距離越來越大：+1、+2、+3、+4…','The jumps grow: +1, +2, +3, +4…');
+  }else{
+    const a=ri(0,4), z=25-ri(0,4);
+    const all=[ABC[a],ABC[z],ABC[a+1],ABC[z-1],ABC[a+2],ABC[z-2]];
+    ans=all.pop(); seq=all;
+    hint=Z('兩條字母線交錯：一條往後、一條往前','Two lines take turns: one goes forward, one goes back');
+  }
+  const ai=ABC.indexOf(ans);
+  return LQ('abc',PR.next,()=>seqHTML(seq),ans,[ABC[ai+1],ABC[ai-1],ABC[ai+2],ABC[ai-2],ABC[ai+3],ABC[ai-3]].filter(Boolean),hint);
+}
+
+/* 11. 九宮格（拉丁方陣 / 數字矩陣） */
+function qLatin(){
+  const set=shuffle(pk(EMO_SETS).slice()), base=set.slice(0,3), sh=pk([1,2]);
+  const cells=[]; for(let r=0;r<3;r++) for(let c=0;c<3;c++) cells.push(base[(c+r*sh)%3]);
+  const miss=ri(0,8), ans=cells[miss]; cells[miss]=null;
+  return LQ('lat',PR.grid,()=>gridHTML(cells),ans,set.filter(x=>x!==ans),
+    Z('每一橫排、每一直排，三種圖案各出現一次','Each row and column has each picture exactly once'),'emo');
+}
+function qMatrix(lv){
+  let rows,hint;
+  if(lv===3){
+    rows=[0,1,2].map(()=>{const a=ri(1,9),b=ri(1,9);return [a,b,a+b];});
+    hint=Z('每一橫排：第一個 ＋ 第二個 ＝ 第三個','In each row: first + second = third');
+  }else if(RND()<0.5){
+    rows=[0,1,2].map(()=>{const a=ri(2,6),b=ri(2,5);return [a,b,a*b];});
+    hint=Z('每一橫排：第一個 × 第二個 ＝ 第三個','In each row: first × second = third');
+  }else{
+    const t=ri(12,20);
+    rows=[0,1,2].map(()=>{const a=ri(1,t-8),b=ri(1,Math.min(9,t-a-1));return [a,b,t-a-b];});
+    hint=Z('每一橫排加起來都是 '+t,'Every row adds up to '+t);
+  }
+  const cells=rows.flat(), r=ri(1,2), miss=r*3+ri(0,2), ans=cells[miss]; cells[miss]=null;
+  return LQ('mtx',PR.grid,()=>gridHTML(cells),ans,[ans+1,ans-1,ans+2,ans-2,ans+3,ans+10].filter(w=>w>=0),hint);
+}
+
+/* 12. 排序推理 */
+const NAMES=[Z('小明','Amy'),Z('小華','Ben'),Z('小美','Cody'),Z('阿傑','Dina')];
+const RELS=[
+  {mz:'高',lz:'矮',me:'is taller than',le:'is shorter than',q:[Z('誰最高？','Who is the tallest?'),Z('誰最矮？','Who is the shortest?'),Z('誰第二高？','Who is the second tallest?')]},
+  {mz:'跑得快',lz:'跑得慢',me:'runs faster than',le:'runs slower than',q:[Z('誰跑最快？','Who is the fastest?'),Z('誰跑最慢？','Who is the slowest?'),Z('誰跑第二快？','Who is the second fastest?')]},
+  {mz:'年紀大',lz:'年紀小',me:'is older than',le:'is younger than',q:[Z('誰年紀最大？','Who is the oldest?'),Z('誰年紀最小？','Who is the youngest?'),Z('誰年紀第二大？','Who is the second oldest?')]},
+];
+function qOrder(lv){
+  const rel=pk(RELS), ord=shuffle([0,1,2,3]);          // ord[0] 最多 … ord[3] 最少
+  let facts=[[0,1],[1,2],[2,3]].map(([i,j])=>{
+    const flip=lv===4&&RND()<0.5;
+    return flip?{x:ord[j],y:ord[i],more:false}:{x:ord[i],y:ord[j],more:true};
+  });
+  if(lv===4) facts=shuffle(facts);
+  const ask=lv===4?ri(0,2):ri(0,1), ans=ord[[0,3,1][ask]];
+  const line=f=>lang==='zh'
+    ? NAMES[f.x].zh+'比'+NAMES[f.y].zh+(f.more?rel.mz:rel.lz)+'。'
+    : NAMES[f.x].en+' '+(f.more?rel.me:rel.le)+' '+NAMES[f.y].en+'.';
+  return LQ('ord',rel.q[ask],()=>'<div class="ltext">'+facts.map(line).join('<br>')+'</div>',
+    NAMES[ans],NAMES.filter((_,i)=>i!==ans),
+    Z('把四個人一句一句排成一排，再找答案','Line all four up one sentence at a time, then answer'),'word');
+}
+
+/* 13. 符號算式 */
+function qSymbol(){
+  const [A,B,C]=shuffle(['🍎','🍌','🍇','🍓','⭐','🐱']).slice(0,3);
+  const a=ri(2,9), b=ri(2,9), c=ri(1,9);
+  let lines,ans,hint;
+  const t=ri(0,2);
+  if(t===0){
+    lines=[A+' ＋ '+A+' ＝ '+(2*a),A+' ＋ '+B+' ＝ '+(a+b),B+' ＋ '+B+' ＝ ？'];
+    ans=2*b; hint=Z('先從第一行找出 '+A+' 是多少','Use the first line to find '+A);
+  }else if(t===1){
+    lines=[A+' ＋ '+A+' ＋ '+A+' ＝ '+(3*a),A+' ＋ '+B+' ＝ '+(a+b),B+' ＋ '+C+' ＝ '+(b+c),C+' ＝ ？'];
+    ans=c; hint=Z('一行一行解：先 '+A+'，再 '+B+'，最後 '+C,'Solve line by line: '+A+', then '+B+', then '+C);
+  }else{
+    const x=ri(2,5), y=ri(1,4);                      // 🅰=x，🅱=x+y，乘積不超過 45
+    lines=[A+' ＋ '+A+' ＝ '+(2*x),B+' － '+A+' ＝ '+y,A+' × '+B+' ＝ ？'];
+    ans=x*(x+y); hint=Z('先找 '+A+'，再算出 '+B,'Find '+A+' first, then '+B);
+    return LQ('sym',Z('每個圖案代表一個數字','Each picture stands for a number'),
+      ()=>'<div class="ltext eq">'+lines.join('<br>')+'</div>',ans,
+      [ans+x,ans-x,ans+1,ans-1,x*y,2*x*(x+y)].filter(w=>w>=0),hint);
+  }
+  return LQ('sym',Z('每個圖案代表一個數字','Each picture stands for a number'),
+    ()=>'<div class="ltext eq">'+lines.join('<br>')+'</div>',ans,
+    [ans+1,ans-1,ans+2,ans-2,a,b,a+b].filter(w=>w>=0),hint);
+}
+
+const LOGIC={
+  1:[()=>qPattern(['AB','ABC','AAB','ABB']),qDots,()=>qOddEmoji(false),()=>qSeries(1)],
+  2:[()=>qPattern(['ABCD','AABB','ABBC','ABAC']),()=>qArrow(2),()=>qOddNum(2),()=>qSeries(2),qAnaEmo,qLatin],
+  3:[()=>qArrow(3),()=>qOddEmoji(true),()=>qOddNum(3),()=>qSeries(3),qAnaWord,()=>qAnaNum(3),
+     ()=>qLetters(3),()=>qMatrix(3),()=>qOrder(3)],
+  4:[()=>qSeries(4),()=>qOddNum(4),()=>qAnaNum(4),()=>qLetters(4),()=>qMatrix(4),()=>qOrder(4),qSymbol,qSymbol],
+};
+function makeLogic(lv){
+  let q;
+  for(let k=0;k<8;k++){ q=pk(LOGIC[lv])(); if(q.type!==lastLogic&&q.labels.length===4) break; }
+  lastLogic=q.type;
+  return q;
+}
+
 function wordNum(w){                       // 英文數字轉回阿拉伯數字（給提示用）
   w=w.trim().toLowerCase();
   if(w.includes(' hundred')){
@@ -684,8 +1041,10 @@ function runSpin(done){
 /* ---------- 遊戲 ---------- */
 const $=id=>document.getElementById(id);
 const TOTAL=10, START_DIST=10, BACK=5, MAXD=16, PAUSES=3;
-let G=null, rate=0.5, mode='normal', last=0, raf=null;   // rate：大蛇每秒前進幾格
-const MODES=()=>({easy:L('mEasy'),normal:L('mNormal'),boss:L('mBoss'),en:L('mEn')});
+let G=null, rate=0.5, mode='normal', cat='math', last=0, raf=null;
+const modeBy={math:'normal',logic:'l1'};   // rate：大蛇每秒前進幾格
+const MODES=()=>({easy:L('mEasy'),plain:L('mPlain'),normal:L('mNormal'),boss:L('mBoss'),en:L('mEn'),
+  l1:L('logicName')+'・'+L('lv1'),l2:L('logicName')+'・'+L('lv2'),l3:L('logicName')+'・'+L('lv3'),l4:L('logicName')+'・'+L('lv4')});
 
 function newGame(){
   stopEN();
@@ -705,7 +1064,10 @@ function nextDoor(){
   G.tries=0;
   $('qlabel').textContent=L('door',G.door+1)+' · '+MODES()[mode];
   $('doorNo').textContent='門 '+(G.door+1);
-  if(G.q.words){
+  if(G.q.logic){
+    $('enbar').hidden=true;
+    renderLogic();
+  }else if(G.q.words){
     $('enbar').hidden=false;
     const ok=speakEN(G.q.text);
     if(ok){ $('q').innerHTML='<span class="hear">'+L('listen')+'</span>'; $('q').style.fontSize='clamp(22px,6.5vw,32px)'; }
@@ -719,12 +1081,18 @@ function nextDoor(){
   $('tip').textContent='';
   const bs=$('opts').children;
   G.q.options.forEach((v,i)=>{ const b=bs[i];
-    b.textContent = G.q.words ? numWord(v) : v;
+    b.textContent = optLabel(G.q,v);
     b.disabled=false;
-    b.className = G.q.words ? 'word' : (v>999 ? 'small' : '');
+    b.className = G.q.logic ? G.q.cls : G.q.words ? 'word' : (v>999 ? 'small' : '');
     b.onclick=()=>answer(v,b); });
   const ds=$('doors').children;
   for(let i=0;i<TOTAL;i++) ds[i].className=i<G.door?'on':'';
+}
+function optLabel(q,v){ return q.logic ? tx(q.labels[v]) : q.words ? numWord(v) : v; }
+function renderLogic(){
+  const q=G.q;
+  $('q').style.fontSize='';
+  $('q').innerHTML='<div class="lprompt">'+tx(q.prompt)+'</div>'+(q.body?q.body():'');
 }
 function answer(v,btn){
   if(!G||!G.alive||G.moving||G.paused) return;
@@ -812,17 +1180,25 @@ function homeHTML(){
     '</div>'+
     '<div class="em">🐍</div><h1>'+L('homeTitle')+'</h1>'+
     '<p>'+L('homeDesc')+'</p>'+
-    '<div class="pickcap">'+L('pickLevel')+'</div>'+
-    '<div class="levels" id="levels">'+
-      lvBtn('easy','mEasy','mEasyS')+lvBtn('normal','mNormal','mNormalS')+
-      lvBtn('boss','mBoss','mBossS')+lvBtn('en','mEn','mEnS')+
+    '<div class="pickcap">'+L('pickCat')+'</div>'+
+    '<div class="catsel" id="catSel">'+
+      '<button data-c="math"'+(cat==='math'?' class="sel"':'')+'>'+L('cMath')+'</button>'+
+      '<button data-c="logic"'+(cat==='logic'?' class="sel"':'')+'>'+L('cLogic')+'</button>'+
     '</div>'+
+    '<div class="pickcap">'+L('pickLevel')+'</div>'+
+    '<div class="levels" id="levels">'+levelsHTML()+'</div>'+
     '<div class="pickcap">'+L('pickSpeed')+'</div>'+
     '<div class="speeds" id="speeds">'+
       spBtn(0.1,'sLearn')+spBtn(0.5,'sNormal')+spBtn(1,'sFast')+spBtn(2,'sWild')+
     '</div>'+
     '<div class="row"><button class="btn go" id="start" style="flex:1">'+L('start')+'</button></div>'+
     '<div class="installtip" id="installTip"></div>';
+}
+function levelsHTML(){
+  return cat==='math'
+    ? lvBtn('easy','mEasy','mEasyS')+lvBtn('plain','mPlain','mPlainS')+lvBtn('normal','mNormal','mNormalS')+
+      lvBtn('boss','mBoss','mBossS')+lvBtn('en','mEn','mEnS')
+    : lvBtn('l1','lv1','lv1S')+lvBtn('l2','lv2','lv2S')+lvBtn('l3','lv3','lv3S')+lvBtn('l4','lv4','lv4S');
 }
 function lvBtn(m,k,sub){
   return '<button data-m="'+m+'"'+(mode===m?' class="sel"':'')+'>'+L(k)+'<span>'+L(sub)+'</span></button>';
@@ -845,6 +1221,12 @@ function applyLang(){
   if($('showtxt')) $('showtxt').textContent=L('showTxt');
   if(G&&G.q) $('qlabel').textContent=L('door',G.door+1)+' · '+MODES()[mode];
   else $('qlabel').textContent=L('door',1);
+  if(G&&G.q&&G.q.logic&&G.alive){
+    renderLogic();
+    const bs=$('opts').children;
+    G.q.options.forEach((v,i)=>{ bs[i].textContent=optLabel(G.q,v); });
+  }
+  if(G&&G.q&&G.alive&&$('tip').textContent.startsWith('💡')) $('tip').textContent='💡 '+hintFor(G.q,mode);
   updatePause();
   if($('over').classList.contains('on')) goHome();
 }
@@ -861,9 +1243,15 @@ function bindHome(){
     for(const x of $('speeds').children) x.className=x===b?'sel':'';
   };
 
+  $('catSel').onclick=e=>{
+    const b=e.target.closest('button'); if(!b||b.dataset.c===cat)return;
+    cat=b.dataset.c; mode=modeBy[cat];
+    for(const x of $('catSel').children) x.className=x===b?'sel':'';
+    $('levels').innerHTML=levelsHTML();
+  };
   $('levels').onclick=e=>{
     const b=e.target.closest('button'); if(!b)return;
-    mode=b.dataset.m;
+    mode=b.dataset.m; modeBy[cat]=mode;
     for(const x of $('levels').children) x.className=x===b?'sel':'';
   };
 
