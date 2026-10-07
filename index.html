@@ -89,6 +89,7 @@
   .q{font-family:var(--num);font-weight:800;font-size:clamp(38px,12vw,58px);line-height:1.1;margin:2px 0 3px;
     color:var(--paper);text-shadow:0 3px 0 rgba(0,0,0,.35)}
   .q small{font-size:.5em;color:var(--mist);font-weight:600}
+  .q .blank{color:var(--torch)}
   .opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
   .opts button{font-family:var(--num);font-weight:800;font-size:clamp(26px,7.5vw,34px);
     padding:16px 0;border-radius:16px;border:1px solid rgba(255,255,255,.16);
@@ -157,6 +158,7 @@
     font-size:22px;font-family:var(--num);font-weight:800;text-shadow:none;box-sizing:border-box}
   .lseq.dots span{font-size:11px;letter-spacing:1px;max-width:58px;line-height:1.1;word-break:break-all;color:#FFE07A}
   .lseq.arw span{font-size:26px;font-family:system-ui,sans-serif}
+  .lseq.dots .qm{font-size:20px;color:var(--torch)}
   .lseq .qm,.lgrid .qm,.lana .qm{border:1.5px dashed var(--torch);color:var(--torch);background:rgba(255,178,58,.1)}
   .lgrid{display:inline-grid;grid-template-columns:repeat(3,50px);gap:5px}
   .lgrid span{height:44px}
@@ -327,7 +329,7 @@ const T={
  zh:{
   title:'大蛇走廊 · 算對就開門', site:'九九村',
   homeTitle:'大蛇走廊',
-  homeDesc:'走廊上有 <b>10</b> 道門，每道門一題<b>數學</b>或<b>邏輯</b>題。<br>答對門就開，大蛇被嚇退 <b>5</b> 格；答錯大蛇逼近 1 格。<br>大蛇從後面 <b>10</b> 格追來。每局 <b>3</b> 次暫停，每開一道門抽一次寶物。',
+  homeDesc:'走廊上有 <b>10</b> 道門，每道門一題<b>數學</b>或<b>邏輯</b>題。<br>答對門就開，大蛇被嚇退 <b>5</b> 格；答錯大蛇逼近 1 格。<br>同一道門答錯 <b>2</b> 次就輸了，別用猜的！<br>大蛇從後面 <b>10</b> 格追來。每局 <b>3</b> 次暫停，每開一道門抽一次寶物。',
   pickCat:'選分類', cMath:'🔢 數學類', cLogic:'🧩 邏輯類', logicName:'邏輯',
   mPlain:'入門', mPlainS:'兩位數加減・不進位',
   lv1:'簡易', lv1S:'圖形規律・找不同', lv2:'普通', lv2S:'數列・類比・九宮格',
@@ -350,7 +352,9 @@ const T={
   listen:'🔊 聽題目', replay:'🔊 再聽一次', showTxt:'👀 看文字',
   kHint:'提示', kClear:'清除', kGo:'送出',
   doorOpen:'門開了！大蛇退後 {0} 格。',
-  wrongTip:'不對喔，再看一次！大蛇逼近 1 格。',
+  wrongTip:'不對喔！再錯一次就輸了。',
+  loseWT:'同一道門答錯兩次！',
+  loseWP:'第 <b>{0}</b> 道門答錯兩次，大蛇趁機追上來了。<br>正確答案是 <b>{1}</b>。',
   pausedTip:'⏸ 暫停中，想好了再按「繼續」。剩下 {0} 次。',
   got:'獲得 <span class="pop">{0}</span> <b>{1}</b>',
   it1:'金幣', it2:'寶石戒指', it3:'水晶球', it4:'鑽石', it5:'皇冠', it6:'傳說獎盃',
@@ -369,12 +373,17 @@ const T={
   hSplit:'拆開算：{0} × {1} ＝ {2}×{3} ＋ {4}×{5}。',
   hSplit10:'拆開算：{0} × {1} ＝ {0}×{2} 再乘 10。',
   hEn:'英文的意思是：{0} {1} {2} ＝ ？',
+  hBAdd:'想想看：幾加 {0} 會等於 {1}？從 {0} 往上數到 {1}。',
+  hBAdd2:'想想看：{0} 加幾會等於 {1}？從 {0} 往上數到 {1}。',
+  hBSub:'想想看：幾減 {0} 會等於 {1}？把 {1} 加回 {0} 就知道了。',
+  hBSub2:'想想看：{0} 減幾會剩 {1}？從 {1} 往上數到 {0}。',
+  hTri:'先算 {0}＋{1}＝{2}，再加 {3}。',
   tryAgain:'再算一次，答案不太對。', slow:'慢慢算，別急。'
  },
  en:{
   title:'Snake Escape · Mathville', site:'Mathville',
   homeTitle:'Snake Escape',
-  homeDesc:'<b>10</b> doors ahead, each with a <b>math</b> or <b>logic</b> puzzle.<br>Right answer: the door opens and the snake backs off <b>5</b> steps. Wrong: it gains 1.<br>It starts <b>10</b> steps behind you. <b>3</b> pauses per run, a treasure spin at every door.',
+  homeDesc:'<b>10</b> doors ahead, each with a <b>math</b> or <b>logic</b> puzzle.<br>Right answer: the door opens and the snake backs off <b>5</b> steps. Wrong: it gains 1.<br>Miss the same door <b>twice</b> and the run is over — no guessing!<br>It starts <b>10</b> steps behind you. <b>3</b> pauses per run, a treasure spin at every door.',
   pickCat:'CATEGORY', cMath:'🔢 Math', cLogic:'🧩 Logic', logicName:'Logic',
   mPlain:'Starter', mPlainS:'2-digit + −, no carrying',
   lv1:'Easy', lv1S:'patterns, odd one out', lv2:'Normal', lv2S:'series, analogies, grids',
@@ -397,7 +406,9 @@ const T={
   listen:'🔊 Listen', replay:'🔊 Again', showTxt:'👀 Show text',
   kHint:'Hint', kClear:'Clear', kGo:'Enter',
   doorOpen:'Door open! The snake falls back {0} steps.',
-  wrongTip:'Not quite — try again. The snake gains 1 step.',
+  wrongTip:'Not quite! One more miss and the run is over.',
+  loseWT:'Two misses on one door!',
+  loseWP:'You missed door <b>{0}</b> twice and the snake caught up.<br>The answer was <b>{1}</b>.',
   pausedTip:'⏸ Paused. Tap Resume when you are ready. {0} left.',
   got:'You got <span class="pop">{0}</span> <b>{1}</b>',
   it1:'Gold coin', it2:'Jewel ring', it3:'Crystal orb', it4:'Diamond', it5:'Crown', it6:'Legendary trophy',
@@ -416,6 +427,11 @@ const T={
   hSplit:'Split it: {0} × {1} = {2}×{3} + {4}×{5}.',
   hSplit10:'Split it: {0} × {1} = {0}×{2}, then ×10.',
   hEn:'In numbers: {0} {1} {2} = ?',
+  hBAdd:'What plus {0} makes {1}? Count up from {0} to {1}.',
+  hBAdd2:'{0} plus what makes {1}? Count up from {0} to {1}.',
+  hBSub:'What minus {0} leaves {1}? Add {0} back onto {1}.',
+  hBSub2:'{0} minus what leaves {1}? Count up from {1} to {0}.',
+  hTri:'First {0} + {1} = {2}, then add {3}.',
   tryAgain:'Not quite — have another go.', slow:'Take your time.'
  }
 };
@@ -452,13 +468,29 @@ function makeQuestion(level,mode){
 
   /* 簡易：加減都是個位數 */
   if(mode==='easy'){
-    if(RND()<0.5){
+    const r=RND();
+    if(r<0.25){
       const a=ri(2,9), b=ri(2,9);
       const ans=a+b;
       return {text:a+' ＋ '+b,ans,options:pack(ans,[ans-1,ans+1,ans-2,ans+2,a*b],4),kind:'add'};
     }
-    const a=ri(3,9), b=ri(1,a-1), ans=a-b;
-    return {text:a+' － '+b,ans,options:pack(ans,[ans+1,ans-1,ans+2,a+b],4),kind:'sub'};
+    if(r<0.45){
+      const a=ri(3,9), b=ri(1,a-1), ans=a-b;
+      return {text:a+' － '+b,ans,options:pack(ans,[ans+1,ans-1,ans+2,a+b],4),kind:'sub'};
+    }
+    if(r<0.8){                                     // 填空：□＋4＝9、7－□＝3
+      const t=ri(0,3);
+      if(t<2){
+        const a=ri(1,9), b=ri(2,9), c=a+b;
+        if(t===0) return {text:'□ ＋ '+b+' ＝ '+c,ans:a,options:pack(a,[a+1,a-1,a+2,c,b],4),kind:'blank',eq:true,blank:['bAdd',b,c]};
+        return {text:b+' ＋ □ ＝ '+c,ans:a,options:pack(a,[a+1,a-1,a+2,c,b],4),kind:'blank',eq:true,blank:['bAdd2',b,c]};
+      }
+      const a=ri(3,9), b=ri(1,a-1), c=a-b;
+      if(t===2) return {text:'□ － '+b+' ＝ '+c,ans:a,options:pack(a,[a+1,a-1,c,b+c+1,a+2],4),kind:'blank',eq:true,blank:['bSub',b,c]};
+      return {text:a+' － □ ＝ '+c,ans:b,options:pack(b,[b+1,b-1,a+c,c,b+2],4),kind:'blank',eq:true,blank:['bSub2',a,c]};
+    }
+    const a=ri(1,5), b=ri(1,5), c=ri(1,5), ans=a+b+c;  // 三個數連加
+    return {text:a+' ＋ '+b+' ＋ '+c,ans,options:pack(ans,[ans-1,ans+1,a+b,b+c,ans+2],4),kind:'add3',tri:[a,b,c]};
   }
 
   /* 入門：兩位數加減，不進位、不借位 */
@@ -534,6 +566,8 @@ function makeQuestion(level,mode){
 
 function hintFor(q,mode){
   if(q.logic) return tx(q.hint);
+  if(q.blank) return L('h'+q.blank[0][0].toUpperCase()+q.blank[0].slice(1),q.blank[1],q.blank[2]);
+  if(q.tri){ const [a,b,c]=q.tri; return L('hTri',a,b,a+b,c); }
   if(q.plain){
     const [a,b]=q.plain, ao=a%10, bo=b%10, at=Math.floor(a/10), bt=Math.floor(b/10);
     return q.kind==='add' ? L('hPAdd',ao,bo,ao+bo,at,bt,at+bt) : L('hPSub',ao,bo,ao-bo,at,bt,at-bt);
@@ -604,12 +638,64 @@ function qPattern(units){
     Z('每 '+n+' 個一組重複：'+unit,'It repeats every '+n+': '+unit),'emo');
 }
 
-/* 2. 點點增加 */
+/* 2. 點點題：變多、變少、先多後少、重複、兩色交錯、變兩倍（約 150 種變化） */
+const DOT_C={r:'#FF7A6B',b:'#6FB8FF'};
+const dotCell=(k,c)=>c?'<i style="font-style:normal;color:'+DOT_C[c]+'">'+'●'.repeat(k)+'</i>':'●'.repeat(k);
 function qDots(){
-  const st=ri(1,2), d=pk([1,1,2]), arr=[0,1,2].map(i=>st+i*d), ans=st+3*d;
-  return LQ('dots',Z('下一格有幾個點？','How many dots come next?'),
-    ()=>seqHTML(arr.map(k=>'●'.repeat(k)),'dots'),ans,[ans-1,ans+1,ans+2,ans-2,ans+d+1],
-    Z('每次多 '+d+' 個點','Each step adds '+d+(d>1?' dots':' dot')));
+  const fam=pk(['up','up','down','hill','rep','two','two','dbl']);
+  let seq,ans,hint,prompt=Z('下一格有幾個點？','How many dots come next?'),wr=[];
+  if(fam==='up'){                                    // 每次多 d 個（原本的題型也在這裡）
+    const n=pk([3,3,4]); let st,d;
+    do{ st=ri(1,4); d=pk([1,1,2,2,3]); }while(st+n*d>12);
+    seq=Array.from({length:n},(_,i)=>st+i*d); ans=st+n*d;
+    hint=Z('每次多 '+d+' 個點','Each step adds '+d+(d>1?' dots':' dot'));
+  }else if(fam==='down'){                            // 每次少 d 個
+    const n=pk([3,4]); let st,d;
+    do{ st=ri(6,12); d=pk([1,2]); }while(st-n*d<1);
+    seq=Array.from({length:n},(_,i)=>st-i*d); ans=st-n*d;
+    hint=Z('每次少 '+d+' 個點','Each step takes away '+d+(d>1?' dots':' dot'));
+  }else if(fam==='hill'){                            // 先多後少／先少後多
+    const a=ri(1,4), d=ri(1,3), up=RND()<0.6;
+    if(a+2*d>10) return qDots();
+    if(up){ seq=[a,a+d,a+2*d,a+d]; ans=a;
+      hint=Z('先每次多 '+d+' 個，到最高後再每次少 '+d+' 個','Up by '+d+' to the top, then back down by '+d); }
+    else{ seq=[a+2*d,a+d,a,a+d]; ans=a+2*d;
+      hint=Z('先每次少 '+d+' 個，到最少後再每次多 '+d+' 個','Down by '+d+' to the bottom, then back up by '+d); }
+    wr=[a+d,a+3*d];
+  }else if(fam==='rep'){                             // 重複：2、5、2、5、2 → 5
+    if(RND()<0.6){
+      const a=ri(1,6); let b; do{ b=ri(1,6); }while(b===a);
+      seq=[a,b,a,b,a]; ans=b; wr=[a];
+      hint=Z(a+' 個、'+b+' 個輪流出現','It goes '+a+', '+b+', '+a+', '+b+'…');
+    }else{
+      const st=ri(1,4), dir=pk([1,-1]), u=[st,st+1,st+2]; if(dir<0) u.reverse();
+      seq=[u[0],u[1],u[2],u[0],u[1]]; ans=u[2]; wr=[u[0],u[1]];
+      hint=Z(u.join('、')+' 三個一組重複',u.join(', ')+' repeats in a group of three');
+    }
+  }else if(fam==='two'){                             // 兩色交錯：紅點一條規律、藍點一條規律
+    const r0=ri(1,3), dr=pk([0,1,1,2]), b0=ri(2,6), db=pk([0,1,-1]);
+    if(b0+3*db<1||dr===0&&db===0) return qDots();
+    const R=i=>r0+i*dr, B=i=>b0+i*db, askBlue=RND()<0.5;
+    const cells=askBlue?[[R(0),'r'],[B(0),'b'],[R(1),'r'],[B(1),'b'],[R(2),'r']]
+                       :[[R(0),'r'],[B(0),'b'],[R(1),'r'],[B(1),'b'],[R(2),'r'],[B(2),'b']];
+    seq=cells.map(([k,c])=>dotCell(k,c));
+    ans=askBlue?B(2):R(3); wr=askBlue?[R(3),B(1)]:[B(3),R(2)];
+    const say=(z0,zd,ez)=>zd===0?Z('都是 '+z0+' 個','always '+z0):zd>0?Z('每次多 '+zd+' 個','up by '+zd+' each time'):Z('每次少 '+(-zd)+' 個','down by '+(-zd)+' each time');
+    const rs=say(r0,dr), bs=say(b0,db);
+    prompt=askBlue?Z('下一格是藍點，有幾個？','The next box is blue. How many dots?')
+                  :Z('下一格是紅點，有幾個？','The next box is red. How many dots?');
+    hint=Z('紅點和藍點分開看：紅點'+rs.zh+'，藍點'+bs.zh,'Look at each color on its own: red is '+rs.en+', blue is '+bs.en);
+    return LQ('dots',prompt,()=>seqHTML(seq,'dots'),ans,
+      [...wr,ans-1,ans+1,ans+2,ans-2].filter(w=>w>0&&w!==ans),hint);
+  }else{                                             // 變兩倍／多的點越來越多
+    const v=ri(0,2);
+    if(v===0){ seq=[1,2,4]; ans=8; hint=Z('每次變兩倍','It doubles each time'); }
+    else{ const a=v; seq=[a,a+1,a+3,a+6]; ans=a+10;
+      hint=Z('多的點一次比一次多 1：+1、+2、+3、+4','The jumps grow: +1, +2, +3, +4'); }
+    wr=[seq[seq.length-1]+2,seq[seq.length-1]*2];
+  }
+  return LQ('dots',prompt,()=>seqHTML(seq.map(k=>typeof k==='number'?dotCell(k):k),'dots'),ans,
+    [...wr,ans-1,ans+1,ans+2,ans-2,ans+3].filter(w=>w>0&&w!==ans),hint);
 }
 
 /* 3. 找不同類（圖） */
@@ -703,6 +789,39 @@ const ANA_EMO=[['🐔','🥚','🐄','🥛',['🍯','🌽','🐟']],['☀️','�
   ['🥚','🐣','🐛','🦋',['🐝','🐞','🐜']],['🔥','🚒','🤒','🚑',['🚓','🚌','🚲']],
   ['📖','👀','🎵','👂',['👃','🖐️','👄']],['🌱','🌳','🐣','🐔',['🥚','🐟','🐶']],
   ['🐟','🌊','🐦','🌳',['🏜️','🔥','🧊']]];
+/* 擴充：圖像類比（新增 89 組，總共 100 組；只用 Emoji 5.0（2017）以前的圖案，舊手機也看得到） */
+ANA_EMO.push(
+  ['🐝','🌸','🐼','🎋',['🍌','🥕','🍖']],['🐭','🧀','🐶','🍖',['🥕','🍌','🍯']],['🐻','🍯','🐰','🥕',['🍌','🍖','🧀']],
+  ['🐮','🌾','🐱','🐟',['🥕','🍯','🍌']],['🐟','🌊','🐫','🏜️',['🌲','❄️','🏠']],['🐧','❄️','🐒','🌴',['🏜️','🌊','⛄']],
+  ['👶','👨','🐤','🐔',['🥚','🐟','🐶']],['🌱','🌻','👶','👴',['🍼','🎈','🐣']],['✏️','📝','🖌️','🎨',['🔨','✂️','🔑']],
+  ['📞','👂','📺','👀',['👃','👄','✋']],['🎤','👄','🎧','👂',['👀','👃','✋']],['⚽','👟','🏀','✋',['👂','👀','👃']],
+  ['🎣','🐟','🏹','🎯',['🎈','⚽','🍎']],['🕶️','☀️','🔦','🌙',['🌈','☁️','🌊']],['🧣','❄️','👙','☀️',['🌧️','🌙','☁️']],
+  ['👓','👀','💍','✋',['👂','👃','👄']],['✈️','☁️','⛵','🌊',['🌳','🏠','🛣️']],['🚂','🛤️','🚗','🛣️',['🌊','☁️','🌳']],
+  ['🚀','🌙','🚢','🌊',['🏔️','🌳','🏠']],['👮','🚓','🎅','🛷',['🚗','🚌','🚲']],['🐝','🍯','🐄','🥛',['🥚','🍞','🍎']],
+  ['🌳','🍎','🐔','🥚',['🥛','🍯','🌽']],['🥔','🍟','🌽','🍿',['🍞','🍕','🍰']],['🐔','🍗','🐷','🥓',['🥛','🍯','🥚']],
+  ['☀️','🌙','🔥','❄️',['💧','⚡','🌈']],['👍','👎','😀','😢',['😂','😎','😍']],['⬆️','⬇️','⬅️','➡️',['↗️','↙️','↖️']],
+  ['🐘','🐜','🌳','🌱',['🌲','🍂','🌴']],['🐢','🐇','🐌','🐆',['🐛','🐞','🐢']],['🍓','❤️','🍌','💛',['💚','💙','💜']],
+  ['🥦','💚','🍇','💜',['❤️','💛','💙']],['🌊','💙','🍊','🧡',['💚','💜','❤️']],['📚','🏫','💊','🏥',['🏠','🏦','🏰']],
+  ['💰','🏦','✉️','📮',['🏥','🏫','🏠']],['🚗','⛽','📱','🔋',['💧','🍔','🔑']],['🌹','👃','🍭','👅',['👂','👀','✋']],
+  ['🔔','👂','🌈','👀',['👃','👅','✋']],['☕','🔥','🍦','❄️',['🌧️','☀️','⚡']],['🐦','✈️','🐟','⛵',['🚗','🚲','🚂']],
+  ['⛄','❄️','🏖️','☀️',['🍂','🌧️','🌸']],['🎄','🎅','🎃','👻',['🐰','🎂','🎈']],['🍪','🥛','🍔','🍟',['🍦','🍎','🍩']],
+  ['🍞','🥪','🥚','🍳',['🥛','🍎','🍌']],['🚌','🚗','🚢','⛵',['✈️','🚂','🌊']],['🐳','🐟','🐘','🐭',['🦒','🐯','🦏']],
+  ['🐱','🐭','🐶','🐱',['🐟','🐮','🐘']],['🕷️','🕸️','🐝','🍯',['🌸','🍎','🥛']],['🐓','☀️','🦉','🌙',['🌧️','❄️','🌈']],
+  ['🛏️','😴','🍽️','😋',['😢','😡','😱']],['👀','👓','👂','🎧',['👟','🧤','💍']],['🌰','🐿️','🍌','🐒',['🐰','🐻','🐶']],
+  ['🍼','👶','🥕','🐰',['🐶','🐱','🐵']],['🌊','🏄','🏔️','⛷️',['🚴','🏊','⚽']],['🌵','🏜️','🌴','🏝️',['🏔️','🏠','🏙️']],
+  ['🐙','🌊','🐿️','🌳',['🏜️','❄️','🏠']],['🦁','🍖','🐄','🌾',['🍎','🍯','🐟']],['🦒','🍃','🐿️','🌰',['🍖','🐟','🍯']],
+  ['🎒','🏫','💼','🏢',['🏥','🏠','🏰']],['👨','👴','👩','👵',['👧','👶','👦']],['👦','👨','👧','👩',['👵','👶','👴']],
+  ['🐱','🐈','🐶','🐕',['🐇','🐁','🐖']],['🐯','🐅','🐷','🐖',['🐄','🐎','🐑']],['🐾','🐶','👣','👦',['🐟','🐍','🐛']],
+  ['🔭','⭐','🔍','🐜',['🌳','🏠','🌊']],['✌️','2️⃣','🖐️','5️⃣',['3️⃣','4️⃣','1️⃣']],['🥇','🥈','1️⃣','2️⃣',['3️⃣','4️⃣','🔟']],
+  ['🍰','🍴','🍜','🥢',['✂️','🔑','🔨']],['😴','🌙','🍳','☀️',['❄️','🌧️','⚡']],['🐝','🌸','🐛','🍃',['🍖','🐟','🧀']],
+  ['🎺','👄','🎹','✋',['👂','👀','👃']],['⚽','⚪','🎲','⬜',['🔺','⭐','🔷']],['🍕','🔺','🍩','⭕',['⬜','⭐','🔷']],
+  ['☀️','🏫','🌙','🛏️',['🏖️','🍳','⚽']],['🤒','💊','😴','🛏️',['🍔','⚽','🎮']],['🔒','🔑','🔩','🔧',['🔨','✂️','📎']],
+  ['🥛','🧀','🌾','🍞',['🍎','🥚','🍯']],['❄️','🧤','☀️','🕶️',['🧣','🌂','👢']],['🐈','🐅','🐕','🐺',['🐇','🐁','🐖']],
+  ['😀','😢','☀️','🌧️',['🌈','⭐','🌙']],['🕐','🕑','🕒','🕓',['🕔','🕕','🕐']],['🍎','🍌','🥕','🥦',['🍇','🍓','🍒']],
+  ['⚽','🏀','🎸','🎹',['⚾','🎾','🏈']],['🚗','🚌','🍎','🍊',['🚲','🚂','✈️']],['👕','👖','🍔','🍟',['👗','👟','🧢']],
+  ['🐦','🦅','🐟','🦈',['🐱','🐶','🐻']],['💧','🌧️','❄️','🌨️',['🌈','☀️','⚡']],['👟','🏃','🚲','🚴',['🏊','⛷️','🏄']],
+  ['🏫','👦','🏥','🤒',['👮','🎅','👸']],['🍌','🐒','🎋','🐼',['🐻','🐶','🐰']]
+);
 function qAnaEmo(){
   const [a,b,c,d,w]=pk(ANA_EMO);
   return LQ('anaE',PR.ana,()=>'<div class="lana">'+span(a)+'<em>→</em>'+span(b)+'<br>'+span(c)+'<em>→</em>'+span('?','qm')+'</div>',
@@ -723,6 +842,98 @@ const ANA_WORD=[
   [Z('白天','day'),Z('太陽','sun'),Z('晚上','night'),Z('月亮','moon'),[Z('雲','cloud'),Z('床','bed'),Z('黑','dark')],Z('天上看到什麼','What you see in the sky')],
   [Z('筆','pen'),Z('寫','write'),Z('剪刀','scissors'),Z('剪','cut'),[Z('畫','draw'),Z('黏','glue'),Z('摺','fold')],Z('拿來做什麼','What you do with it')],
 ];
+/* 擴充：文字類比（新增 89 組，總共 100 組） */
+ANA_WORD.push(
+  [Z('上','up'),Z('下','down'),Z('左','left'),Z('右','right'),[Z('前','front'),Z('中間','middle'),Z('後','back')],Z('意思相反','They are opposites')],
+  [Z('開','open'),Z('關','closed'),Z('進','in'),Z('出','out'),[Z('上','up'),Z('下','down'),Z('去','go')],Z('意思相反','They are opposites')],
+  [Z('哭','cry'),Z('笑','laugh'),Z('坐','sit'),Z('站','stand'),[Z('跑','run'),Z('睡','sleep'),Z('吃','eat')],Z('意思相反','They are opposites')],
+  [Z('黑','black'),Z('白','white'),Z('新','new'),Z('舊','old'),[Z('好','good'),Z('大','big'),Z('美','pretty')],Z('意思相反','They are opposites')],
+  [Z('乾','dry'),Z('濕','wet'),Z('滿','full'),Z('空','empty'),[Z('多','many'),Z('重','heavy'),Z('熱','hot')],Z('意思相反','They are opposites')],
+  [Z('厚','thick'),Z('薄','thin'),Z('寬','wide'),Z('窄','narrow'),[Z('高','tall'),Z('長','long'),Z('大','big')],Z('意思相反','They are opposites')],
+  [Z('早','early'),Z('晚','late'),Z('先','first'),Z('最後','last'),[Z('快','fast'),Z('多','more'),Z('慢','slow')],Z('意思相反','They are opposites')],
+  [Z('贏','win'),Z('輸','lose'),Z('來','come'),Z('去','go'),[Z('走','walk'),Z('跑','run'),Z('到','arrive')],Z('意思相反','They are opposites')],
+  [Z('好','good'),Z('壞','bad'),Z('對','right'),Z('錯','wrong'),[Z('棒','great'),Z('真','true'),Z('美','nice')],Z('意思相反','They are opposites')],
+  [Z('遠','far'),Z('近','near'),Z('深','deep'),Z('淺','shallow'),[Z('高','high'),Z('長','long'),Z('寬','wide')],Z('意思相反','They are opposites')],
+  [Z('乾淨','clean'),Z('髒','dirty'),Z('安靜','quiet'),Z('吵','noisy'),[Z('小','small'),Z('慢','slow'),Z('好','good')],Z('意思相反','They are opposites')],
+  [Z('男生','boy'),Z('女生','girl'),Z('爸爸','dad'),Z('媽媽','mom'),[Z('哥哥','brother'),Z('爺爺','grandpa'),Z('弟弟','little brother')],Z('男生和女生','Boy and girl')],
+  [Z('國王','king'),Z('皇后','queen'),Z('王子','prince'),Z('公主','princess'),[Z('騎士','knight'),Z('城堡','castle'),Z('皇冠','crown')],Z('男生和女生','Boy and girl')],
+  [Z('推','push'),Z('拉','pull'),Z('丟','throw'),Z('接','catch'),[Z('打','hit'),Z('踢','kick'),Z('跳','jump')],Z('意思相反','They are opposites')],
+  [Z('記得','remember'),Z('忘記','forget'),Z('開始','start'),Z('結束','finish'),[Z('繼續','keep going'),Z('等','wait'),Z('跑','run')],Z('意思相反','They are opposites')],
+  [Z('強','strong'),Z('弱','weak'),Z('勇敢','brave'),Z('害怕','scared'),[Z('生氣','angry'),Z('開心','happy'),Z('累','tired')],Z('意思相反','They are opposites')],
+  [Z('開心','happy'),Z('難過','sad'),Z('醒著','awake'),Z('睡著','asleep'),[Z('累','tired'),Z('餓','hungry'),Z('冷','cold')],Z('意思相反','They are opposites')],
+  [Z('年輕','young'),Z('老','old'),Z('便宜','cheap'),Z('貴','expensive'),[Z('多','more'),Z('新','new'),Z('大','big')],Z('意思相反','They are opposites')],
+  [Z('裡面','inside'),Z('外面','outside'),Z('上面','top'),Z('下面','bottom'),[Z('旁邊','side'),Z('中間','middle'),Z('前面','front')],Z('意思相反','They are opposites')],
+  [Z('甜','sweet'),Z('苦','bitter'),Z('硬','hard'),Z('軟','soft'),[Z('冷','cold'),Z('小','small'),Z('圓','round')],Z('意思相反','They are opposites')],
+  [Z('帽子','hat'),Z('頭','head'),Z('戒指','ring'),Z('手指','finger'),[Z('腳','foot'),Z('耳朵','ear'),Z('脖子','neck')],Z('東西戴在哪裡','Where you wear it')],
+  [Z('圍巾','scarf'),Z('脖子','neck'),Z('眼鏡','glasses'),Z('眼睛','eyes'),[Z('嘴巴','mouth'),Z('頭髮','hair'),Z('手','hand')],Z('東西戴在哪裡','Where you wear it')],
+  [Z('手錶','watch'),Z('手腕','wrist'),Z('鞋子','shoes'),Z('腳','feet'),[Z('腿','legs'),Z('手','hands'),Z('頭','head')],Z('東西穿戴在哪裡','Where you wear it')],
+  [Z('耳環','earring'),Z('耳朵','ear'),Z('項鍊','necklace'),Z('脖子','neck'),[Z('手','hand'),Z('頭','head'),Z('腳','foot')],Z('東西戴在哪裡','Where you wear it')],
+  [Z('廚師','cook'),Z('廚房','kitchen'),Z('農夫','farmer'),Z('農田','farm'),[Z('學校','school'),Z('商店','shop'),Z('醫院','hospital')],Z('在哪裡工作','Where they work')],
+  [Z('警察','police officer'),Z('警察局','police station'),Z('消防員','firefighter'),Z('消防局','fire station'),[Z('醫院','hospital'),Z('學校','school'),Z('銀行','bank')],Z('在哪裡工作','Where they work')],
+  [Z('飛行員','pilot'),Z('飛機','plane'),Z('公車司機','bus driver'),Z('公車','bus'),[Z('船','ship'),Z('馬','horse'),Z('火箭','rocket')],Z('他們開什麼','What they drive or fly')],
+  [Z('老師','teacher'),Z('學生','student'),Z('醫生','doctor'),Z('病人','patient'),[Z('護士','nurse'),Z('醫院','hospital'),Z('藥','medicine')],Z('他們照顧的人','Who they take care of')],
+  [Z('獸醫','vet'),Z('動物','animals'),Z('牙醫','dentist'),Z('牙齒','teeth'),[Z('眼睛','eyes'),Z('頭髮','hair'),Z('骨頭','bones')],Z('他們照顧什麼','What they take care of')],
+  [Z('郵差','mail carrier'),Z('信','letters'),Z('麵包師傅','baker'),Z('麵包','bread'),[Z('牛奶','milk'),Z('魚','fish'),Z('青菜','vegetables')],Z('工作和什麼有關','What their job is about')],
+  [Z('杯子','cup'),Z('喝','drink'),Z('床','bed'),Z('睡','sleep'),[Z('洗','wash'),Z('吃','eat'),Z('玩','play')],Z('拿來做什麼','What you do with it')],
+  [Z('掃把','broom'),Z('掃地','sweep'),Z('牙刷','toothbrush'),Z('刷牙','brush teeth'),[Z('洗臉','wash your face'),Z('梳頭','comb hair'),Z('吃飯','eat')],Z('拿來做什麼','What you do with it')],
+  [Z('時鐘','clock'),Z('時間','time'),Z('尺','ruler'),Z('長度','length'),[Z('重量','weight'),Z('顏色','color'),Z('聲音','sound')],Z('可以量出什麼','What it measures')],
+  [Z('溫度計','thermometer'),Z('溫度','temperature'),Z('秤','scale'),Z('重量','weight'),[Z('長度','length'),Z('時間','time'),Z('速度','speed')],Z('可以量出什麼','What it measures')],
+  [Z('電話','phone'),Z('打電話','call'),Z('相機','camera'),Z('拍照','take photos'),[Z('看書','read'),Z('聽歌','listen to music'),Z('畫畫','draw')],Z('拿來做什麼','What you do with it')],
+  [Z('肥皂','soap'),Z('洗手','wash hands'),Z('毛巾','towel'),Z('擦乾','dry off'),[Z('刷牙','brush teeth'),Z('梳頭','comb hair'),Z('洗頭','wash hair')],Z('拿來做什麼','What you do with it')],
+  [Z('鉛筆','pencil'),Z('寫字','write'),Z('橡皮擦','eraser'),Z('擦掉','erase'),[Z('畫','draw'),Z('剪','cut'),Z('讀','read')],Z('拿來做什麼','What you do with it')],
+  [Z('鼻子','nose'),Z('聞','smell'),Z('舌頭','tongue'),Z('嚐','taste'),[Z('聽','hear'),Z('看','see'),Z('說','speak')],Z('身體部位能做什麼','What the body part does')],
+  [Z('腳','feet'),Z('走路','walk'),Z('翅膀','wings'),Z('飛','fly'),[Z('游泳','swim'),Z('跑','run'),Z('跳','jump')],Z('身體部位能做什麼','What the body part does')],
+  [Z('鳥','bird'),Z('飛','fly'),Z('魚','fish'),Z('游','swim'),[Z('走','walk'),Z('跳','jump'),Z('爬','climb')],Z('牠們怎麼移動','How it moves')],
+  [Z('兔子','rabbit'),Z('跳','hop'),Z('蛇','snake'),Z('滑行','slither'),[Z('飛','fly'),Z('跑','run'),Z('唱','sing')],Z('牠們怎麼移動','How it moves')],
+  [Z('小貓','kitten'),Z('貓','cat'),Z('小雞','chick'),Z('雞','hen'),[Z('鴨子','duck'),Z('蛋','egg'),Z('鵝','goose')],Z('小時候和長大後','Baby and grown-up')],
+  [Z('小牛','calf'),Z('牛','cow'),Z('小羊','lamb'),Z('羊','sheep'),[Z('馬','horse'),Z('豬','pig'),Z('狗','dog')],Z('小時候和長大後','Baby and grown-up')],
+  [Z('嬰兒','baby'),Z('大人','grown-up'),Z('種子','seed'),Z('大樹','tree'),[Z('葉子','leaf'),Z('土','soil'),Z('水','water')],Z('小時候和長大後','Small at first, big later')],
+  [Z('小鴨','duckling'),Z('鴨子','duck'),Z('毛毛蟲','caterpillar'),Z('蝴蝶','butterfly'),[Z('蜜蜂','bee'),Z('蜘蛛','spider'),Z('螞蟻','ant')],Z('小時候和長大後','Baby and grown-up')],
+  [Z('魚','fish'),Z('海','sea'),Z('駱駝','camel'),Z('沙漠','desert'),[Z('森林','forest'),Z('雪地','snow'),Z('河','river')],Z('住在哪裡','Where it lives')],
+  [Z('企鵝','penguin'),Z('冰天雪地','ice and snow'),Z('獅子','lion'),Z('草原','grassland'),[Z('海','sea'),Z('天空','sky'),Z('房子','house')],Z('住在哪裡','Where it lives')],
+  [Z('人','people'),Z('房子','house'),Z('狗','dog'),Z('狗屋','doghouse'),[Z('鳥巢','nest'),Z('樹','tree'),Z('河','river')],Z('住在哪裡','Where it lives')],
+  [Z('熊','bear'),Z('山洞','cave'),Z('蜘蛛','spider'),Z('蜘蛛網','web'),[Z('鳥巢','nest'),Z('河','river'),Z('蜂窩','hive')],Z('住在哪裡','Where it lives')],
+  [Z('香蕉','banana'),Z('黃色','yellow'),Z('草','grass'),Z('綠色','green'),[Z('紅色','red'),Z('藍色','blue'),Z('白色','white')],Z('是什麼顏色','What color it is')],
+  [Z('天空','sky'),Z('藍色','blue'),Z('雪','snow'),Z('白色','white'),[Z('黑色','black'),Z('綠色','green'),Z('黃色','yellow')],Z('是什麼顏色','What color it is')],
+  [Z('番茄','tomato'),Z('紅色','red'),Z('茄子','eggplant'),Z('紫色','purple'),[Z('綠色','green'),Z('黃色','yellow'),Z('橘色','orange')],Z('是什麼顏色','What color it is')],
+  [Z('紅燈','red light'),Z('停','stop'),Z('綠燈','green light'),Z('走','go'),[Z('跳','jump'),Z('睡','sleep'),Z('坐','sit')],Z('紅綠燈告訴我們什麼','What the traffic light tells us')],
+  [Z('兔子','rabbit'),Z('紅蘿蔔','carrot'),Z('貓','cat'),Z('魚','fish'),[Z('草','grass'),Z('香蕉','banana'),Z('蜂蜜','honey')],Z('喜歡吃什麼','What it likes to eat')],
+  [Z('熊貓','panda'),Z('竹子','bamboo'),Z('熊','bear'),Z('蜂蜜','honey'),[Z('草','grass'),Z('香蕉','banana'),Z('紅蘿蔔','carrot')],Z('喜歡吃什麼','What it likes to eat')],
+  [Z('牛','cow'),Z('草','grass'),Z('猴子','monkey'),Z('香蕉','banana'),[Z('肉','meat'),Z('魚','fish'),Z('種子','seeds')],Z('喜歡吃什麼','What it likes to eat')],
+  [Z('小鳥','bird'),Z('蟲','worm'),Z('獅子','lion'),Z('肉','meat'),[Z('竹子','bamboo'),Z('蜂蜜','honey'),Z('草','grass')],Z('喜歡吃什麼','What it likes to eat')],
+  [Z('蘋果','apple'),Z('水果','fruit'),Z('紅蘿蔔','carrot'),Z('蔬菜','vegetable'),[Z('肉','meat'),Z('甜點','dessert'),Z('飲料','drink')],Z('屬於哪一類','Which group it belongs to')],
+  [Z('狗','dog'),Z('動物','animal'),Z('玫瑰','rose'),Z('花','flower'),[Z('樹','tree'),Z('水果','fruit'),Z('草','grass')],Z('屬於哪一類','Which group it belongs to')],
+  [Z('紅色','red'),Z('顏色','color'),Z('三角形','triangle'),Z('形狀','shape'),[Z('數字','number'),Z('大小','size'),Z('線','line')],Z('屬於哪一類','Which group it belongs to')],
+  [Z('鋼琴','piano'),Z('樂器','instrument'),Z('足球','soccer'),Z('運動','sport'),[Z('音樂','music'),Z('食物','food'),Z('衣服','clothes')],Z('屬於哪一類','Which group it belongs to')],
+  [Z('汽車','car'),Z('交通工具','vehicle'),Z('襯衫','shirt'),Z('衣服','clothes'),[Z('鞋子','shoes'),Z('帽子','hat'),Z('玩具','toy')],Z('屬於哪一類','Which group it belongs to')],
+  [Z('葉子','leaf'),Z('樹','tree'),Z('花瓣','petal'),Z('花','flower'),[Z('草','grass'),Z('根','root'),Z('果實','fruit')],Z('一部分和整個','A part and the whole')],
+  [Z('輪子','wheel'),Z('汽車','car'),Z('翅膀','wing'),Z('鳥','bird'),[Z('魚','fish'),Z('蛇','snake'),Z('貓','cat')],Z('一部分和整個','A part and the whole')],
+  [Z('秒','second'),Z('分鐘','minute'),Z('天','day'),Z('星期','week'),[Z('年','year'),Z('小時','hour'),Z('秒','second')],Z('小的時間和大一點的時間','A small unit of time and a bigger one')],
+  [Z('月','month'),Z('年','year'),Z('分鐘','minute'),Z('小時','hour'),[Z('天','day'),Z('秒','second'),Z('季節','season')],Z('小的時間和大一點的時間','A small unit of time and a bigger one')],
+  [Z('麵包','bread'),Z('麵粉','flour'),Z('果汁','juice'),Z('水果','fruit'),[Z('牛奶','milk'),Z('米','rice'),Z('蛋','egg')],Z('用什麼做的','What it is made from')],
+  [Z('起司','cheese'),Z('牛奶','milk'),Z('紙','paper'),Z('樹木','wood'),[Z('石頭','stone'),Z('塑膠','plastic'),Z('布','cloth')],Z('用什麼做的','What it is made from')],
+  [Z('冰','ice'),Z('水','water'),Z('雪人','snowman'),Z('雪','snow'),[Z('雨','rain'),Z('雲','cloud'),Z('沙','sand')],Z('用什麼做的','What it is made from')],
+  [Z('狗','dog'),Z('汪汪','woof'),Z('貓','cat'),Z('喵喵','meow'),[Z('哞哞','moo'),Z('嘎嘎','quack'),Z('吱吱','squeak')],Z('動物怎麼叫','The sound the animal makes')],
+  [Z('牛','cow'),Z('哞哞','moo'),Z('鴨子','duck'),Z('嘎嘎','quack'),[Z('汪汪','woof'),Z('喵喵','meow'),Z('咩咩','baa')],Z('動物怎麼叫','The sound the animal makes')],
+  [Z('羊','sheep'),Z('咩咩','baa'),Z('老鼠','mouse'),Z('吱吱','squeak'),[Z('哞哞','moo'),Z('汪汪','woof'),Z('嘎嘎','quack')],Z('動物怎麼叫','The sound the animal makes')],
+  [Z('夏天','summer'),Z('游泳','swim'),Z('冬天','winter'),Z('堆雪人','build a snowman'),[Z('放風箏','fly a kite'),Z('賞花','look at flowers'),Z('撿落葉','rake leaves')],Z('那個季節常做的事','Something you do in that season')],
+  [Z('春天','spring'),Z('開花','flowers bloom'),Z('秋天','autumn'),Z('落葉','leaves fall'),[Z('下雪','snow falls'),Z('很熱','it gets hot'),Z('發芽','seeds sprout')],Z('那個季節會發生什麼','What happens in that season')],
+  [Z('下雨','rainy'),Z('雨傘','umbrella'),Z('大太陽','sunny'),Z('遮陽帽','sun hat'),[Z('圍巾','scarf'),Z('手套','gloves'),Z('雨衣','raincoat')],Z('天氣要帶什麼','What to take in that weather')],
+  [Z('圖書館','library'),Z('書','books'),Z('動物園','zoo'),Z('動物','animals'),[Z('電影','movies'),Z('玩具','toys'),Z('食物','food')],Z('那裡有很多什麼','What you find there')],
+  [Z('游泳池','pool'),Z('游泳','swim'),Z('電影院','cinema'),Z('看電影','watch a movie'),[Z('買菜','buy food'),Z('睡覺','sleep'),Z('看病','see a doctor')],Z('在那裡做什麼','What you do there')],
+  [Z('廚房','kitchen'),Z('煮飯','cook'),Z('臥室','bedroom'),Z('睡覺','sleep'),[Z('洗澡','take a bath'),Z('洗車','wash the car'),Z('種花','plant flowers')],Z('在那裡做什麼','What you do there')],
+  [Z('超市','supermarket'),Z('買東西','shop'),Z('醫院','hospital'),Z('看病','see a doctor'),[Z('上課','have class'),Z('游泳','swim'),Z('寄信','mail a letter')],Z('在那裡做什麼','What you do there')],
+  [Z('一','one'),Z('二','two'),Z('三','three'),Z('四','four'),[Z('五','five'),Z('六','six'),Z('零','zero')],Z('下一個數字','The next number')],
+  [Z('二','two'),Z('四','four'),Z('五','five'),Z('十','ten'),[Z('七','seven'),Z('六','six'),Z('八','eight')],Z('變成兩倍','Double it')],
+  [Z('一雙','a pair'),Z('二','two'),Z('一打','a dozen'),Z('十二','twelve'),[Z('十','ten'),Z('二十','twenty'),Z('六','six')],Z('一組有幾個','How many in the set')],
+  [Z('畫家','painter'),Z('畫筆','paintbrush'),Z('醫生','doctor'),Z('聽診器','stethoscope'),[Z('剪刀','scissors'),Z('鍋子','pot'),Z('鐵鎚','hammer')],Z('他們用的工具','The tool they use')],
+  [Z('廚師','cook'),Z('鍋子','pot'),Z('木匠','carpenter'),Z('鐵鎚','hammer'),[Z('聽診器','stethoscope'),Z('畫筆','paintbrush'),Z('書','book')],Z('他們用的工具','The tool they use')],
+  [Z('農夫','farmer'),Z('種菜','grow vegetables'),Z('消防員','firefighter'),Z('滅火','put out fires'),[Z('抓小偷','catch thieves'),Z('開飛機','fly planes'),Z('教書','teach')],Z('他們的工作','What their job is')],
+  [Z('老師','teacher'),Z('教書','teach'),Z('警察','police officer'),Z('抓小偷','catch thieves'),[Z('蓋房子','build houses'),Z('看病','treat the sick'),Z('送信','deliver mail')],Z('他們的工作','What their job is')],
+  [Z('禮物','present'),Z('開心','happy'),Z('跌倒','fall down'),Z('痛','hurt'),[Z('笑','laugh'),Z('餓','hungry'),Z('睏','sleepy')],Z('會有什麼感覺','How it makes you feel')],
+  [Z('生日','birthday'),Z('蛋糕','cake'),Z('過年','Lunar New Year'),Z('紅包','red envelope'),[Z('月餅','mooncake'),Z('粽子','rice dumpling'),Z('聖誕樹','Christmas tree')],Z('節日常見的東西','What goes with the celebration')],
+  [Z('中秋節','Moon Festival'),Z('月餅','mooncake'),Z('端午節','Dragon Boat Festival'),Z('粽子','rice dumpling'),[Z('湯圓','sweet rice balls'),Z('紅包','red envelope'),Z('蛋糕','cake')],Z('節日常見的東西','What goes with the celebration')]
+);
 function qAnaWord(){
   const [a,b,c,d,w,h]=pk(ANA_WORD);
   return LQ('anaW',Z('「？」應該填什麼？','Which word fits?'),
@@ -1046,10 +1257,48 @@ const modeBy={math:'normal',logic:'l1'};   // rate：大蛇每秒前進幾格
 const MODES=()=>({easy:L('mEasy'),plain:L('mPlain'),normal:L('mNormal'),boss:L('mBoss'),en:L('mEn'),
   l1:L('logicName')+'・'+L('lv1'),l2:L('logicName')+'・'+L('lv2'),l3:L('logicName')+'・'+L('lv3'),l4:L('logicName')+'・'+L('lv4')});
 
+/* ---------- 不重複出題 ----------
+   每題算出一個「題目指紋」：數學看算式，邏輯看題型＋題幹＋答案（不看錯誤選項的排列）。
+   同一局用過的指紋不再出；最近 3 局出過的也盡量避開（題庫太小才退而求其次）。 */
+const HIST_KEY='snakeEscape.recent.v1', HIST_GAMES=3;
+let RECENT=[];
+try{ const h=JSON.parse(localStorage.getItem(HIST_KEY)||'[]'); if(Array.isArray(h)) RECENT=h.filter(Array.isArray).slice(-HIST_GAMES); }catch(e){}
+function qKey(q){
+  if(!q.logic) return 'm|'+q.text;
+  const sv=lang; lang='zh';
+  let k;
+  try{ k=q.type+'|'+keyOf(q.prompt)+'|'+(q.body?q.body():q.labels.map(keyOf).sort().join(','))+'|'+keyOf(q.labels[q.ans]); }
+  finally{ lang=sv; }
+  return k;
+}
+function recentSet(){ const s=new Set(); RECENT.forEach(g=>g.forEach(k=>s.add(k))); return s; }
+function pickQuestion(level,md){
+  const used=G.used, recent=G.recent, prevLogic=lastLogic;
+  let best=null, bestScore=9, bestType='';
+  for(let i=0;i<120;i++){
+    lastLogic=prevLogic;
+    const q=makeQuestion(level,md), k=qKey(q);
+    const score=used.has(k)?2:recent.has(k)?1:0;
+    if(score<bestScore){ best=q; best.key=k; bestScore=score; bestType=lastLogic; }
+    if(score===0) break;
+  }
+  lastLogic=bestType;
+  used.add(best.key);
+  return best;
+}
+function saveHistory(){
+  if(!G||G.saved||!G.used||!G.used.size) return;
+  G.saved=true;
+  RECENT.push([...G.used]);
+  RECENT=RECENT.slice(-HIST_GAMES);
+  try{ localStorage.setItem(HIST_KEY,JSON.stringify(RECENT)); }catch(e){}
+}
+
 function newGame(){
   stopEN();
+  saveHistory();
   G={dist:START_DIST,door:0,stars:0,tries:0,q:null,alive:true,t0:performance.now(),moving:false,
-     paused:false,pauses:PAUSES,snap:null,loot:{},frozen:false};
+     paused:false,pauses:PAUSES,snap:null,loot:{},frozen:false,used:new Set(),recent:recentSet(),saved:false};
   $('loot').innerHTML=''; $('spin').hidden=true;
   $('scene').classList.remove('paused'); updatePause();
   $('doors').innerHTML=Array.from({length:TOTAL},()=>'<i></i>').join('');
@@ -1060,7 +1309,7 @@ function newGame(){
   if(!raf) raf=requestAnimationFrame(loop);
 }
 function nextDoor(){
-  G.q=makeQuestion(G.door,mode);
+  G.q=pickQuestion(G.door,mode);
   G.tries=0;
   $('qlabel').textContent=L('door',G.door+1)+' · '+MODES()[mode];
   $('doorNo').textContent='門 '+(G.door+1);
@@ -1075,7 +1324,7 @@ function nextDoor(){
             $('qlabel').textContent+=L('noVoice'); $('enbar').hidden=true; }
   }else{
     $('enbar').hidden=true;
-    $('q').innerHTML=G.q.text+' <small>＝ ？</small>';
+    $('q').innerHTML=G.q.eq ? G.q.text.replace('□','<span class="blank">□</span>') : G.q.text+' <small>＝ ？</small>';
     $('q').style.fontSize = G.q.text.length>10 ? 'clamp(27px,8.5vw,42px)' : '';
   }
   $('tip').textContent='';
@@ -1095,7 +1344,7 @@ function renderLogic(){
   $('q').innerHTML='<div class="lprompt">'+tx(q.prompt)+'</div>'+(q.body?q.body():'');
 }
 function answer(v,btn){
-  if(!G||!G.alive||G.moving||G.paused) return;
+  if(!G||!G.alive||G.moving||G.paused||G.locked) return;
   if(v===G.q.ans){
     btn.className='ok';
     if(G.tries===0){ G.stars++; $('stars').textContent=G.stars; }
@@ -1119,11 +1368,21 @@ function answer(v,btn){
     G.tries++; G.dist=Math.max(0,G.dist-1);
     $('scene').classList.add('hitshake');
     setTimeout(()=>$('scene').classList.remove('hitshake'),400);
-    if(G.tries>=2&&G.q.words) revealEN();
-    $('tip').textContent = G.tries>=2 ? '💡 '+hintFor(G.q,mode) : L('wrongTip');
+    if(G.tries>=2){                                // 同一道門答錯兩次：直接輸
+      G.locked=true; stopEN();
+      const bs=$('opts').children;
+      for(const b of bs){ b.disabled=true; if(b.textContent===String(optLabel(G.q,G.q.ans))) b.className='ok'; }
+      if(G.q.words) revealEN();
+      $('tip').textContent='';
+      setTimeout(()=>lose('twice'),1100);
+      return;
+    }
+    if(G.q.words) revealEN();
+    $('tip').textContent=wrongLine();
     if(G.dist<=0) lose();
   }
 }
+function wrongLine(){ return L('wrongTip')+' 💡 '+hintFor(G.q,mode); }
 function revealEN(){
   if(!G||!G.q||!G.q.words) return;
   $('q').innerHTML=G.q.text+' <small>＝ ？</small>';
@@ -1146,17 +1405,17 @@ function setPaused(p){
   updatePause();
 }
 function quitAsk(){
-  if(!G||!G.alive||$('over').classList.contains('on')) return;
+  if(!G||!G.alive||G.locked||$('over').classList.contains('on')) return;
   G.frozen=true; stopEN();
   panel('<div class="em">🚪</div><h1>'+L('quitT')+'</h1><p>'+L('quitP')+'</p>'+
     '<div class="row"><button class="btn" id="qNo">'+L('quitNo')+'</button>'+
     '<button class="btn go" id="qYes">'+L('quitYes')+'</button></div>');
   $('qNo').onclick=()=>{ G.frozen=false; $('over').classList.remove('on'); };
-  $('qYes').onclick=()=>{ G.alive=false; G.frozen=false; stopEN();
+  $('qYes').onclick=()=>{ G.alive=false; saveHistory(); G.frozen=false; stopEN();
     $('scene').classList.remove('paused'); updatePause(); goHome(); };
 }
 function togglePause(){
-  if(!G||!G.alive||G.moving) return;
+  if(!G||!G.alive||G.moving||G.locked) return;
   if(G.paused) setPaused(false);
   else { if(G.pauses<=0) return; G.pauses--; setPaused(true); }
 }
@@ -1164,14 +1423,14 @@ function loop(now){
   raf=requestAnimationFrame(loop);
   const dt=Math.min(.1,(now-last)/1000); last=now;
   const t=now/1000;
-  if(G&&G.alive&&!G.moving&&!G.paused&&!G.frozen) G.dist-=dt*rate;
+  if(G&&G.alive&&!G.moving&&!G.paused&&!G.frozen&&!G.locked) G.dist-=dt*rate;
   const d=G?Math.max(0,G.dist):START_DIST;
   drawSnake(Math.min(d,16),t);
   runPlayer(t,G&&G.moving);
   const shown=Math.max(0,Math.ceil(d));
   if($('dist').textContent!=shown) $('dist').textContent=shown;
   $('pDist').className='pill dist'+(d<=4?' warn':'');
-  if(G&&G.alive&&G.dist<=0) lose();
+  if(G&&G.alive&&!G.locked&&G.dist<=0) lose();
 }
 function homeHTML(){
   return '<div class="langsel" id="langSel">'+
@@ -1226,7 +1485,7 @@ function applyLang(){
     const bs=$('opts').children;
     G.q.options.forEach((v,i)=>{ bs[i].textContent=optLabel(G.q,v); });
   }
-  if(G&&G.q&&G.alive&&$('tip').textContent.startsWith('💡')) $('tip').textContent='💡 '+hintFor(G.q,mode);
+  if(G&&G.q&&G.alive&&!G.locked&&!G.moving&&!G.paused&&G.tries===1) $('tip').textContent=wrongLine();
   updatePause();
   if($('over').classList.contains('on')) goHome();
 }
@@ -1266,7 +1525,7 @@ function panel(html){ $('panel').innerHTML=html; $('over').classList.add('on'); 
 function goHome(){ panel(homeHTML()); bindHome(); showInstall(); }
 
 function win(){
-  G.alive=false; stopEN(); $('scene').classList.remove('paused'); updatePause();
+  G.alive=false; saveHistory(); stopEN(); $('scene').classList.remove('paused'); updatePause();
   const sec=((performance.now()-G.t0)/1000).toFixed(1);
   panel('<div class="em">🏆</div><h1>'+L('winT')+'</h1>'+
     '<p>'+L('winP',MODES()[mode],G.stars,sec)+'</p>'+
@@ -1276,10 +1535,12 @@ function win(){
     '<button class="btn go" id="again">'+L('again')+'</button></div>');
   $('again').onclick=newGame; $('home').onclick=goHome;
 }
-function lose(){
+function lose(why){
   if(!G.alive) return;
-  G.alive=false; stopEN(); $('scene').classList.remove('paused'); updatePause();
-  panel('<div class="em">🐍</div><h1>'+L('loseT')+'</h1>'+
+  G.alive=false; saveHistory(); stopEN(); $('scene').classList.remove('paused'); updatePause();
+  const twice=why==='twice';
+  panel('<div class="em">'+(twice?'🔒':'🐍')+'</div><h1>'+L(twice?'loseWT':'loseT')+'</h1>'+
+    (twice?'<p>'+L('loseWP',G.door+1,optLabel(G.q,G.q.ans))+'</p>':'')+
     '<p>'+L('loseP',G.door+1,G.stars,lootLine(G.loot),lootValue(G.loot))+'</p>'+
     '<div class="row"><button class="btn" id="home">'+L('chSpeed')+'</button>'+
     '<button class="btn go" id="again">'+L('retry')+'</button></div>');
