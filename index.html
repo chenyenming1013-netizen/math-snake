@@ -177,7 +177,9 @@
     padding:0 6px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
     font-size:22px;font-family:var(--num);font-weight:800;text-shadow:none;box-sizing:border-box}
   .lseq.dots span{font-size:11px;letter-spacing:1px;max-width:58px;line-height:1.1;word-break:break-all;color:#FFE07A}
-  .lseq.arw span{font-size:26px;font-family:system-ui,sans-serif}
+  .lseq.arw span{font-size:26px;width:40px;min-width:40px;padding:0;color:var(--paper)}
+  svg.ar{width:1em;height:1em;display:block}
+  .opts button.arw svg.ar{margin:0 auto}
   .lseq.dots .qm{font-size:20px;color:var(--torch)}
   .lseq .qm,.lgrid .qm,.lana .qm{border:1.5px dashed var(--torch);color:var(--torch);background:rgba(255,178,58,.1)}
   .lgrid{display:inline-grid;grid-template-columns:repeat(3,50px);gap:5px}
@@ -792,14 +794,20 @@ function qSeries(lv){
 }
 
 /* 6. 方向旋轉 */
-const ARW=['↑','↗','→','↘','↓','↙','←','↖'];
+/* 箭頭用 SVG 畫再旋轉：任何角度都畫得出來，而且每個箭頭大小一致
+   普通：每次轉 90°；困難：每次轉 30° 或 45°（不出 135°、180° 這種看起來像亂跳的） */
+const arrowSVG=d=>'<svg class="ar" viewBox="-12 -12 24 24" aria-hidden="true"><g transform="rotate('+d+')">'+
+  '<path d="M0 9V-8M-6.5-1.5L0-8L6.5-1.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></g></svg>';
 function qArrow(lv){
-  const step=lv===2?pk([2,-2]):pk([1,-1,3,-3]), st=ri(0,7);
-  const at=i=>ARW[((st+i*step)%8+8)%8];
-  const seq=[0,1,2,3,4].map(at), ans=at(5);
-  const deg=Math.abs(step)*45, cw=step>0;
-  return LQ('arw',PR.next,()=>seqHTML(seq,'arw'),ans,[at(4),at(6),ARW[((st-5*step)%8+8)%8],...ARW],
-    Z('每次'+(cw?'順':'逆')+'時針轉 '+deg+'°','It turns '+deg+'° '+(cw?'clockwise':'counter-clockwise')+' each time'),'arw');
+  const unit=lv===2?90:pk([30,45]), step=unit*pk([1,-1]);
+  const grid=unit===30?30:45, start=grid*ri(0,360/grid-1);
+  const at=i=>((start+i*step)%360+360)%360;
+  const seq=[0,1,2,3,4].map(at), ans=at(5), cw=step>0;
+  const wr=[at(4),at(6),at(-5),ans+180,ans+90,ans-90,ans+2*step,ans-2*step].map(d=>(d%360+360)%360);
+  const q=LQ('arw',PR.next,()=>seqHTML(seq.map(arrowSVG),'arw'),arrowSVG(ans),wr.map(arrowSVG),
+    Z('每次'+(cw?'順':'逆')+'時針轉 '+unit+'°','It turns '+unit+'° '+(cw?'clockwise':'counter-clockwise')+' each time'),'arw');
+  q.html=true;
+  return q;
 }
 
 /* 7. 圖像類比 */
@@ -1350,13 +1358,14 @@ function nextDoor(){
   $('tip').textContent='';
   const bs=$('opts').children;
   G.q.options.forEach((v,i)=>{ const b=bs[i];
-    b.textContent = optLabel(G.q,v);
+    setOpt(b,G.q,v);
     b.disabled=false;
     b.className = G.q.logic ? G.q.cls : G.q.words ? 'word' : (v>999 ? 'small' : '');
     b.onclick=()=>answer(v,b); });
   const ds=$('doors').children;
   for(let i=0;i<TOTAL;i++) ds[i].className=i<G.door?'on':'';
 }
+function setOpt(b,q,v){ const s=String(optLabel(q,v)); if(q.html) b.innerHTML=s; else b.textContent=s; b.dataset.v=v; }
 function optLabel(q,v){ return q.logic ? tx(q.labels[v]) : q.words ? numWord(v) : v; }
 function renderLogic(){
   const q=G.q;
@@ -1391,7 +1400,7 @@ function answer(v,btn){
     if(G.tries>=2){                                // 同一道門答錯兩次：直接輸
       G.locked=true; stopEN();
       const bs=$('opts').children;
-      for(const b of bs){ b.disabled=true; if(b.textContent===String(optLabel(G.q,G.q.ans))) b.className='ok'; }
+      for(const b of bs){ b.disabled=true; if(+b.dataset.v===G.q.ans) b.className='ok'; }
       if(G.q.words) revealEN();
       $('tip').textContent='';
       setTimeout(()=>lose('twice'),1100);
@@ -1503,7 +1512,7 @@ function applyLang(){
   if(G&&G.q&&G.q.logic&&G.alive){
     renderLogic();
     const bs=$('opts').children;
-    G.q.options.forEach((v,i)=>{ bs[i].textContent=optLabel(G.q,v); });
+    G.q.options.forEach((v,i)=>{ setOpt(bs[i],G.q,v); });
   }
   if(G&&G.q&&G.alive&&!G.locked&&!G.moving&&!G.paused&&G.tries===1) $('tip').textContent=wrongLine();
   updatePause();
