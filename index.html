@@ -81,6 +81,8 @@
   .flash{animation:flash .35s}
   @keyframes flash{0%,100%{filter:none}40%{filter:brightness(1.7) saturate(1.4)}}
   .hitshake{animation:hs .4s}
+  .introcap{display:block;font-family:var(--body);font-size:13px;font-weight:600;color:var(--mist);padding:30px 0;animation:fadein .6s}
+  .scene.intro{cursor:pointer}
   @keyframes hs{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}60%{transform:translateX(6px)}}
 
   /* 題目 */
@@ -187,6 +189,20 @@
   .lana{font-size:20px;line-height:2.3}
   .lana em{font-style:normal;color:var(--mist);margin:0 8px;font-size:18px}
   .lana.num span{min-width:44px}
+  .lrows{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .lrow{display:flex;align-items:center;justify-content:center;gap:3px;min-height:32px;padding:2px 8px;border-radius:10px;
+    background:rgba(255,255,255,.06);font-size:23px;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",system-ui,sans-serif}
+  .lrow i{font-style:normal;line-height:1}
+  .lrow b{font-family:var(--body);font-size:12px;color:var(--mist);margin-right:6px;font-weight:700}
+  .lrow.bal em{font-style:normal;font-size:18px;margin:0 8px;opacity:.85}
+  .lhead{font-family:var(--body);font-size:12.5px;color:var(--mist);margin:-4px 0 6px;font-weight:600}
+  .lwalk{display:grid;width:max-content;margin:0 auto 5px;grid-template-columns:repeat(4,30px);gap:3px}
+  .lwalk span{height:30px;font-size:18px!important;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:22px;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+  .lwalk span.me{background:rgba(255,178,58,.22);border-color:var(--torch)}
+  .lsteps{display:flex;justify-content:center;gap:4px}
+  .lsteps span{width:27px;height:27px;display:flex;align-items:center;justify-content:center;border-radius:8px;
+    font-size:20px;color:#FFE07A;background:rgba(255,224,122,.08);border:1px solid rgba(255,224,122,.25)}
   .ltext{font-family:var(--body);font-size:16px;font-weight:600;line-height:1.75;text-shadow:none}
   .ltext i{font-style:normal;color:#FFE07A}
   .ltext b.qm{color:var(--torch);font-family:var(--num)}
@@ -227,6 +243,7 @@
       </defs>
       <rect x="0" y="0" width="400" height="132" fill="url(#wall)"/>
       <g id="bricks" opacity=".5"></g>
+      <rect id="introDark" x="0" y="0" width="400" height="104" fill="#05030a" opacity="0" pointer-events="none"/>
       <g id="torches"></g>
       <rect x="0" y="104" width="400" height="28" fill="#171110"/>
       <line x1="0" y1="104" x2="400" y2="104" stroke="#5B4534" stroke-width="1.5"/>
@@ -237,6 +254,22 @@
         <rect x="358" y="40" width="28" height="58" rx="2" fill="#3A2C22"/>
         <circle cx="366" cy="70" r="3.2" fill="#FFB23A"/>
         <text id="doorNo" x="372" y="30" font-size="11" fill="#B9A894" text-anchor="middle" font-family="Baloo 2, sans-serif">門 1</text>
+      </g>
+      <!-- 開場動畫：藏寶箱 -->
+      <g id="chest" transform="translate(338,104)" style="display:none">
+        <circle id="chestGlow" cx="0" cy="-16" r="26" fill="url(#glow)" opacity="0"/>
+        <rect x="-15" y="-17" width="30" height="17" rx="2" fill="#8A5A2B" stroke="#5A3816" stroke-width="1.4"/>
+        <rect x="-15" y="-11" width="30" height="3" fill="#D9A93A"/>
+        <rect x="-2.6" y="-13" width="5.2" height="6.5" rx="1" fill="#F2D06B" stroke="#8A6512" stroke-width=".8"/>
+        <g id="chestLid">
+          <path d="M-15.5 -17 C-15.5 -27 15.5 -27 15.5 -17 Z" fill="#9C6A34" stroke="#5A3816" stroke-width="1.4"/>
+          <rect x="-15.5" y="-19.6" width="31" height="2.6" fill="#D9A93A"/>
+        </g>
+      </g>
+      <g id="coins" style="display:none">
+        <circle r="3.4" fill="#FFD34D" stroke="#B8860B" stroke-width=".9"/><circle r="3.4" fill="#FFD34D" stroke="#B8860B" stroke-width=".9"/>
+        <circle r="3" fill="#7FE3FF" stroke="#2D8FB0" stroke-width=".9"/><circle r="3.4" fill="#FFD34D" stroke="#B8860B" stroke-width=".9"/>
+        <circle r="3.4" fill="#FFD34D" stroke="#B8860B" stroke-width=".9"/><circle r="3" fill="#FF7A9A" stroke="#B03A5A" stroke-width=".9"/>
       </g>
       <!-- 玩家：小偷 -->
       <g id="player" transform="translate(300,104)">
@@ -302,12 +335,22 @@
           <circle cx="4.6" cy="-3.2" r="2.9" fill="#F5E27A"/>
           <ellipse cx="5.2" cy="-3.2" rx="1.1" ry="2.4" fill="#151A0F"/>
           <circle cx="4" cy="-4.4" r=".9" fill="#fff" opacity=".9"/>
+          <g id="slid" opacity="0"><circle cx="4.6" cy="-3.2" r="3.3" fill="#6CC14F"/>
+            <path d="M1.6 -2.6 C3.4 -1.2 5.8 -1.2 7.6 -2.6" fill="none" stroke="#24561B" stroke-width="1" stroke-linecap="round"/></g>
           <circle cx="10.4" cy="-1.6" r=".7" fill="#2A5F20"/>
           <g id="tongue">
             <path d="M0 0 L7.5 0 M7.5 0 L11.5 2.2 M7.5 0 L11.5 -2.2"
                   fill="none" stroke="#F04438" stroke-width="1.5" stroke-linecap="round"/>
           </g>
         </g>
+      </g>
+      <!-- 開場動畫：Zzz 與對話泡泡 -->
+      <text id="zzz" x="0" y="0" font-size="11" fill="#CFE8B8" font-family="Baloo 2, sans-serif" font-weight="800" style="display:none">z Z</text>
+      <g id="bubble" style="display:none">
+        <rect id="bubbleR" x="-34" y="-17" width="68" height="20" rx="9" fill="#FFF6E6" stroke="#FFB23A" stroke-width="1.4"/>
+        <path d="M-4 3 L0 9 L4 3 Z" fill="#FFF6E6" stroke="#FFB23A" stroke-width="1.4" stroke-linejoin="round"/>
+        <rect x="-5" y="1.5" width="10" height="2.4" fill="#FFF6E6"/>
+        <text id="bubbleT" x="0" y="-2.6" font-size="11.5" fill="#2A1A10" text-anchor="middle" font-weight="800" font-family="Noto Sans TC, sans-serif"></text>
       </g>
     </svg>
   </div>
@@ -375,6 +418,7 @@ const T={
   kHint:'提示', kClear:'清除', kGo:'送出',
   doorOpen:'門開了！大蛇退後 {0} 格。',
   wrongTip:'不對喔！再錯一次就輸了。',
+  introSkip:'點一下畫面可以跳過', introOops:'糟了！', introGo:'快逃！',
   loseWT:'同一道門答錯兩次！',
   loseWP:'第 <b>{0}</b> 道門答錯兩次，大蛇趁機追上來了。<br>正確答案是 <b>{1}</b>。',
   pausedTip:'⏸ 暫停中，想好了再按「繼續」。剩下 {0} 次。',
@@ -429,6 +473,7 @@ const T={
   kHint:'Hint', kClear:'Clear', kGo:'Enter',
   doorOpen:'Door open! The snake falls back {0} steps.',
   wrongTip:'Not quite! One more miss and the run is over.',
+  introSkip:'Tap to skip', introOops:'Uh-oh!', introGo:'Run!',
   loseWT:'Two misses on one door!',
   loseWP:'You missed door <b>{0}</b> twice and the snake caught up.<br>The answer was <b>{1}</b>.',
   pausedTip:'⏸ Paused. Tap Resume when you are ready. {0} left.',
@@ -1082,9 +1127,96 @@ function qSymbol(){
     [ans+1,ans-1,ans+2,ans-2,a,b,a+b].filter(w=>w>=0),hint);
 }
 
+/* 14. 數數比大小（簡易）：哪一種最多／最少、多幾個 */
+const COUNT_EMO=['🍎','🍌','🍇','🍓','🍊','🍒','⭐','🌸','🐟','🐞','🎈','🍪'];
+const emoRow=(e,n)=>'<div class="lrow">'+('<i>'+e+'</i>').repeat(n)+'</div>';
+function qCount(){
+  if(RND()<0.5){                                   // 四排裡哪一種最多／最少
+    const emo=shuffle(COUNT_EMO.slice()).slice(0,4);
+    const base=ri(2,5), n=shuffle([base,base+1,base+2,base+3].slice());
+    const most=RND()<0.5, idx=n.indexOf(most?base+3:base);
+    const rows=shuffle([0,1,2,3]);
+    return LQ('cnt',most?Z('哪一種最多？','Which one has the most?'):Z('哪一種最少？','Which one has the fewest?'),
+      ()=>'<div class="lrows">'+rows.map(i=>emoRow(emo[i],n[i])).join('')+'</div>',
+      emo[idx],emo.filter((_,i)=>i!==idx),
+      Z('每一排都數一數，再比大小','Count each row, then compare'),'emo');
+  }
+  const [A,B]=shuffle(COUNT_EMO.slice()).slice(0,2);  // 兩排差幾個
+  const a=ri(2,6), d=ri(1,4), b=a+d, top=RND()<0.5;
+  return LQ('cntD',Z(B+' 比 '+A+' 多幾個？','How many more '+B+' than '+A+'?'),
+    ()=>'<div class="lrows">'+(top?emoRow(A,a)+emoRow(B,b):emoRow(B,b)+emoRow(A,a))+'</div>',
+    d,[d+1,d-1,d+2,a,b,a+b].filter(x=>x>0),
+    Z(A+' 有 '+a+' 個，'+B+' 有 '+b+' 個，'+b+' 比 '+a+' 多幾？',
+      'There are '+a+' '+A+' and '+b+' '+B+'. How far is it from '+a+' to '+b+'?'));
+}
+
+/* 15. 少了哪一個（簡易）：上面 5 個，下面打亂又拿走一個 */
+const MISS_EMO=['🍎','🍌','🍇','🍓','🐶','🐱','🐰','🐼','🐸','⚽','🎈','⭐','🌸','🚗','🍦','🎁','🐟','🦋','🍩','🔔'];
+function qMissing(){
+  const n=pk([4,5,5]), set=shuffle(MISS_EMO.slice()).slice(0,n);
+  const miss=pk(set), rest=shuffle(set.filter(x=>x!==miss));
+  const row=(lab,xs)=>'<div class="lrow"><b>'+tx(lab)+'</b>'+xs.map(x=>'<i>'+x+'</i>').join('')+'</div>';
+  return LQ('miss',Z('下面少了哪一個？','Which one is missing below?'),
+    ()=>'<div class="lrows">'+row(Z('上面','Top'),set)+row(Z('下面','Below'),rest)+'</div>',
+    miss,rest,Z('上面的一個一個拿去下面找，找不到的就是答案','Find each top picture in the bottom row. The one you cannot find is the answer'),'emo');
+}
+
+/* 16. 天平推理（普通）：🍎 ＝ 🍌🍌，🍌 ＝ 🍇🍇🍇，🍎 ＝ 幾個 🍇？ */
+const BAL_EMO=['🍉','🍍','🍈','🍎','🍊','🍋','🍓','🍒'];   // 由大到小排，左邊一定比較大
+function qBalance(){
+  const [A,B,C]=shuffle(BAL_EMO.map((_,i)=>i)).slice(0,3).sort((x,y)=>x-y).map(i=>BAL_EMO[i]);
+  const rep=(e,n)=>Array(n).fill(e).join('');
+  const line=(l,r)=>'<div class="lrow bal"><i>'+l+'</i><em>⚖️</em><i>'+r+'</i></div>';
+  const head=Z('天平兩邊一樣重','Each scale is balanced');
+  if(RND()<0.6){
+    const a=ri(2,3), b=ri(2,4), ans=a*b;
+    return LQ('bal',Z('1 個 '+A+' 和幾個 '+C+' 一樣重？','1 '+A+' weighs the same as how many '+C+'?'),
+      ()=>'<div class="lhead">'+tx(head)+'</div><div class="lrows">'+line(A,rep(B,a))+line(B,rep(C,b))+'</div>',
+      ans,[a+b,ans+1,ans-1,a,b,ans+a,ans+b].filter(x=>x>0),
+      Z('把每個 '+B+' 都換成 '+b+' 個 '+C+'，再數一數','Swap every '+B+' for '+b+' '+C+', then count them all'));
+  }
+  const a=ri(2,4), k=ri(2,3), ans=a*k;
+  return LQ('bal',Z(k+' 個 '+A+' 和幾個 '+B+' 一樣重？',k+' '+A+' weigh the same as how many '+B+'?'),
+    ()=>'<div class="lhead">'+tx(head)+'</div><div class="lrows">'+line(A,rep(B,a))+'</div>',
+    ans,[a+k,ans+1,ans-1,a,ans+a].filter(x=>x>0),
+    Z('每 1 個 '+A+' 都要 '+a+' 個 '+B+'，'+k+' 個 '+A+' 呢？','Each '+A+' needs '+a+' '+B+'. What about '+k+' of them?'));
+}
+
+/* 17. 方格走路（普通）：照箭頭一步一格，最後停在哪裡？ */
+const WALK_HERO=['🐰','🐢','🐶','🐱','🐼'], WALK_ITEM=['🥕','🍎','⭐','🌸','🎁','🍦','🎈','🍓','🔔','🍪'];
+const DIR={U:[0,-1,0],R:[1,0,90],D:[0,1,180],L:[-1,0,270]};
+function qWalk(){
+  const N=4;
+  for(let tries=0;tries<200;tries++){
+    const len=ri(3,5), sx=ri(0,N-1), sy=ri(0,N-1);
+    const steps=Array.from({length:len},()=>pk('URDL'.split('')));
+    const go=st=>{ let x=sx,y=sy; for(const d of st){ x+=DIR[d][0]; y+=DIR[d][1]; if(x<0||y<0||x>=N||y>=N) return null; } return [x,y]; };
+    const end=go(steps); if(!end||end[0]===sx&&end[1]===sy) continue;
+    // 錯誤選項：常見走錯的地方（少走一步、左右或上下弄反、只走前面幾步）
+    const flip={L:'R',R:'L',U:'D',D:'U'};
+    const cands=[];
+    steps.forEach((_,i)=>cands.push(go(steps.filter((_,j)=>j!==i))));
+    cands.push(go(steps.map(d=>d==='L'||d==='R'?flip[d]:d)));
+    cands.push(go(steps.map(d=>d==='U'||d==='D'?flip[d]:d)));
+    for(let i=1;i<len;i++) cands.push(go(steps.slice(0,i)));
+    const key=c=>c[0]+','+c[1], used=new Set([key(end),sx+','+sy]), wrong=[];
+    for(const c of shuffle(cands)){ if(c&&!used.has(key(c))){ used.add(key(c)); wrong.push(c); } if(wrong.length===3) break; }
+    if(wrong.length<3) continue;
+    const hero=pk(WALK_HERO), items=shuffle(WALK_ITEM.slice()).slice(0,4);
+    const cell={}; cell[key(end)]=items[0]; wrong.forEach((c,i)=>cell[key(c)]=items[i+1]); cell[sx+','+sy]=hero;
+    const grid=()=>{ let h='<div class="lwalk">'; for(let y=0;y<N;y++) for(let x=0;x<N;x++){
+      const k=x+','+y; h+='<span'+(k===sx+','+sy?' class="me"':'')+'>'+(cell[k]||'')+'</span>'; } return h+'</div>'; };
+    const arrows='<div class="lsteps">'+steps.map(d=>'<span>'+arrowSVG(DIR[d][2])+'</span>').join('')+'</div>';
+    return LQ('walk',Z('照箭頭走，最後停在哪裡？','Follow the arrows. Where do you stop?'),
+      ()=>grid()+arrows,items[0],items.slice(1),
+      Z('手指從 '+hero+' 出發，一個箭頭走一格','Start at '+hero+', one square per arrow'),'emo');
+  }
+  return qBalance();
+}
+
 const LOGIC={
-  1:[()=>qPattern(['AB','ABC','AAB','ABB']),qDots,()=>qOddEmoji(false),()=>qSeries(1)],
-  2:[()=>qPattern(['ABCD','AABB','ABBC','ABAC']),()=>qArrow(2),()=>qOddNum(2),()=>qSeries(2),qAnaEmo,qLatin],
+  1:[()=>qPattern(['AB','ABC','AAB','ABB']),qDots,()=>qOddEmoji(false),()=>qSeries(1),qCount,qMissing],
+  2:[()=>qPattern(['ABCD','AABB','ABBC','ABAC']),()=>qArrow(2),()=>qOddNum(2),()=>qSeries(2),qAnaEmo,qLatin,qBalance,qWalk],
   3:[()=>qArrow(3),()=>qOddEmoji(true),()=>qOddNum(3),()=>qSeries(3),qAnaWord,()=>qAnaNum(3),
      ()=>qLetters(3),()=>qMatrix(3),()=>qOrder(3)],
   4:[()=>qSeries(4),()=>qOddNum(4),()=>qAnaNum(4),()=>qLetters(4),()=>qMatrix(4),()=>qOrder(4),qSymbol,qSymbol],
@@ -1198,6 +1330,96 @@ function runPlayer(t,moving){
   set('pbob',{transform:'translate(0,'+(-Math.abs(s)*1.3).toFixed(2)+') rotate('+(moving?-5:-1.5)+')'});
   set('sack',{transform:'rotate('+(s*5).toFixed(1)+',-11,-18)'});
   set('shadow',{rx:(12-Math.abs(s)*1.4).toFixed(1),opacity:(0.38-Math.abs(s)*0.06).toFixed(2)});
+}
+
+/* ---------- 開場動畫 ----------
+   第一局：小偷溜進藏寶室、拿金幣、吵醒大蛇、開跑（約 4.2 秒）
+   之後每局：短版，小偷直接開跑、大蛇追進來（約 1 秒）
+   點畫面或按鍵可跳過；系統有開「減少動態效果」就不播。 */
+let introSeen=false;
+const INTRO_LEN={full:4.2,short:1.0};
+const reduceMotion=()=>!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const clamp01=x=>Math.max(0,Math.min(1,x));
+const ease=x=>{ x=clamp01(x); return x*x*(3-2*x); };
+const show=(id,on)=>{ $(id).style.display=on?'':'none'; };
+function startIntro(kind){
+  G.intro={kind,t0:performance.now(),dur:INTRO_LEN[kind],shook:false};
+  $('scene').classList.add('intro');
+  $('qlabel').textContent='';
+  $('q').style.fontSize='';
+  $('q').innerHTML='<span class="introcap">'+L('introSkip')+'</span>';
+  $('opts').style.visibility='hidden';
+  $('tip').textContent=''; $('enbar').hidden=true;
+  $('bubbleT').textContent=L(kind==='full'?'introOops':'introGo');
+  const full=kind==='full';
+  show('chest',full); show('zzz',full); show('coins',full); show('bubble',false);
+  $('chestLid').setAttribute('transform',''); $('chest').setAttribute('opacity',1);
+  updatePause();
+}
+function finishIntro(){
+  if(!G||!G.intro) return;
+  G.intro=null;
+  $('scene').classList.remove('intro','hitshake');
+  ['chest','zzz','coins','bubble'].forEach(id=>show(id,false));
+  $('introDark').setAttribute('opacity',0);
+  $('slid').setAttribute('opacity',0);
+  $('door').style.opacity='';
+  $('player').setAttribute('transform','translate('+PX+','+GY+')');
+  $('opts').style.visibility='';
+  G.t0=performance.now(); last=performance.now();
+  nextDoor(); updatePause();
+}
+function drawIntro(now){
+  const I=G.intro, e=(now-I.t0)/1000, t=now/1000;
+  if(e>=I.dur){ finishIntro(); return; }
+  const setP=x=>$('player').setAttribute('transform','translate('+x.toFixed(1)+','+GY+')');
+  if(I.kind==='short'){                                   // 短版：開跑＋大蛇追進來
+    const k=ease(e/I.dur);
+    setP(PX); runPlayer(t,true);
+    drawSnake(START_DIST+8*(1-k),t);
+    $('door').style.opacity=k.toFixed(2);
+    show('bubble',e<0.7);
+    $('bubble').setAttribute('transform','translate('+PX+','+(GY-47)+')');
+    return;
+  }
+  // 完整版
+  const dark=e<3.2?0.62:0.62*(1-ease((e-3.2)/0.8));
+  $('introDark').setAttribute('opacity',(dark*ease(e/0.4)).toFixed(2));
+  // 小偷：0–1.4 秒踮腳走進來，2.9 秒後開跑
+  const px= e<1.4 ? -24+ease(e/1.4)*(292+24) : e<2.9 ? 292 : 292+ease((e-2.9)/1.1)*(PX-292);
+  setP(px); runPlayer(e<1.4?t*0.8:t, e<1.4||e>=2.9);
+  // 大蛇：睡覺（不動、閉眼）→ 2.2 秒睜眼吐舌 → 2.9 秒後追上來
+  const awake=e>=2.2;
+  const sd= e<2.9 ? 13.5 : 13.5-ease((e-2.9)/1.1)*(13.5-START_DIST);
+  drawSnake(sd, awake? t : 1.0);
+  $('slid').setAttribute('opacity',awake?0:1);
+  const hx=PX-13.5*CELL;
+  show('zzz',!awake);
+  $('zzz').setAttribute('transform','translate('+(hx+6)+','+(GY-26-((e*12)%8))+')');
+  $('zzz').setAttribute('opacity',(0.5+0.5*Math.sin(e*4)).toFixed(2));
+  if(awake&&!I.shook){ I.shook=true; $('scene').classList.add('hitshake'); }
+  // 寶箱：1.4–1.8 秒打開；2.9 秒後淡出，門淡入
+  const lid=ease((e-1.4)/0.4);
+  $('chestLid').setAttribute('transform','rotate('+(lid*58).toFixed(1)+',15.5,-17)');
+  $('chestGlow').setAttribute('opacity',(lid*(0.8+0.2*Math.sin(t*9))).toFixed(2));
+  const away=ease((e-2.9)/0.7);
+  $('chest').setAttribute('opacity',(1-away).toFixed(2));
+  $('door').style.opacity=away.toFixed(2);
+  // 金幣：1.6–2.4 秒從寶箱飛進袋子，袋子變鼓
+  const cs=$('coins').children, sx=338, sy=GY-22, tx_=292-12, ty=GY-20;
+  let got=0;
+  for(let i=0;i<cs.length;i++){
+    const f=(e-1.6-i*0.11)/0.4;
+    if(f>=1) got++;
+    if(f<0||f>=1){ cs[i].setAttribute('opacity',0); continue; }
+    const x=sx+(tx_-sx)*f, y=sy+(ty-sy)*f-Math.sin(f*Math.PI)*(26+i*3);
+    cs[i].setAttribute('cx',x.toFixed(1)); cs[i].setAttribute('cy',y.toFixed(1)); cs[i].setAttribute('opacity',1);
+  }
+  const sk=0.7+0.4*(got/cs.length);
+  const sack=$('sack'); sack.setAttribute('transform',(sack.getAttribute('transform')||'')+' translate(-11,-18) scale('+sk.toFixed(2)+') translate(11,18)');
+  // 對話泡泡：2.3–3.4 秒「糟了！」
+  show('bubble',e>=2.3&&e<3.4);
+  $('bubble').setAttribute('transform','translate('+px.toFixed(1)+','+(GY-47)+')');
 }
 
 /* ---------- 英文語音 ---------- */
@@ -1331,8 +1553,9 @@ function newGame(){
   $('scene').classList.remove('paused'); updatePause();
   $('doors').innerHTML=Array.from({length:TOTAL},()=>'<i></i>').join('');
   $('stars').textContent=0;
-  nextDoor();
   $('over').classList.remove('on');
+  if(reduceMotion()){ G.intro=null; nextDoor(); }
+  else { startIntro(introSeen?'short':'full'); introSeen=true; }
   last=performance.now();
   if(!raf) raf=requestAnimationFrame(loop);
 }
@@ -1419,10 +1642,11 @@ function revealEN(){
 }
 function updatePause(){
   const b=$('pause');
-  if(!G||!G.alive){ b.textContent=L('pause',PAUSES); b.disabled=true; b.className='pausebtn'; return; }
+  if(!G||!G.alive){ b.textContent=L('pause',PAUSES); b.disabled=true; b.className='pausebtn'; if($('quit')) $('quit').disabled=false; return; }
   b.textContent = G.paused ? L('resume') : L('pause',G.pauses);
   b.className = 'pausebtn'+(G.paused?' on':'');
-  b.disabled = !G.paused && G.pauses<=0;
+  b.disabled = !!G.intro || (!G.paused && G.pauses<=0);
+  if($('quit')) $('quit').disabled=!!G.intro;
 }
 function setPaused(p){
   const bs=$('opts').children;
@@ -1434,7 +1658,7 @@ function setPaused(p){
   updatePause();
 }
 function quitAsk(){
-  if(!G||!G.alive||G.locked||$('over').classList.contains('on')) return;
+  if(!G||!G.alive||G.locked||G.intro||$('over').classList.contains('on')) return;
   G.frozen=true; stopEN();
   panel('<div class="em">🚪</div><h1>'+L('quitT')+'</h1><p>'+L('quitP')+'</p>'+
     '<div class="row"><button class="btn" id="qNo">'+L('quitNo')+'</button>'+
@@ -1444,7 +1668,7 @@ function quitAsk(){
     $('scene').classList.remove('paused'); updatePause(); goHome(); };
 }
 function togglePause(){
-  if(!G||!G.alive||G.moving||G.locked) return;
+  if(!G||!G.alive||G.moving||G.locked||G.intro) return;
   if(G.paused) setPaused(false);
   else { if(G.pauses<=0) return; G.pauses--; setPaused(true); }
 }
@@ -1452,6 +1676,7 @@ function loop(now){
   raf=requestAnimationFrame(loop);
   const dt=Math.min(.1,(now-last)/1000); last=now;
   const t=now/1000;
+  if(G&&G.intro&&G.alive){ drawIntro(now); return; }
   if(G&&G.alive&&!G.moving&&!G.paused&&!G.frozen&&!G.locked) G.dist-=dt*rate;
   const d=G?Math.max(0,G.dist):START_DIST;
   drawSnake(Math.min(d,16),t);
@@ -1507,7 +1732,9 @@ function applyLang(){
   });
   if($('replay')) $('replay').textContent=L('replay');
   if($('showtxt')) $('showtxt').textContent=L('showTxt');
-  if(G&&G.q) $('qlabel').textContent=L('door',G.door+1)+' · '+MODES()[mode];
+  if(G&&G.intro){ $('q').innerHTML='<span class="introcap">'+L('introSkip')+'</span>';
+    $('bubbleT').textContent=L(G.intro.kind==='full'?'introOops':'introGo'); }
+  else if(G&&G.q) $('qlabel').textContent=L('door',G.door+1)+' · '+MODES()[mode];
   else $('qlabel').textContent=L('door',1);
   if(G&&G.q&&G.q.logic&&G.alive){
     renderLogic();
@@ -1611,12 +1838,15 @@ if($('quit')) $('quit').onclick=quitAsk;
 applyLang();
 goHome();
 document.addEventListener('keydown',e=>{
+  if(G&&G.intro&&G.alive){ if(e.key===' '||e.key==='Enter'||e.key==='Escape') e.preventDefault(); finishIntro(); return; }
   if(e.key==='Escape'){ quitAsk(); return; }
   if(e.key===' '){ e.preventDefault(); togglePause(); return; }
   const i='1234'.indexOf(e.key);
   if(i>=0&&G&&G.alive){ const b=$('opts').children[i]; if(b&&!b.disabled) b.click(); }
 });
 drawSnake(10,0); runPlayer(0,false);
+$('scene').addEventListener('click',()=>{ if(G&&G.intro) finishIntro(); });   // 點畫面跳過開場
+$('q').addEventListener('click',()=>{ if(G&&G.intro) finishIntro(); });
 raf=requestAnimationFrame(loop);
 </script>
 </body>
