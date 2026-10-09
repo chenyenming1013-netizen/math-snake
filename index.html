@@ -156,6 +156,23 @@
     font-size:26px;font-weight:800;letter-spacing:.2em;background:rgba(0,0,0,.3);color:var(--torch);
     border:1px solid rgba(255,255,255,.2)}
   .roomin.bad{border-color:var(--danger)}
+  .panel.rec{padding:16px 14px 14px;text-align:left}
+  .panel.rec h1{text-align:center;margin-bottom:6px}
+  .rech{font-size:11.5px;color:var(--mist);letter-spacing:.12em;margin:12px 0 5px;font-weight:700}
+  .vault{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;text-align:center}
+  .vault span{display:flex;flex-direction:column;align-items:center;padding:6px 0;border-radius:10px;background:rgba(255,255,255,.06);font-size:20px}
+  .vault span.zero{opacity:.3}
+  .vault b{font-family:var(--num);font-size:13px;color:var(--torch);margin-top:1px}
+  .recsum{font-size:12px;color:var(--mist);margin:6px 0 0;text-align:center}
+  .recsum b,.reclist b{color:var(--paper);font-size:13.5px;font-family:var(--num)}
+  .reclist{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mist)}
+  .reclist div{display:flex;justify-content:space-between;gap:8px;padding:5px 9px;border-radius:9px;background:rgba(255,255,255,.05)}
+  .reclist div>span:first-child{color:var(--paper);font-weight:700;white-space:nowrap}
+  .reclist div>span:last-child{text-align:right}
+  .reclist .won{color:#9BE07A}
+  .recnote{font-size:10.5px;color:var(--mist);opacity:.8;margin:10px 0 0;text-align:center;line-height:1.5}
+  .newrec{color:var(--torch)!important;font-weight:800}
+  .btn.recb{flex:0 0 auto;padding-left:14px;padding-right:14px}
   .pickcap{font-size:11.5px;color:var(--mist);letter-spacing:.14em;margin:11px 0 5px}
   .langsel{display:flex;gap:6px;justify-content:center;margin-bottom:10px}
   .langsel button{padding:6px 16px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;
@@ -203,6 +220,14 @@
   .lsteps{display:flex;justify-content:center;gap:4px}
   .lsteps span{width:27px;height:27px;display:flex;align-items:center;justify-content:center;border-radius:8px;
     font-size:20px;color:#FFE07A;background:rgba(255,224,122,.08);border:1px solid rgba(255,224,122,.25)}
+  .lseq.clks span{width:58px;height:58px;padding:2px;min-width:58px}
+  svg.clk{width:52px;height:52px;display:block}
+  svg.clk line{stroke-linecap:round}
+  .lpyr{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .lpyr div{display:flex;gap:4px}
+  .lpyr span{display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:36px;padding:0 5px;border-radius:9px;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);font-size:20px;font-family:var(--num);font-weight:800;box-sizing:border-box}
+  .lpyr .qm{border:1.5px dashed var(--torch);color:var(--torch);background:rgba(255,178,58,.1)}
   .ltext{font-family:var(--body);font-size:16px;font-weight:600;line-height:1.75;text-shadow:none}
   .ltext i{font-style:normal;color:#FFE07A}
   .ltext b.qm{color:var(--torch);font-family:var(--num)}
@@ -408,6 +433,13 @@ const T={
   mEn:'外國魔王', mEnS:'英文語音出題',
   sLearn:'學習', sNormal:'普通', sFast:'一般', sWild:'刺激', perSec:'格/秒',
   start:'開始逃跑',
+  recBtn:'📒 紀錄', recT:'我的紀錄', recVault:'寶物收藏箱', recVaultP:'玩了 <b>{0}</b> 局，收藏總價值 <b>{1}</b> 分',
+  recBest:'各難度最佳紀錄', recLog:'最近 10 局', recNone:'還沒有紀錄，先玩一局吧。',
+  recClear:'清除紀錄', recClear2:'再按一次確定清除', recBack:'返回',
+  recNote:'紀錄只存在這台裝置的瀏覽器裡，按「結束」離開的那局不會記錄。',
+  bestTime:'最快 <b>{0}</b> 秒', bestStars:'⭐ 最多 <b>{0}</b>', bestDoor:'最遠第 <b>{0}</b> 道門',
+  logWin:'通關 {0} 秒', logLose:'到第 {0} 道門',
+  newRec:'🎉 新紀錄：{0}', nrTime:'最快通關', nrStars:'一次答對最多', nrDoor:'走最遠', nrSep:'、',
   instIOS:'想像 App 一樣玩？按 Safari 下方的<b>分享</b>圖示 → 加入主畫面。',
   instOther:'想像 App 一樣玩？用瀏覽器選單的<b>加入主畫面</b>。',
   instBtn:'📲 安裝到手機',
@@ -463,6 +495,13 @@ const T={
   mEn:'Listening', mEnS:'questions read aloud',
   sLearn:'Learning', sNormal:'Calm', sFast:'Normal', sWild:'Rush', perSec:'steps/s',
   start:'Start running',
+  recBtn:'📒 Records', recT:'My records', recVault:'Treasure chest', recVaultP:'<b>{0}</b> runs played · <b>{1}</b> points collected',
+  recBest:'Best by level', recLog:'Last 10 runs', recNone:'No records yet. Play a run first.',
+  recClear:'Clear records', recClear2:'Tap again to confirm', recBack:'Back',
+  recNote:'Records are saved only in this browser on this device. Runs you quit are not recorded.',
+  bestTime:'Fastest <b>{0}</b>s', bestStars:'⭐ best <b>{0}</b>', bestDoor:'Reached door <b>{0}</b>',
+  logWin:'Cleared in {0}s', logLose:'Reached door {0}',
+  newRec:'🎉 New record: {0}', nrTime:'fastest clear', nrStars:'most first-try answers', nrDoor:'furthest run', nrSep:', ',
   instIOS:'Want it like an app? Tap <b>Share</b> in Safari → Add to Home Screen.',
   instOther:'Want it like an app? Use <b>Add to Home screen</b> in your browser menu.',
   instBtn:'📲 Install on this phone',
@@ -782,6 +821,15 @@ const CATS_HARD=[
   [Z('圓的東西','round things'),['⚽','🌕','🍊','🏀','🍩','💿'],['📦','🎲','📕','📱']],
   [Z('有輪子的','things with wheels'),['🚗','🚲','🚌','🛴','🚜'],['⛵','🚀','🛶']],
   [Z('植物長出來的','things from plants'),['🍎','🌽','🥕','🍇','🍅'],['🥚','🧀','🍗','🥛']],
+  [Z('會發光的','things that give light'),['☀️','💡','🔦','🕯️','⭐','🔥'],['📚','🍞','🎒','👟','🥛']],
+  [Z('甜點','sweet treats'),['🍰','🍩','🍪','🍦','🍫','🍭','🍬'],['🥕','🥦','🌽','🍅','🥒']],
+  [Z('上學用的東西','school things'),['✏️','📏','📚','🎒','✂️','📐'],['🍳','🛏️','🚿','🍴']],
+  [Z('身體的部位','parts of the body'),['👀','👃','👂','👄','✋'],['👓','🧢','🧤','👟']],
+  [Z('天空裡的','things in the sky'),['☀️','🌙','⭐','☁️','🌈'],['🌳','🏠','🌊','🌷']],
+  [Z('會生蛋的動物','animals that lay eggs'),['🐔','🐦','🐢','🐍','🐸','🐟'],['🐶','🐱','🐮','🐷','🐴','🐘']],
+  [Z('穿在腳上的','things you wear on your feet'),['👟','👞','👢','👠','🧦'],['🧢','🧤','👓','🧣']],
+  [Z('在水上走的交通工具','things that travel on water'),['⛵','🚤','🛶','🚢'],['🚗','🚌','🚲','🚂']],
+  [Z('冰冰涼涼的','cold things'),['❄️','⛄','🍦','🍧'],['🔥','☀️','☕','🌶️']],
 ];
 function qOddEmoji(hard){
   let cat,three,odd;
@@ -811,26 +859,37 @@ function qOddNum(lv){
 /* 5. 數列 */
 function qSeries(lv){
   const G1=[
-    ()=>{const d=pk([1,2,5,10]),a=ri(1,d===10?30:12);return [5,i=>a+i*d,Z('每次加 '+d,'Add '+d+' each time'),[d]];},
-    ()=>{const d=pk([1,2]),a=ri(12,20);return [5,i=>a-i*d,Z('每次減 '+d,'Take away '+d+' each time'),[d]];}];
+    ()=>{const d=pk([1,2,3,5,10]),a=ri(1,d===10?30:d===5?20:12),n=pk([5,6]);return [n,i=>a+i*d,Z('每次加 '+d,'Add '+d+' each time'),[d]];},
+    ()=>{const d=pk([1,2,3]),n=pk([5,6]),a=ri(d*n+1,20);return [n,i=>a-i*d,Z('每次減 '+d,'Take away '+d+' each time'),[d]];},
+    ()=>{const d=pk([10,5]),n=5,a=d*ri(d===10?5:8,10);return [n,i=>a-i*d,Z('每次減 '+d,'Take away '+d+' each time'),[d]];}];
   const G2=[
-    ()=>{const d=ri(3,9),a=ri(1,20);return [5,i=>a+i*d,Z('每次加 '+d,'Add '+d+' each time'),[d]];},
-    ()=>{const d=ri(3,9),a=ri(50,90);return [5,i=>a-i*d,Z('每次減 '+d,'Take away '+d+' each time'),[d]];}];
+    ()=>{const d=ri(3,9),a=ri(1,20),n=pk([5,6]);return [n,i=>a+i*d,Z('每次加 '+d,'Add '+d+' each time'),[d]];},
+    ()=>{const d=ri(3,9),a=ri(50,90);return [5,i=>a-i*d,Z('每次減 '+d,'Take away '+d+' each time'),[d]];},
+    ()=>{const d=pk([11,12,15,20,25]),a=ri(1,20);return [5,i=>a+i*d,Z('每次加 '+d,'Add '+d+' each time'),[d,10]];},
+    ()=>{const k=pk([2,3]),a=ri(1,9),b=ri(10,30);                         // 兩個數輪流各自加
+          return [6,i=>i%2?b+(i-1)/2*k:a+i/2*k,Z('單、雙位置分開看，各自每次加 '+k,'Look at every other number: each line adds '+k),[k,b-a]];}];
   const G3=[
-    ()=>{const a=ri(1,3);return [5,i=>a*2**i,Z('每次乘 2（變兩倍）','Double it each time'),[a*8]];},
-    ()=>{const a=ri(1,10);return [6,i=>a+i*(i+1)/2,Z('加的數一次比一次多 1：+1、+2、+3…','Add 1, then 2, then 3…'),[5,4]];},
-    ()=>{const x=ri(3,6),y=ri(1,2),a=ri(1,9);return [7,i=>a+Math.ceil(i/2)*x-Math.floor(i/2)*y,
+    ()=>{const a=ri(1,5);return [5,i=>a*2**i,Z('每次乘 2（變兩倍）','Double it each time'),[a*8,a]];},
+    ()=>{const a=ri(1,20);return [6,i=>a+i*(i+1)/2,Z('加的數一次比一次多 1：+1、+2、+3…','Add 1, then 2, then 3…'),[5,4]];},
+    ()=>{const a=ri(60,90),n=6;return [n,i=>a-i*(i+1)/2,Z('減的數一次比一次多 1：−1、−2、−3…','Take away 1, then 2, then 3…'),[5,4]];},
+    ()=>{const a=ri(1,10),s=pk([2,3]);return [6,i=>a+s*i*(i+1)/2,Z('加的數一次比一次多 '+s+'：+'+s+'、+'+2*s+'、+'+3*s+'…','The jump grows by '+s+': +'+s+', +'+2*s+', +'+3*s+'…'),[s,5*s]];},
+    ()=>{const x=ri(3,9),y=ri(1,x-1),a=ri(1,15);return [7,i=>a+Math.ceil(i/2)*x-Math.floor(i/2)*y,
           Z('加 '+x+'、減 '+y+' 輪流','Add '+x+', take away '+y+', and repeat'),[x,y]];},
-    ()=>{const k=pk([10,5,2]);return [7,i=>i%2?Math.ceil(i/2)*k:i/2+1,
-          Z('兩條數列交錯：1、2、3… 和 '+k+'、'+2*k+'、'+3*k+'…','Two series take turns: 1, 2, 3… and '+k+', '+2*k+', '+3*k+'…'),[k]];}];
+    ()=>{const k=pk([10,5,2,3]),s0=ri(1,4);return [7,i=>i%2?Math.ceil(i/2)*k:i/2+s0,
+          Z('兩條數列交錯：'+s0+'、'+(s0+1)+'、'+(s0+2)+'… 和 '+k+'、'+2*k+'、'+3*k+'…','Two series take turns: '+s0+', '+(s0+1)+', '+(s0+2)+'… and '+k+', '+2*k+', '+3*k+'…'),[k]];}];
   const G4=[
-    ()=>{const p=pk([[1,1],[1,2],[2,3]]);const f=[p[0],p[1]];for(let i=2;i<7;i++)f.push(f[i-1]+f[i-2]);
+    ()=>{const p=pk([[1,1],[1,2],[2,3],[1,3],[2,2],[3,4],[2,5],[1,4],[3,3]]);const f=[p[0],p[1]];for(let i=2;i<7;i++)f.push(f[i-1]+f[i-2]);
           return [7,i=>f[i],Z('前兩個數加起來就是下一個','Add the two before to get the next'),[f[5],f[4]]];},
-    ()=>{const o=ri(1,3);return [5,i=>(i+o)*(i+o),Z('1×1、2×2、3×3…','1×1, 2×2, 3×3…'),[o+4,2*(o+4)]];},
-    ()=>{const a=ri(1,2);let v=a;const f=[a];for(let i=1;i<6;i++){v=v*2+1;f.push(v);}
-          return [5,i=>f[i],Z('乘 2 再加 1','Double it, then add 1'),[f[4]-f[3],1]];},
-    ()=>{const a=ri(1,9);return [6,i=>a+2**i-1,Z('加的數每次變兩倍：+1、+2、+4、+8…','The jump doubles: +1, +2, +4, +8…'),[16,8]];},
-    ()=>{const a=pk([1,2]);return [5,i=>a*3**i,Z('每次乘 3','Times 3 each time'),[a*27]];}];
+    ()=>{const o=ri(1,5);return [5,i=>(i+o)*(i+o),Z('1×1、2×2、3×3…','1×1, 2×2, 3×3…'),[o+4,2*(o+4)]];},
+    ()=>{const o=ri(1,4),c=pk([1,-1]);return [5,i=>(i+o)*(i+o)+c,Z(c>0?'1×1、2×2、3×3… 再加 1':'1×1、2×2、3×3… 再減 1',c>0?'1×1, 2×2, 3×3… plus 1':'1×1, 2×2, 3×3… minus 1'),[o+4,2,2*(o+4)]];},
+    ()=>{const a=ri(1,4),c=pk([1,-1]);if(c<0&&a<2)return [5,i=>[3,5,9,17,33][i],Z('乘 2 再減 1','Double it, then take away 1'),[16,1]];
+          let v=a;const f=[a];for(let i=1;i<6;i++){v=v*2+c;f.push(v);}
+          return [5,i=>f[i],Z(c>0?'乘 2 再加 1':'乘 2 再減 1',c>0?'Double it, then add 1':'Double it, then take away 1'),[f[4]-f[3],1]];},
+    ()=>{const a=ri(1,20);return [6,i=>a+2**i-1,Z('加的數每次變兩倍：+1、+2、+4、+8…','The jump doubles: +1, +2, +4, +8…'),[16,8]];},
+    ()=>{const a=pk([1,2,3]);return [5,i=>a*3**i,Z('每次乘 3','Times 3 each time'),[a*27,a*9]];},
+    ()=>{const a=ri(1,5),k=pk([1,2,3]);const f=[a];for(let i=1;i<7;i++)f.push(i%2?f[i-1]+k:f[i-1]*2);   // 加 k、乘 2 輪流
+          return [7,i=>f[i],Z('加 '+k+'、乘 2 輪流','Add '+k+', then double, and repeat'),[k,f[5]]];},
+    ()=>{const a=ri(1,3);return [5,i=>(i+a)*(i+a+1)/2,Z('加的數一次比一次多 1','Each jump is 1 bigger than the last'),[a+4,1]];}];
   const [n,f,hint,extra]=pk({1:G1,2:G2,3:G3,4:G4}[lv])();
   const seq=Array.from({length:n},(_,i)=>f(i)), ans=seq.pop();
   const last=seq[seq.length-1], d=last-seq[seq.length-2];
@@ -1034,21 +1093,40 @@ function qAnaNum(lv){
 const ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 function qLetters(lv){
   let seq,ans,hint;
-  if(lv===3){
-    const st=pk([1,2,3,-1,-2]), n=5;
+  const t=lv===3?ri(0,2):ri(0,3);
+  if(lv===3&&t<2){                                    // 固定往後或往前跳
+    const st=pk([1,2,3,4,-1,-2,-3]), n=pk([4,5]);
     const s0=st>0?ri(0,25-st*n):ri(-st*n,25);
     const all=Array.from({length:n+1},(_,i)=>ABC[s0+i*st]);
     ans=all.pop(); seq=all;
     hint=st>0?Z('每次往後跳 '+st+' 個字母','Skip ahead '+st+' letter'+(st>1?'s':'')):Z('每次往前退 '+(-st)+' 個字母','Go back '+(-st)+' letter'+(st<-1?'s':''));
-  }else if(RND()<0.5){
-    const s0=ri(0,3), idx=[0,1,3,6,10,15].map(x=>s0+x);
-    ans=ABC[idx.pop()]; seq=idx.map(i=>ABC[i]);
-    hint=Z('跳的距離越來越大：+1、+2、+3、+4…','The jumps grow: +1, +2, +3, +4…');
-  }else{
-    const a=ri(0,4), z=25-ri(0,4);
-    const all=[ABC[a],ABC[z],ABC[a+1],ABC[z-1],ABC[a+2],ABC[z-2]];
+  }else if(lv===3){                                   // 字母配數字：A1 B2 C3 → D4
+    const st=pk([1,2]), s0=ri(0,10), n=4;
+    const all=Array.from({length:n+1},(_,i)=>ABC[s0+i*st]+(s0+i*st+1));
     ans=all.pop(); seq=all;
-    hint=Z('兩條字母線交錯：一條往後、一條往前','Two lines take turns: one goes forward, one goes back');
+    hint=Z('字母是第幾個，後面就寫幾：A1、B2、C3…','The number tells which letter it is: A1, B2, C3…');
+    const k=s0+n*st;
+    return LQ('abc',PR.next,()=>seqHTML(seq),ans,[ABC[k]+(k),ABC[k]+(k+2),ABC[k+1]+(k+1),ABC[k-1]+(k+1),ABC[k+1]+(k+2)].filter(x=>!/undefined/.test(x)),hint);
+  }else if(t===0){                                    // 跳的距離越來越大
+    const s0=ri(0,10), idx=[0,1,3,6,10].map(x=>s0+x), n=s0>5?4:5;
+    const use=s0>5?idx.slice(0,5):[...idx,s0+15];
+    ans=ABC[use.pop()]; seq=use.map(i=>ABC[i]);
+    hint=Z('跳的距離越來越大：+1、+2、+3、+4…','The jumps grow: +1, +2, +3, +4…');
+  }else if(t===1){                                    // 兩條字母線交錯
+    const a=ri(0,6), z=25-ri(0,6), k=pk([1,1,2]);
+    const all=[ABC[a],ABC[z],ABC[a+k],ABC[z-k],ABC[a+2*k],ABC[z-2*k]];
+    ans=all.pop(); seq=all;
+    hint=Z('兩條字母線交錯：一條往後、一條往前，每次 '+k+' 格','Two lines take turns: one goes forward, one goes back, '+k+' at a time');
+  }else if(t===2){                                    // 往後 2、往前 1：A C B D C E
+    const a=ri(0,15), x=pk([2,3]), all=[a];
+    for(let i=1;i<7;i++) all.push(all[i-1]+(i%2?x:-1));
+    ans=ABC[all.pop()]; seq=all.map(i=>ABC[i]);
+    hint=Z('往後 '+x+' 個、往前 1 個，輪流','Forward '+x+', back 1, and repeat');
+  }else{                                              // 跳 1 跳 2 輪流：A B D E G H
+    const a=ri(0,12), all=[a];
+    for(let i=1;i<7;i++) all.push(all[i-1]+(i%2?1:2));
+    ans=ABC[all.pop()]; seq=all.map(i=>ABC[i]);
+    hint=Z('往後 1 個、往後 2 個，輪流','Forward 1, forward 2, and repeat');
   }
   const ai=ABC.indexOf(ans);
   return LQ('abc',PR.next,()=>seqHTML(seq),ans,[ABC[ai+1],ABC[ai-1],ABC[ai+2],ABC[ai-2],ABC[ai+3],ABC[ai-3]].filter(Boolean),hint);
@@ -1080,13 +1158,17 @@ function qMatrix(lv){
 }
 
 /* 12. 排序推理 */
-const NAMES=[Z('小明','Amy'),Z('小華','Ben'),Z('小美','Cody'),Z('阿傑','Dina')];
+const NAMES_ALL=[Z('小明','Amy'),Z('小華','Ben'),Z('小美','Cody'),Z('阿傑','Dina'),Z('小芳','Ella'),Z('阿豪','Finn'),Z('小玉','Gina'),Z('大雄','Hugo')];
+let NAMES=NAMES_ALL.slice(0,4);
 const RELS=[
   {mz:'高',lz:'矮',me:'is taller than',le:'is shorter than',q:[Z('誰最高？','Who is the tallest?'),Z('誰最矮？','Who is the shortest?'),Z('誰第二高？','Who is the second tallest?')]},
   {mz:'跑得快',lz:'跑得慢',me:'runs faster than',le:'runs slower than',q:[Z('誰跑最快？','Who is the fastest?'),Z('誰跑最慢？','Who is the slowest?'),Z('誰跑第二快？','Who is the second fastest?')]},
   {mz:'年紀大',lz:'年紀小',me:'is older than',le:'is younger than',q:[Z('誰年紀最大？','Who is the oldest?'),Z('誰年紀最小？','Who is the youngest?'),Z('誰年紀第二大？','Who is the second oldest?')]},
+  {mz:'重',lz:'輕',me:'is heavier than',le:'is lighter than',q:[Z('誰最重？','Who is the heaviest?'),Z('誰最輕？','Who is the lightest?'),Z('誰第二重？','Who is the second heaviest?')]},
+  {mz:'早到',lz:'晚到',me:'arrived earlier than',le:'arrived later than',q:[Z('誰最早到？','Who arrived first?'),Z('誰最晚到？','Who arrived last?'),Z('誰第二個到？','Who arrived second?')]},
 ];
 function qOrder(lv){
+  NAMES=shuffle(NAMES_ALL.slice()).slice(0,4);
   const rel=pk(RELS), ord=shuffle([0,1,2,3]);          // ord[0] 最多 … ord[3] 最少
   let facts=[[0,1],[1,2],[2,3]].map(([i,j])=>{
     const flip=lv===4&&RND()<0.5;
@@ -1125,6 +1207,46 @@ function qSymbol(){
   return LQ('sym',Z('每個圖案代表一個數字','Each picture stands for a number'),
     ()=>'<div class="ltext eq">'+lines.join('<br>')+'</div>',ans,
     [ans+1,ans-1,ans+2,ans-2,a,b,a+b].filter(w=>w>=0),hint);
+}
+
+/* 18. 時鐘規律：每次往後撥固定的時間（普通：整點／半點；困難：加入 15 分） */
+const clockSVG=(h,m)=>{ const ha=(h%12+m/60)*30, ma=m*6;
+  let ticks=''; for(let i=0;i<12;i++){ const a=i*30*Math.PI/180, r1=i%3?9.4:8.4;
+    ticks+='<line x1="'+(Math.sin(a)*r1).toFixed(1)+'" y1="'+(-Math.cos(a)*r1).toFixed(1)+'" x2="'+(Math.sin(a)*10.6).toFixed(1)+'" y2="'+(-Math.cos(a)*10.6).toFixed(1)+'"/>'; }
+  return '<svg class="clk" viewBox="-12 -12 24 24" aria-hidden="true"><circle r="11.3" fill="#FFF6E6" stroke="#FFB23A" stroke-width="1"/>'+
+    '<g stroke="#6E5A48" stroke-width=".8" stroke-linecap="round">'+ticks+'</g>'+
+    '<line x1="0" y1="0" x2="0" y2="-5.4" stroke="#2A1A10" stroke-width="1.9" stroke-linecap="round" transform="rotate('+ha+')"/>'+
+    '<line x1="0" y1="0" x2="0" y2="-8.6" stroke="#D2502E" stroke-width="1.2" stroke-linecap="round" transform="rotate('+ma+')"/>'+
+    '<circle r="1" fill="#2A1A10"/></svg>'; };
+const clockTxt=t=>{ t=((t%720)+720)%720; const h=Math.floor(t/60)||12, m=t%60; return h+':'+(m<10?'0':'')+m; };
+function qClock(lv){
+  const step=lv===2?pk([60,30,120]):pk([15,45,90,30]), grid=step%30?15:30;
+  const st=grid*ri(0,720/grid-1), times=[0,1,2,3].map(i=>st+i*step), ans=st+4*step;
+  const cm=t=>{ t=((t%720)+720)%720; return clockSVG(Math.floor(t/60),t%60); };
+  const dur=m=>m>=60?(m%60?Math.floor(m/60)+' 小時 '+(m%60)+' 分':(m/60)+' 小時'):m+' 分';
+  const durE=m=>m>=60?(m%60?Math.floor(m/60)+' h '+(m%60)+' min':(m/60)+(m===60?' hour':' hours')):m+' minutes';
+  return LQ('clk',Z('時鐘照規律走，下一個是幾點？','The clocks follow a rule. What time comes next?'),
+    ()=>'<div class="lseq clks">'+times.map(t=>'<span>'+cm(t)+'</span>').join('')+'<span class="qm">?</span></div>',
+    clockTxt(ans),[ans-step,ans+step,ans+30,ans-30,ans+60,ans-60,ans+180,ans+360].map(clockTxt),
+    Z('每次往後 '+dur(step)+'，看短針（時）和長針（分）','Each clock is '+durE(step)+' later. Short hand = hours, long hand = minutes'),'word');
+}
+
+/* 19. 數字金字塔：上面的數＝下面兩個數相加（困難 3 層、魔王 4 層） */
+function qPyramid(lv){
+  const n=lv===3?3:4, base=Array.from({length:n},()=>ri(1,lv===3?9:7));
+  const rows=[base]; for(let r=1;r<n;r++){ const p=rows[r-1]; rows.push(p.slice(1).map((v,i)=>p[i]+v)); }
+  let hr,hc;                                    // 問號位置：頂端、中間或最底下（最底下要用減的）
+  do{ hr=ri(0,n-1); hc=ri(0,n-1-hr); }while(lv===3&&hr===0&&RND()<0.4);
+  const ans=rows[hr][hc];
+  const known=(r,c)=>!(r===hr&&c===hc);
+  // 確認只靠「上＝下兩個相加」就推得出來：把問號以外的格子當已知，反覆推
+  const html=()=>'<div class="lpyr">'+rows.slice().reverse().map((row,ri_)=>{ const r=n-1-ri_;
+    return '<div>'+row.map((v,c)=>known(r,c)?span(v):span('?','qm')).join('')+'</div>'; }).join('')+'</div>';
+  const top=rows[n-1][0];
+  return LQ('pyr',Z('上面的數 ＝ 下面兩個數加起來，？ 是多少？','Each number is the sum of the two below it. What is ?'),html,
+    ans,[ans+1,ans-1,ans+2,ans-2,ans+10,ans-10,top-ans>0?top-ans:ans+3].filter(w=>w>0),
+    hr===0?Z('往上看：上面那格減掉旁邊那格，就是 ？','Look up: the box above minus the box next to ? gives ?')
+          :Z('把 ？ 下面兩格加起來','Add the two boxes under ?'));
 }
 
 /* 14. 數數比大小（簡易）：哪一種最多／最少、多幾個 */
@@ -1216,10 +1338,10 @@ function qWalk(){
 
 const LOGIC={
   1:[()=>qPattern(['AB','ABC','AAB','ABB']),qDots,()=>qOddEmoji(false),()=>qSeries(1),qCount,qMissing],
-  2:[()=>qPattern(['ABCD','AABB','ABBC','ABAC']),()=>qArrow(2),()=>qOddNum(2),()=>qSeries(2),qAnaEmo,qLatin,qBalance,qWalk],
+  2:[()=>qPattern(['ABCD','AABB','ABBC','ABAC']),()=>qArrow(2),()=>qOddNum(2),()=>qSeries(2),qAnaEmo,qLatin,qBalance,qWalk,()=>qClock(2)],
   3:[()=>qArrow(3),()=>qOddEmoji(true),()=>qOddNum(3),()=>qSeries(3),qAnaWord,()=>qAnaNum(3),
-     ()=>qLetters(3),()=>qMatrix(3),()=>qOrder(3)],
-  4:[()=>qSeries(4),()=>qOddNum(4),()=>qAnaNum(4),()=>qLetters(4),()=>qMatrix(4),()=>qOrder(4),qSymbol,qSymbol],
+     ()=>qLetters(3),()=>qMatrix(3),()=>qOrder(3),()=>qClock(3),()=>qPyramid(3)],
+  4:[()=>qSeries(4),()=>qOddNum(4),()=>qAnaNum(4),()=>qLetters(4),()=>qMatrix(4),()=>qOrder(4),qSymbol,qSymbol,()=>qPyramid(4)],
 };
 function makeLogic(lv){
   let q;
@@ -1452,7 +1574,68 @@ const ITEMS=[
   {k:'crown',e:'👑', t:'it5', w:8,  v:25},
   {k:'cup',  e:'🏆', t:'it6', w:4,  v:50},
 ];
-const VAULT={};                                    // 這次開網頁以來的總收藏
+/* ---------- 遊戲紀錄（存在這台裝置的瀏覽器） ----------
+   best：各難度最佳（最快通關秒數、一次答對最多題、最多開幾道門）
+   vault：累積寶物；log：最近 10 局。按「結束」離開的那局不記錄。 */
+const REC_KEY='snakeEscape.records.v1';
+function emptyRec(){ return {best:{},vault:{},runs:0,log:[]}; }
+let REC=emptyRec();
+try{
+  const r=JSON.parse(localStorage.getItem(REC_KEY)||'null');
+  if(r&&typeof r==='object'){
+    REC.best=r.best&&typeof r.best==='object'?r.best:{};
+    REC.vault=r.vault&&typeof r.vault==='object'?r.vault:{};
+    REC.runs=+r.runs||0;
+    REC.log=Array.isArray(r.log)?r.log.slice(0,10):[];
+  }
+}catch(e){}
+function saveRec(){ try{ localStorage.setItem(REC_KEY,JSON.stringify(REC)); }catch(e){} }
+function recordRun(won,sec){                         // 回傳這局破了哪些紀錄
+  const opened=won?TOTAL:G.door, b=REC.best[mode]||{}, news=[];
+  if(won&&(b.time==null||sec<b.time)){ if(b.time!=null) news.push('nrTime'); b.time=sec; }
+  if(G.stars>(b.stars||0)){ if(b.stars!=null) news.push('nrStars'); b.stars=G.stars; }
+  if(opened>(b.door||0)){ if(b.door!=null&&!won) news.push('nrDoor'); b.door=opened; }
+  REC.best[mode]=b;
+  for(const k in G.loot) REC.vault[k]=(REC.vault[k]||0)+G.loot[k];
+  REC.runs++;
+  REC.log.unshift({t:Date.now(),m:mode,w:won?1:0,d:opened,s:G.stars,sec:won?sec:null});
+  REC.log=REC.log.slice(0,10);
+  saveRec();
+  return news;
+}
+function newRecLine(news){
+  return news.length?'<p class="newrec">'+L('newRec',news.map(k=>L(k)).join(L('nrSep')))+'</p>':'';
+}
+const MODE_ORDER=['easy','plain','normal','boss','en','l1','l2','l3','l4'];
+function recordsHTML(){
+  const names=MODES(), any=REC.runs>0;
+  const vault='<div class="vault">'+ITEMS.map(i=>'<span'+(REC.vault[i.k]?'':' class="zero"')+'>'+i.e+'<b>'+(REC.vault[i.k]||0)+'</b></span>').join('')+'</div>'+
+    '<p class="recsum">'+L('recVaultP',REC.runs,lootValue(REC.vault))+'</p>';
+  const best=MODE_ORDER.filter(m=>REC.best[m]).map(m=>{ const b=REC.best[m];
+    const main=b.time!=null?L('bestTime',b.time.toFixed(1)):L('bestDoor',Math.min(TOTAL,(b.door||0)+1));
+    return '<div><span>'+names[m]+'</span><span>'+main+' · '+L('bestStars',b.stars||0)+'</span></div>'; }).join('');
+  const pad=n=>(n<10?'0':'')+n;
+  const log=REC.log.map(r=>{ const d=new Date(r.t);
+    const when=(d.getMonth()+1)+'/'+d.getDate()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+    const res=r.w?'<span class="won">'+L('logWin',(+r.sec).toFixed(1))+'</span>':L('logLose',Math.min(TOTAL,r.d+1));
+    return '<div><span>'+when+'</span><span>'+(names[r.m]||r.m)+' · '+res+' · ⭐'+r.s+'</span></div>'; }).join('');
+  return '<h1>'+L('recT')+'</h1>'+
+    '<div class="rech">'+L('recVault')+'</div>'+vault+
+    (any?'<div class="rech">'+L('recBest')+'</div><div class="reclist">'+best+'</div>'+
+         '<div class="rech">'+L('recLog')+'</div><div class="reclist">'+log+'</div>'
+        :'<p class="recsum" style="margin-top:14px">'+L('recNone')+'</p>')+
+    '<p class="recnote">'+L('recNote')+'</p>'+
+    '<div class="row">'+(any?'<button class="btn" id="recClear">'+L('recClear')+'</button>':'')+
+    '<button class="btn go" id="recBack">'+L('recBack')+'</button></div>';
+}
+function showRecords(){
+  panel(recordsHTML(),'rec');
+  $('recBack').onclick=goHome;
+  if($('recClear')){ let armed=false;
+    $('recClear').onclick=()=>{
+      if(!armed){ armed=true; $('recClear').textContent=L('recClear2'); $('recClear').classList.add('newrec'); return; }
+      REC=emptyRec(); saveRec(); showRecords(); }; }
+}
 function rollItem(){
   let t=Math.random()*ITEMS.reduce((s,i)=>s+i.w,0);
   for(const i of ITEMS){ t-=i.w; if(t<=0) return i; }
@@ -1493,7 +1676,6 @@ function runSpin(done){
   function show(){
     $('prize').innerHTML=L('got',prize.e,L(prize.t));
     G.loot[prize.k]=(G.loot[prize.k]||0)+1;
-    VAULT[prize.k]=(VAULT[prize.k]||0)+1;
     renderLoot();
     setTimeout(()=>{ $('spin').hidden=true; done(); }, slow?300:750);
   }
@@ -1704,7 +1886,8 @@ function homeHTML(){
     '<div class="speeds" id="speeds">'+
       spBtn(0.1,'sLearn')+spBtn(0.5,'sNormal')+spBtn(1,'sFast')+spBtn(2,'sWild')+
     '</div>'+
-    '<div class="row"><button class="btn go" id="start" style="flex:1">'+L('start')+'</button></div>'+
+    '<div class="row"><button class="btn recb" id="recBtn">'+L('recBtn')+'</button>'+
+    '<button class="btn go" id="start" style="flex:1">'+L('start')+'</button></div>'+
     '<div class="installtip" id="installTip"></div>';
 }
 function levelsHTML(){
@@ -1743,7 +1926,7 @@ function applyLang(){
   }
   if(G&&G.q&&G.alive&&!G.locked&&!G.moving&&!G.paused&&G.tries===1) $('tip').textContent=wrongLine();
   updatePause();
-  if($('over').classList.contains('on')) goHome();
+  if($('over').classList.contains('on')){ if(view==='rec') showRecords(); else goHome(); }
 }
 function toggleLang(){ lang = lang==='zh'?'en':'zh'; applyLang(); }
 function bindHome(){
@@ -1771,22 +1954,25 @@ function bindHome(){
   };
 
   $('start').onclick=newGame;
+  $('recBtn').onclick=showRecords;
 }
 $('pause').onclick=togglePause;
 $('replay').onclick=()=>{ if(G&&G.q&&G.q.words) speakEN(G.q.text); };
 $('showtxt').onclick=revealEN;
 $('q').onclick=()=>{ if(G&&G.alive&&G.q&&G.q.words) speakEN(G.q.text); };
-function panel(html,cls){ $('panel').className='panel'+(cls?' '+cls:''); $('panel').innerHTML=html; $('over').classList.add('on'); }
+let view='';
+function panel(html,cls){ view=cls||''; $('panel').className='panel'+(cls?' '+cls:''); $('panel').innerHTML=html; $('over').classList.add('on'); }
 
 function goHome(){ panel(homeHTML(),'home'); bindHome(); showInstall(); }
 
 function win(){
   G.alive=false; saveHistory(); stopEN(); $('scene').classList.remove('paused'); updatePause();
-  const sec=((performance.now()-G.t0)/1000).toFixed(1);
-  panel('<div class="em">🏆</div><h1>'+L('winT')+'</h1>'+
+  const secN=Math.round((performance.now()-G.t0)/100)/10, sec=secN.toFixed(1);
+  const news=recordRun(true,secN);
+  panel('<div class="em">🏆</div><h1>'+L('winT')+'</h1>'+newRecLine(news)+
     '<p>'+L('winP',MODES()[mode],G.stars,sec)+'</p>'+
     '<p>'+L('lootP',lootLine(G.loot),lootValue(G.loot))+
-    (lootValue(VAULT)>lootValue(G.loot)?L('vaultP',lootValue(VAULT)):'')+'</p>'+
+    (lootValue(REC.vault)>lootValue(G.loot)?L('vaultP',lootValue(REC.vault)):'')+'</p>'+
     '<div class="row"><button class="btn" id="home">'+L('chSpeed')+'</button>'+
     '<button class="btn go" id="again">'+L('again')+'</button></div>');
   $('again').onclick=newGame; $('home').onclick=goHome;
@@ -1794,8 +1980,8 @@ function win(){
 function lose(why){
   if(!G.alive) return;
   G.alive=false; saveHistory(); stopEN(); $('scene').classList.remove('paused'); updatePause();
-  const twice=why==='twice';
-  panel('<div class="em">'+(twice?'🔒':'🐍')+'</div><h1>'+L(twice?'loseWT':'loseT')+'</h1>'+
+  const twice=why==='twice', news=recordRun(false,null);
+  panel('<div class="em">'+(twice?'🔒':'🐍')+'</div><h1>'+L(twice?'loseWT':'loseT')+'</h1>'+newRecLine(news)+
     (twice?'<p>'+L('loseWP',G.door+1,optLabel(G.q,G.q.ans))+'</p>':'')+
     '<p>'+L('loseP',G.door+1,G.stars,lootLine(G.loot),lootValue(G.loot))+'</p>'+
     '<div class="row"><button class="btn" id="home">'+L('chSpeed')+'</button>'+
