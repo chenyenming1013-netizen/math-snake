@@ -40,6 +40,8 @@
   .pausebtn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:var(--paper);
     border-radius:999px;padding:5px 12px;font-size:12.5px;font-family:var(--body);cursor:pointer}
   .pausebtn:disabled{opacity:.35;cursor:default}
+  #musicBtn{padding:5px 9px}
+  #musicBtn.off{opacity:.55}
   .pausebtn.on{background:rgba(255,178,58,.22);border-color:var(--torch);color:var(--torch);font-weight:700}
   .scene.paused{filter:grayscale(.7) brightness(.6)}
   .pill{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:999px;
@@ -92,6 +94,15 @@
     color:var(--paper);text-shadow:0 3px 0 rgba(0,0,0,.35)}
   .q small{font-size:.5em;color:var(--mist);font-weight:600}
   .q .blank{color:var(--torch)}
+  .q .story{font-family:var(--body);font-size:clamp(16px,4.6vw,19px);font-weight:700;line-height:1.6;text-align:left;
+    padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.06);text-shadow:none}
+  .q .cmpq{font-size:clamp(34px,10vw,48px)}
+  .q .cmpq .circ{color:var(--torch);font-size:.85em;margin:0 .1em}
+  .q .cmpcap{font-family:var(--body);font-size:13px;color:var(--mist);font-weight:600;margin-top:4px;text-shadow:none}
+  .q .coinrow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px;max-width:330px;margin:0 auto}
+  svg.coin{display:block}
+  .opts.three{grid-template-columns:repeat(3,1fr)}
+  .opts button.cmp{font-size:clamp(34px,10vw,44px);padding:12px 0}
   .opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
   .opts button{font-family:var(--num);font-weight:800;font-size:clamp(26px,7.5vw,34px);
     padding:16px 0;border-radius:16px;border:1px solid rgba(255,255,255,.16);
@@ -185,11 +196,20 @@
   .levels button span{font-size:10.5px;font-weight:400;opacity:.7}
   .levels button.sel{background:rgba(255,178,58,.2);border-color:var(--torch);color:var(--torch)}
   .levels button:last-child:nth-child(odd){grid-column:1/-1}
-  .catsel{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .catsel{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .levels.units{grid-template-columns:1fr 1fr 1fr}
+  .levels.units button{padding:8px 3px;font-size:12.5px;line-height:1.25;white-space:nowrap}
+  .panel.home .levels.units button{padding:7px 3px;font-size:12px}
   .catsel button{padding:10px 6px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--body);
     border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--paper)}
   .catsel button.sel{background:rgba(255,178,58,.2);border-color:var(--torch);color:var(--torch)}
   /* 邏輯題 */
+  .shadow{display:flex;justify-content:center}
+  .shadow{margin:2px auto 0;width:max-content;padding:6px 26px;border-radius:18px;background:#F4E7CF;box-shadow:inset 0 0 0 2px #E2CDA6}
+  .shadow span{font-size:72px;line-height:1.1;filter:brightness(0);opacity:.85;
+    font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",system-ui,sans-serif}
+  .ltext.truth{text-align:left;font-size:15px;line-height:1.7;padding:4px 10px;border-radius:12px;background:rgba(255,255,255,.05)}
+  .ltext.truth b{color:#FFE07A;font-weight:800}
   .lprompt{font-family:var(--body);font-size:15px;font-weight:700;color:var(--torch);margin:2px 0 8px;text-shadow:none}
   .lseq{display:flex;flex-wrap:wrap;justify-content:center;gap:5px}
   .lseq span,.lgrid span,.lana span{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:40px;
@@ -245,6 +265,7 @@
     <div class="pill dist" id="pDist">大蛇還有 <b id="dist">10</b> 格</div>
     <div class="pill">⭐ <b id="stars">0</b></div>
     <button class="pausebtn" id="pause">⏸ 3</button>
+    <button class="pausebtn" id="musicBtn" aria-pressed="true">🎵</button>
     <button class="pausebtn" id="langBtn">EN</button>
     <button class="pausebtn" id="quit">✕ 結束</button>
     <div class="doors" id="doors"></div>
@@ -420,7 +441,7 @@ const T={
   title:'大蛇走廊 · 算對就開門', site:'九九村',
   homeTitle:'大蛇走廊',
   homeDesc:'走廊上有 <b>10</b> 道門，每道門一題<b>數學</b>或<b>邏輯</b>題。<br>答對門就開，大蛇被嚇退 <b>5</b> 格；答錯大蛇逼近 1 格。<br>同一道門答錯 <b>2</b> 次就輸了，別用猜的！<br>大蛇從後面 <b>10</b> 格追來。每局 <b>3</b> 次暫停，開門還能抽寶物。',
-  pickCat:'選分類', cMath:'🔢 數學類', cLogic:'🧩 邏輯類', logicName:'邏輯',
+  pickCat:'選分類', cUnit:'🎯 單元練習', unitName:'單元', pickUnit:'選單元', cMath:'🔢 數學類', cLogic:'💡 邏輯類', logicName:'邏輯',
   mPlain:'入門', mPlainS:'兩位數加減・不進位',
   lv1:'簡易', lv1S:'圖形規律・找不同', lv2:'普通', lv2S:'數列・類比・九宮格',
   lv3:'困難', lv3S:'旋轉・推理・字母規律', lv4:'魔王', lv4S:'符號算式・多步推理',
@@ -433,6 +454,8 @@ const T={
   mEn:'外國魔王', mEnS:'英文語音出題',
   sLearn:'學習', sNormal:'普通', sFast:'一般', sWild:'刺激', perSec:'格/秒',
   start:'開始逃跑',
+  musicOn:'音樂和音效：開', musicOff:'音樂和音效：關',
+  review:'📕 錯題複習', recMist:'📕 錯題本：還有 <b>{0}</b> 題要複習', recMistNone:'📕 錯題本：目前沒有要複習的題目',
   recBtn:'📒 紀錄', recT:'我的紀錄', recVault:'寶物收藏箱', recVaultP:'玩了 <b>{0}</b> 局，收藏總價值 <b>{1}</b> 分',
   recBest:'各難度最佳紀錄', recLog:'最近 10 局', recNone:'還沒有紀錄，先玩一局吧。',
   recClear:'清除紀錄', recClear2:'再按一次確定清除', recBack:'返回',
@@ -482,7 +505,7 @@ const T={
   title:'Snake Escape · Mathville', site:'Mathville',
   homeTitle:'Snake Escape',
   homeDesc:'<b>10</b> doors ahead, each with a <b>math</b> or <b>logic</b> puzzle.<br>Right answer: the door opens and the snake backs off <b>5</b> steps. Wrong: it gains 1.<br>Miss the same door <b>twice</b> and the run is over — no guessing!<br>It starts <b>10</b> steps behind you. <b>3</b> pauses per run, a treasure spin at every door.',
-  pickCat:'CATEGORY', cMath:'🔢 Math', cLogic:'🧩 Logic', logicName:'Logic',
+  pickCat:'CATEGORY', cUnit:'🎯 Practice', unitName:'Practice', pickUnit:'TOPIC', cMath:'🔢 Math', cLogic:'💡 Logic', logicName:'Logic',
   mPlain:'Starter', mPlainS:'2-digit + −, no carrying',
   lv1:'Easy', lv1S:'patterns, odd one out', lv2:'Normal', lv2S:'series, analogies, grids',
   lv3:'Hard', lv3S:'rotation, reasoning, letters', lv4:'Boss', lv4S:'symbol sums, multi-step logic',
@@ -495,6 +518,8 @@ const T={
   mEn:'Listening', mEnS:'questions read aloud',
   sLearn:'Learning', sNormal:'Calm', sFast:'Normal', sWild:'Rush', perSec:'steps/s',
   start:'Start running',
+  musicOn:'Music & sounds: on', musicOff:'Music & sounds: off',
+  review:'📕 Review', recMist:'📕 Review list: <b>{0}</b> question(s) to practise again', recMistNone:'📕 Review list: nothing to practise right now',
   recBtn:'📒 Records', recT:'My records', recVault:'Treasure chest', recVaultP:'<b>{0}</b> runs played · <b>{1}</b> points collected',
   recBest:'Best by level', recLog:'Last 10 runs', recNone:'No records yet. Play a run first.',
   recClear:'Clear records', recClear2:'Tap again to confirm', recBack:'Back',
@@ -569,8 +594,145 @@ function pack(ans,wrongs,extra){
   return shuffle([...set]);
 }
 
+/* ---------- 新數學題型：應用題、比大小、錢幣、乘法填空（簡易／入門／普通，不含外國魔王） ---------- */
+// 依難度出兩個數：easy 個位數；plain 兩位數不進位不借位；normal 一定進位／借位
+function pairFor(op,mode,hard){
+  if(mode==='easy'){
+    if(op==='add'){ const a=ri(1,9); return [a,ri(1,9)]; }
+    const a=ri(3,9); return [a,ri(1,a-1)];
+  }
+  if(mode==='plain'){
+    if(op==='add'){ const o1=ri(0,8),o2=ri(0,9-o1),t1=ri(1,hard?7:5),t2=ri(1,Math.min(hard?8:5,9-t1)); return [t1*10+o1,t2*10+o2]; }
+    const oa=ri(1,9),ob=ri(0,oa),ta=ri(hard?4:2,9),tb=ri(1,ta-1); return [ta*10+oa,tb*10+ob];
+  }
+  if(op==='add'){ const o1=ri(2,9),o2=ri(11-o1,9),cap=hard?8:5,t1=ri(1,cap-1),t2=ri(1,cap-t1); return [t1*10+o1,t2*10+o2]; }
+  const oa=ri(0,8),ob=ri(oa+1,9),ta=hard?ri(3,9):ri(2,5),tb=ri(1,ta-1); return [ta*10+oa,tb*10+ob];
+}
+const STORIES={
+  add:[
+    (n,m,a,b)=>Z(n.zh+'有 '+a+' 顆🍬，媽媽又給了 '+b+' 顆，現在一共有幾顆？', n.en+' has '+a+' 🍬. Mom gives '+n.en+' '+b+' more. How many are there now?'),
+    (n,m,a,b)=>Z('樹上有 '+a+' 隻🐦，又飛來 '+b+' 隻，一共有幾隻？', a+' 🐦 sit in a tree. '+b+' more fly in. How many birds are there now?'),
+    (n,m,a,b)=>Z('籃子裡有 '+a+' 顆🍎和 '+b+' 顆🍊，一共有幾顆水果？', 'A basket has '+a+' 🍎 and '+b+' 🍊. How many pieces of fruit in all?'),
+    (n,m,a,b)=>Z(n.zh+'昨天讀了 '+a+' 頁📖，今天讀了 '+b+' 頁，兩天一共讀了幾頁？', n.en+' read '+a+' pages 📖 yesterday and '+b+' pages today. How many pages in all?'),
+    (n,m,a,b)=>Z('停車場有 '+a+' 輛🚗，又開進來 '+b+' 輛，現在有幾輛？', 'A parking lot has '+a+' 🚗. '+b+' more drive in. How many cars now?'),
+    (n,m,a,b)=>Z(n.zh+'有 '+a+' 張⭐貼紙，'+m.zh+'有 '+b+' 張，兩個人一共有幾張？', n.en+' has '+a+' ⭐ stickers and '+m.en+' has '+b+'. How many do they have together?'),
+  ],
+  sub:[
+    (n,m,a,b)=>Z(n.zh+'有 '+a+' 顆🍬，吃掉了 '+b+' 顆，還剩幾顆？', n.en+' has '+a+' 🍬 and eats '+b+'. How many are left?'),
+    (n,m,a,b)=>Z('池塘裡有 '+a+' 隻🐸，跳走了 '+b+' 隻，還剩幾隻？', a+' 🐸 are in a pond. '+b+' hop away. How many are left?'),
+    (n,m,a,b)=>Z(n.zh+'有 '+a+' 元，買🍦花了 '+b+' 元，還剩幾元？', n.en+' has '+a+' dollars and spends '+b+' on 🍦. How many dollars are left?'),
+    (n,m,a,b)=>Z('🚌公車上有 '+a+' 個人，到站下車 '+b+' 個人，車上還有幾個人？', 'There are '+a+' people on a 🚌. '+b+' get off. How many are still on the bus?'),
+    (n,m,a,b)=>Z('盒子裡有 '+a+' 枝✏️，借給同學 '+b+' 枝，還剩幾枝？', 'A box has '+a+' ✏️. '+b+' are lent to classmates. How many are left in the box?'),
+    (n,m,a,b)=>Z(n.zh+'有 '+a+' 張⭐貼紙，'+m.zh+'有 '+b+' 張，'+n.zh+'比'+m.zh+'多幾張？', n.en+' has '+a+' ⭐ stickers and '+m.en+' has '+b+'. How many more does '+n.en+' have?'),
+  ],
+  mul:[
+    (n,m,a,b)=>Z('每盒有 '+a+' 個🍩，'+b+' 盒一共有幾個？', 'Each box holds '+a+' 🍩. How many are in '+b+' boxes?'),
+    (n,m,a,b)=>Z('每個盤子放 '+a+' 顆🍓，'+b+' 個盤子一共有幾顆？', 'Each plate has '+a+' 🍓. How many are on '+b+' plates?'),
+    (n,m,a,b)=>Z('每一排坐 '+a+' 個小朋友，'+b+' 排一共坐幾個人？', a+' children sit in each row. How many children are in '+b+' rows?'),
+    (n,m,a,b)=>Z('每隻🐶有 4 隻腳，'+b+' 隻🐶一共有幾隻腳？', 'Each 🐶 has 4 legs. How many legs do '+b+' 🐶 have?'),
+    (n,m,a,b)=>Z('一個星期有 7 天，'+b+' 個星期一共有幾天？', 'A week has 7 days. How many days are in '+b+' weeks?'),
+  ],
+};
+function qStory(mode,hard){
+  const op=mode==='normal'&&RND()<0.35?'mul':pk(['add','sub']);
+  const n=pk(NAMES_ALL), m=pk(NAMES_ALL.filter(x=>x!==n));
+  const ti=ri(0,STORIES[op].length-1);
+  let a,b,ans,wrongs,hint;
+  if(op==='mul'){ a=ti===3?4:ti===4?7:ri(2,9); b=ri(2,9); ans=a*b;
+    wrongs=[a+b,a*(b+1),a*(b-1),ans+a,ans-a,ans+1,ans-1];
+    hint=Z(b+' 個 '+a+'，用乘法：'+a+' × '+b,b+' groups of '+a+': use multiplication, '+a+' × '+b); }
+  else{ [a,b]=pairFor(op,mode,hard); ans=op==='add'?a+b:a-b;
+    wrongs=op==='add'?[ans+1,ans-1,ans+10,ans-10,ans+2,Math.abs(a-b)]:[ans+1,ans-1,ans+10,ans-10,a+b,ans+2];
+    hint=op==='add'?Z('合起來用加法：'+a+' ＋ '+b,'Putting together means adding: '+a+' + '+b)
+                   :(ti===5?Z('比多少用減法：'+a+' － '+b,'"How many more" means subtracting: '+a+' − '+b)
+                           :Z('拿走用減法：'+a+' － '+b,'Taking away means subtracting: '+a+' − '+b)); }
+  const story=STORIES[op][ti](n,m,a,b);
+  return {text:'story|'+op+ti+'|'+a+'|'+b,ans,options:pack(ans,wrongs.filter(w=>w>0&&w!==ans)),kind:'story',xtra:'story',
+          op,nums:[a,b],disp:()=>'<div class="story">'+tx(story)+'</div>',hint2:hint};
+}
+// 比大小：○ 裡填 ＞、＜ 或 ＝（三個選項）
+function qCompare(mode,hard){
+  let L_,R_,lv,rv,hint;
+  const num=x=>({t:String(x),v:x});
+  if(mode==='easy'){
+    if(RND()<0.5){ const a=ri(1,20); let b=RND()<0.2?a:ri(Math.max(1,a-5),a+5); L_=num(a); R_=num(b); }
+    else{ const add=RND()<0.6, x=ri(2,9), y=add?ri(1,9):ri(1,x-1), v=add?x+y:x-y, c=RND()<0.3?v:Math.max(1,v+pk([-2,-1,1,2]));
+      L_={t:x+(add?' ＋ ':' － ')+y,v}; R_=num(c); if(RND()<0.5)[L_,R_]=[R_,L_]; }
+    hint=Z('開口朝向比較大的那邊；兩邊一樣就是 ＝','The open side faces the bigger number; if they match, use =');
+  }else if(mode==='plain'){
+    const t=ri(1,9), o=ri(0,9); let a=t*10+o, b;
+    const k=ri(0,3);
+    if(k===0) b=o*10+t;                         // 十位個位對調：45 ○ 54
+    else if(k===1) b=t*10+ri(0,9);              // 十位一樣，比個位
+    else if(k===2) b=a;
+    else b=ri(10,99);
+    if(b<10) b+=10*ri(1,9);
+    L_=num(a); R_=num(b);
+    hint=Z('先比十位，十位一樣再比個位','Compare the tens first; if they match, compare the ones');
+  }else{
+    const pairs=[];
+    const add2=()=>{ const [a,b]=pairFor('add','normal',hard); return {t:a+' ＋ '+b,v:a+b}; };
+    const sub2=()=>{ const [a,b]=pairFor('sub','normal',hard); return {t:a+' － '+b,v:a-b}; };
+    const mul=()=>{ const x=ri(2,9),y=ri(2,9); return {t:x+' × '+y,v:x*y}; };
+    const k=ri(0,2);
+    if(k===0){ L_=mul(); const fs=[];                         // 乘法 ○ 乘法（常常一樣）
+      for(let x=2;x<=9;x++)for(let y=2;y<=9;y++) if(Math.abs(x*y-L_.v)<=4&&x+' × '+y!==L_.t) fs.push({t:x+' × '+y,v:x*y});
+      R_=fs.length?pk(fs):mul(); }
+    else if(k===1){ L_=pk([add2,sub2])(); R_=num(Math.max(1,L_.v+pk([-3,-1,0,0,1,3]))); }
+    else{ L_=add2(); const d=pk([-10,-1,0,1,10]); R_=num(L_.v+d); if(RND()<0.5)[L_,R_]=[R_,L_]; }
+    hint=Z('先把兩邊都算出來，再比大小','Work out both sides first, then compare');
+  }
+  const ans=L_.v>R_.v?'＞':L_.v<R_.v?'＜':'＝';
+  return {text:'cmp|'+L_.t+'|'+R_.t,ans,options:shuffle(['＞','＜','＝']).sort((x,y)=>'＞＜＝'.indexOf(x)-'＞＜＝'.indexOf(y)),
+          kind:'cmp',xtra:'cmp',sides:[L_.v,R_.v],
+          disp:()=>'<div class="cmpq">'+L_.t+' <span class="circ">○</span> '+R_.t+'</div><div class="cmpcap">'+tx(Z('○ 裡要填什麼？','What goes in the ○?'))+'</div>',hint2:hint};
+}
+// 錢幣：1、5、10、50 元
+const COIN={1:{r:15,f:'#D7DADF',s:'#9AA0A8'},5:{r:18,f:'#E3E6EA',s:'#8C939B'},10:{r:20,f:'#E9D7A2',s:'#A88D3F'},50:{r:23,f:'#F2C94C',s:'#B8860B'}};
+const coinSVG=v=>{ const c=COIN[v], d=c.r*2+4;
+  return '<svg class="coin" width="'+d+'" height="'+d+'" viewBox="0 0 '+d+' '+d+'" aria-hidden="true"><circle cx="'+d/2+'" cy="'+d/2+'" r="'+c.r+'" fill="'+c.f+'" stroke="'+c.s+'" stroke-width="2"/>'+
+    '<circle cx="'+d/2+'" cy="'+d/2+'" r="'+(c.r-4)+'" fill="none" stroke="'+c.s+'" stroke-width="1" opacity=".55"/>'+
+    '<text x="'+d/2+'" y="'+(d/2+5)+'" text-anchor="middle" font-size="'+(v>=10?13:14)+'" font-weight="800" fill="#3A2A12" font-family="Baloo 2, sans-serif">'+v+'</text></svg>'; };
+function qCoins(mode){
+  const kinds=mode==='easy'?[1,5,10]:mode==='plain'?[1,5,10]:[1,5,10,50], cap=mode==='easy'?20:mode==='plain'?60:150;
+  let coins;
+  do{ const n=ri(mode==='easy'?2:3,mode==='easy'?6:7); coins=Array.from({length:n},()=>pk(kinds)); }
+  while(coins.reduce((s,x)=>s+x,0)>cap||new Set(coins).size<2);
+  coins.sort((a,b)=>b-a);
+  const ans=coins.reduce((s,x)=>s+x,0);
+  const wrongs=[ans+1,ans-1,ans+5,ans-5,ans+10,ans-10,coins.length,ans-coins[coins.length-1]];
+  return {text:'coin|'+coins.join(','),ans,options:pack(ans,wrongs.filter(w=>w>0&&w!==ans)),kind:'coin',xtra:'coin',coins,
+          disp:()=>'<div class="coinrow">'+coins.map(coinSVG).join('')+'</div><div class="cmpcap">'+tx(Z('一共幾元？','How many dollars in all?'))+'</div>',
+          hint2:Z('從大的硬幣開始數：50、10、5，最後才數 1 元','Count the big coins first: 50, 10, 5, then the 1s')};
+}
+// 乘法填空：□ × 6 ＝ 42
+function qMulBlank(){
+  const x=ri(2,9), y=ri(2,9), p=x*y, left=RND()<0.5, ans=left?x:y;
+  const text=left?'□ × '+y+' ＝ '+p:x+' × □ ＝ '+p, k=left?y:x;
+  return {text,ans,options:pack(ans,[ans+1,ans-1,ans+2,ans-2,k,p-k].filter(w=>w>0&&w!==ans&&w<=12)),kind:'blank',eq:true,xtra:'mulblank',
+          hint2:Z('背 '+k+' 的乘法表，看幾乘 '+k+' 等於 '+p,'Say the '+k+' times table: what times '+k+' makes '+p+'?')};
+}
+function extraMath(level,mode){
+  const hard=level>=3, r=RND();
+  if(mode==='easy'||mode==='plain'){
+    if(r<0.12) return qStory(mode,hard);
+    if(r<0.22) return qCompare(mode,hard);
+    if(r<0.30) return qCoins(mode);
+    return null;
+  }
+  if(mode==='normal'){
+    if(r<0.12) return qMulBlank();
+    if(r<0.24) return qStory(mode,hard);
+    if(r<0.32) return qCompare(mode,hard);
+    if(r<0.38) return qCoins(mode);
+  }
+  return null;
+}
+
 function makeQuestion(level,mode){
+  if(/^u_/.test(mode)) return unitQuestion(level,mode);
   const hard=level>=3, veryHard=level>=6;
+  { const xq=extraMath(level,mode); if(xq) return xq; }
 
   /* 簡易：加減都是個位數 */
   if(mode==='easy'){
@@ -672,6 +834,7 @@ function makeQuestion(level,mode){
 
 function hintFor(q,mode){
   if(q.logic) return tx(q.hint);
+  if(q.hint2) return tx(q.hint2);
   if(q.blank) return L('h'+q.blank[0][0].toUpperCase()+q.blank[0].slice(1),q.blank[1],q.blank[2]);
   if(q.tri){ const [a,b,c]=q.tri; return L('hTri',a,b,a+b,c); }
   if(q.plain){
@@ -732,7 +895,7 @@ const PR={
 };
 
 /* 1. 圖形循環 */
-const EMO_SETS=[['🔴','🔵','🟡','🟢','🟣'],['⭐','🌙','☀️','☁️','⚡'],['🍎','🍌','🍇','🍓','🍊'],
+const EMO_SETS=[['🔴','🔵','⚪','⚫','🔶'],['⭐','🌙','☀️','☁️','⚡'],['🍎','🍌','🍇','🍓','🍊'],
                 ['🐶','🐱','🐰','🐼','🐸'],['▲','●','■','◆','★']];
 function qPattern(units){
   const u=pk(units), n=u.length, set=shuffle(pk(EMO_SETS).slice());
@@ -817,7 +980,7 @@ const CATS=[
 const CATS_HARD=[
   [Z('會飛的','things that fly'),['🐦','🦋','🐝','🦅','🦇','✈️'],['🐧','🐢','🐘','🐌','🚗']],
   [Z('住在水裡的','water animals'),['🐟','🐙','🐬','🦀','🐳','🦈'],['🐫','🐘','🦒','🐒','🐿️']],
-  [Z('熱的東西','hot things'),['🔥','☀️','🌶️','☕','🌋'],['❄️','🧊','🍦','⛄']],
+  [Z('熱的東西','hot things'),['🔥','☀️','🌶️','☕','🌋'],['❄️','🍨','🍦','⛄']],
   [Z('圓的東西','round things'),['⚽','🌕','🍊','🏀','🍩','💿'],['📦','🎲','📕','📱']],
   [Z('有輪子的','things with wheels'),['🚗','🚲','🚌','🛴','🚜'],['⛵','🚀','🛶']],
   [Z('植物長出來的','things from plants'),['🍎','🌽','🥕','🍇','🍅'],['🥚','🧀','🍗','🥛']],
@@ -852,7 +1015,20 @@ function qOddNum(lv){
   const [name,ok,lo,hi]=pk(RULES[lv]);
   const yes=[],no=[];
   for(let n=lo;n<=hi;n++) (ok(n)?yes:no).push(n);
-  const three=shuffle(yes).slice(0,3), odd=pk(no.filter(n=>n>=Math.min(...three)-6&&n<=Math.max(...three)+6));
+  // 這個年級學過的性質：如果有別的數字也能被單獨挑出來（例如唯一的 4 的倍數），就重出，避免兩個答案都說得通
+  const SAL=[n=>n%2===0,n=>n>=10];
+  if(lv>=3) SAL.push(n=>n%3===0,n=>n%5===0,n=>n%10===0);
+  if(lv>=4) SAL.push(n=>n%4===0,n=>Number.isInteger(Math.sqrt(n)),n=>n>10&&n%11===0);
+  let three,odd;
+  for(let tries=0;tries<300;tries++){
+    three=shuffle(yes.slice()).slice(0,3);
+    const near=no.filter(n=>n>=Math.min(...three)-6&&n<=Math.max(...three)+6);
+    if(!near.length) continue;
+    odd=pk(near);
+    const all=[...three,odd];
+    const clash=all.some(x=>x!==odd&&SAL.some(f=>{ const rest=all.filter(y=>y!==x); return rest.every(y=>f(y)===f(rest[0]))&&f(x)!==f(rest[0]); }));
+    if(!clash) break;
+  }
   return LQ('oddN',PR.oddN,null,odd,three,Z('其他三個都是'+name.zh,'The other three are all '+name.en));
 }
 
@@ -916,11 +1092,11 @@ function qArrow(lv){
 
 /* 7. 圖像類比 */
 const ANA_EMO=[['🐔','🥚','🐄','🥛',['🍯','🌽','🐟']],['☀️','🕶️','🌧️','☂️',['🧤','🎈','🔥']],
-  ['🐒','🍌','🐰','🥕',['🦴','🐟','🍯']],['🐶','🦴','🐱','🐟',['🥕','🍌','🌽']],
-  ['👟','🦶','🧤','🖐️',['👂','👃','👀']],['🔑','🔒','✂️','📄',['🔨','🥄','🎈']],
+  ['🐒','🍌','🐰','🥕',['🍖','🐟','🍯']],['🐶','🍖','🐱','🐟',['🥕','🍌','🌽']],
+  ['👟','👣','🧤','🖐️',['👂','👃','👀']],['🔑','🔒','✂️','📄',['🔨','🥄','🎈']],
   ['🥚','🐣','🐛','🦋',['🐝','🐞','🐜']],['🔥','🚒','🤒','🚑',['🚓','🚌','🚲']],
   ['📖','👀','🎵','👂',['👃','🖐️','👄']],['🌱','🌳','🐣','🐔',['🥚','🐟','🐶']],
-  ['🐟','🌊','🐦','🌳',['🏜️','🔥','🧊']]];
+  ['🐟','🌊','🐦','🌳',['🏜️','🔥','❄️']]];
 /* 擴充：圖像類比（新增 89 組，總共 100 組；只用 Emoji 5.0（2017）以前的圖案，舊手機也看得到） */
 ANA_EMO.push(
   ['🐝','🌸','🐼','🎋',['🍌','🥕','🍖']],['🐭','🧀','🐶','🍖',['🥕','🍌','🍯']],['🐻','🍯','🐰','🥕',['🍌','🍖','🧀']],
@@ -931,14 +1107,14 @@ ANA_EMO.push(
   ['👓','👀','💍','✋',['👂','👃','👄']],['✈️','☁️','⛵','🌊',['🌳','🏠','🛣️']],['🚂','🛤️','🚗','🛣️',['🌊','☁️','🌳']],
   ['🚀','🌙','🚢','🌊',['🏔️','🌳','🏠']],['👮','🚓','🎅','🛷',['🚗','🚌','🚲']],['🐝','🍯','🐄','🥛',['🥚','🍞','🍎']],
   ['🌳','🍎','🐔','🥚',['🥛','🍯','🌽']],['🥔','🍟','🌽','🍿',['🍞','🍕','🍰']],['🐔','🍗','🐷','🥓',['🥛','🍯','🥚']],
-  ['☀️','🌙','🔥','❄️',['💧','⚡','🌈']],['👍','👎','😀','😢',['😂','😎','😍']],['⬆️','⬇️','⬅️','➡️',['↗️','↙️','↖️']],
+  ['☀️','🌙','🔥','❄️',['🍎','⚡','🌈']],['👍','👎','😀','😢',['😂','😎','😍']],['⬆️','⬇️','⬅️','➡️',['↗️','↙️','↖️']],
   ['🐘','🐜','🌳','🌱',['🌲','🍂','🌴']],['🐢','🐇','🐌','🐆',['🐛','🐞','🐢']],['🍓','❤️','🍌','💛',['💚','💙','💜']],
   ['🥦','💚','🍇','💜',['❤️','💛','💙']],['🌊','💙','🍊','🧡',['💚','💜','❤️']],['📚','🏫','💊','🏥',['🏠','🏦','🏰']],
   ['💰','🏦','✉️','📮',['🏥','🏫','🏠']],['🚗','⛽','📱','🔋',['💧','🍔','🔑']],['🌹','👃','🍭','👅',['👂','👀','✋']],
   ['🔔','👂','🌈','👀',['👃','👅','✋']],['☕','🔥','🍦','❄️',['🌧️','☀️','⚡']],['🐦','✈️','🐟','⛵',['🚗','🚲','🚂']],
   ['⛄','❄️','🏖️','☀️',['🍂','🌧️','🌸']],['🎄','🎅','🎃','👻',['🐰','🎂','🎈']],['🍪','🥛','🍔','🍟',['🍦','🍎','🍩']],
   ['🍞','🥪','🥚','🍳',['🥛','🍎','🍌']],['🚌','🚗','🚢','⛵',['✈️','🚂','🌊']],['🐳','🐟','🐘','🐭',['🦒','🐯','🦏']],
-  ['🐱','🐭','🐶','🐱',['🐟','🐮','🐘']],['🕷️','🕸️','🐝','🍯',['🌸','🍎','🥛']],['🐓','☀️','🦉','🌙',['🌧️','❄️','🌈']],
+  ['🐱','🐭','🐶','🐱',['🐟','🐮','🐘']],['🕷️','🕸️','🐝','🍯',['🍞','🍎','🥛']],['🐓','☀️','🦉','🌙',['🌧️','❄️','🌈']],
   ['🛏️','😴','🍽️','😋',['😢','😡','😱']],['👀','👓','👂','🎧',['👟','🧤','💍']],['🌰','🐿️','🍌','🐒',['🐰','🐻','🐶']],
   ['🍼','👶','🥕','🐰',['🐶','🐱','🐵']],['🌊','🏄','🏔️','⛷️',['🚴','🏊','⚽']],['🌵','🏜️','🌴','🏝️',['🏔️','🏠','🏙️']],
   ['🐙','🌊','🐿️','🌳',['🏜️','❄️','🏠']],['🦁','🍖','🐄','🌾',['🍎','🍯','🐟']],['🦒','🍃','🐿️','🌰',['🍖','🐟','🍯']],
@@ -948,7 +1124,7 @@ ANA_EMO.push(
   ['🍰','🍴','🍜','🥢',['✂️','🔑','🔨']],['😴','🌙','🍳','☀️',['❄️','🌧️','⚡']],['🐝','🌸','🐛','🍃',['🍖','🐟','🧀']],
   ['🎺','👄','🎹','✋',['👂','👀','👃']],['⚽','⚪','🎲','⬜',['🔺','⭐','🔷']],['🍕','🔺','🍩','⭕',['⬜','⭐','🔷']],
   ['☀️','🏫','🌙','🛏️',['🏖️','🍳','⚽']],['🤒','💊','😴','🛏️',['🍔','⚽','🎮']],['🔒','🔑','🔩','🔧',['🔨','✂️','📎']],
-  ['🥛','🧀','🌾','🍞',['🍎','🥚','🍯']],['❄️','🧤','☀️','🕶️',['🧣','🌂','👢']],['🐈','🐅','🐕','🐺',['🐇','🐁','🐖']],
+  ['🥛','🧀','🌾','🍞',['🍎','🥚','🍯']],['❄️','🧤','☀️','🕶️',['🧣','🧦','👢']],['🐈','🐅','🐕','🐺',['🐇','🐁','🐖']],
   ['😀','😢','☀️','🌧️',['🌈','⭐','🌙']],['🕐','🕑','🕒','🕓',['🕔','🕕','🕐']],['🍎','🍌','🥕','🥦',['🍇','🍓','🍒']],
   ['⚽','🏀','🎸','🎹',['⚾','🎾','🏈']],['🚗','🚌','🍎','🍊',['🚲','🚂','✈️']],['👕','👖','🍔','🍟',['👗','👟','🧢']],
   ['🐦','🦅','🐟','🦈',['🐱','🐶','🐻']],['💧','🌧️','❄️','🌨️',['🌈','☀️','⚡']],['👟','🏃','🚲','🚴',['🏊','⛷️','🏄']],
@@ -1040,8 +1216,8 @@ ANA_WORD.push(
   [Z('汽車','car'),Z('交通工具','vehicle'),Z('襯衫','shirt'),Z('衣服','clothes'),[Z('鞋子','shoes'),Z('帽子','hat'),Z('玩具','toy')],Z('屬於哪一類','Which group it belongs to')],
   [Z('葉子','leaf'),Z('樹','tree'),Z('花瓣','petal'),Z('花','flower'),[Z('草','grass'),Z('根','root'),Z('果實','fruit')],Z('一部分和整個','A part and the whole')],
   [Z('輪子','wheel'),Z('汽車','car'),Z('翅膀','wing'),Z('鳥','bird'),[Z('魚','fish'),Z('蛇','snake'),Z('貓','cat')],Z('一部分和整個','A part and the whole')],
-  [Z('秒','second'),Z('分鐘','minute'),Z('天','day'),Z('星期','week'),[Z('年','year'),Z('小時','hour'),Z('秒','second')],Z('小的時間和大一點的時間','A small unit of time and a bigger one')],
-  [Z('月','month'),Z('年','year'),Z('分鐘','minute'),Z('小時','hour'),[Z('天','day'),Z('秒','second'),Z('季節','season')],Z('小的時間和大一點的時間','A small unit of time and a bigger one')],
+  [Z('秒','second'),Z('分鐘','minute'),Z('天','day'),Z('星期','week'),[Z('分鐘','minute'),Z('小時','hour'),Z('秒','second')],Z('小的時間和大一點的時間','A small unit of time and a bigger one')],
+  [Z('月','month'),Z('年','year'),Z('分鐘','minute'),Z('小時','hour'),[Z('秒','second'),Z('時鐘','clock'),Z('日曆','calendar')],Z('小的時間和大一點的時間','A small unit of time and a bigger one')],
   [Z('麵包','bread'),Z('麵粉','flour'),Z('果汁','juice'),Z('水果','fruit'),[Z('牛奶','milk'),Z('米','rice'),Z('蛋','egg')],Z('用什麼做的','What it is made from')],
   [Z('起司','cheese'),Z('牛奶','milk'),Z('紙','paper'),Z('樹木','wood'),[Z('石頭','stone'),Z('塑膠','plastic'),Z('布','cloth')],Z('用什麼做的','What it is made from')],
   [Z('冰','ice'),Z('水','water'),Z('雪人','snowman'),Z('雪','snow'),[Z('雨','rain'),Z('雲','cloud'),Z('沙','sand')],Z('用什麼做的','What it is made from')],
@@ -1249,6 +1425,44 @@ function qPyramid(lv){
           :Z('把 ？ 下面兩格加起來','Add the two boxes under ?'));
 }
 
+/* 20. 影子配對（簡易）：這是誰的影子？ */
+const SHADOW_SETS=[
+  ['🐘','🐢','🦒','🐇','🐌','🦋','🐓','🐈','🐟','🐎','🐿️','🦀','🐞','🦉','🐬','🐫','🐊'],
+  ['🎸','✂️','🔑','☂️','🚲','✈️','⚓','🔨','🎈','🍄','🌵','⛄','🍌','🍐','🥕'],
+];
+function qShadow(){
+  const four=shuffle(pk(SHADOW_SETS).slice()).slice(0,4), ans=four[0];
+  return LQ('shd',Z('這是誰的影子？','Whose shadow is this?'),()=>'<div class="shadow"><span>'+ans+'</span></div>',ans,four.slice(1),
+    Z('看外形：耳朵、尾巴、腳或把手長什麼樣子','Look at the outline: ears, tail, legs or handle'),'emo');
+}
+
+/* 21. 誰說真話（魔王）：三個角色各說一句，只有一個說謊 */
+const TRUTH_CAST=[Z('🐶 小狗','🐶 Dog'),Z('🐱 小貓','🐱 Cat'),Z('🐰 小兔','🐰 Bunny'),Z('🐼 熊貓','🐼 Panda'),Z('🐸 青蛙','🐸 Frog'),Z('🐵 猴子','🐵 Monkey')];
+const TRUTH_ITEM=[Z('糖果','candy','🍬'),Z('鑰匙','key','🔑'),Z('寶石','gem','💎')];
+function qTruth(){
+  for(let tries=0;tries<400;tries++){
+    const cast=shuffle(TRUTH_CAST.slice()).slice(0,3), item=pk(TRUTH_ITEM);
+    const st=[0,1,2].map(sp=>({sp,inn:RND()<0.5,t:ri(0,2)}));
+    const said=s=>s.inn?(h=>h===s.t):(h=>h!==s.t);
+    const ok=[0,1,2].filter(h=>st.filter(s=>!said(s)(h)).length===1);
+    if(ok.length!==1) continue;
+    const h=ok[0], liar=st.find(s=>!said(s)(h)).sp;
+    const askLiar=RND()<0.4, ans=askLiar?liar:h;
+    const nm=i=>cast[i];
+    const line=s=>{ const who=nm(s.sp), self=s.t===s.sp;
+      const zh=self?(s.inn?'「'+item.zh+'在我這裡。」':'「'+item.zh+'不在我這裡。」')
+                   :(s.inn?'「'+item.zh+'在'+nm(s.t).zh.split(' ')[1]+'那裡。」':'「'+item.zh+'不在'+nm(s.t).zh.split(' ')[1]+'那裡。」');
+      const en=self?(s.inn?'"I have the '+item.en+'."':'"I do not have the '+item.en+'."')
+                   :(s.inn?'"'+nm(s.t).en.split(' ')[1]+' has the '+item.en+'."':'"'+nm(s.t).en.split(' ')[1]+' does not have the '+item.en+'."');
+      return '<div><b>'+tx(who)+'</b>'+tx(Z('：',': '))+tx(Z(zh,en))+'</div>'; };
+    return LQ('truth',askLiar?Z('三個裡面只有一個說謊，誰說謊？','Only one of them is lying. Who is it?')
+                             :Z('三個裡面只有一個說謊，'+item.zh+'在誰那裡？','Only one of them is lying. Who has the '+item.en+'?'),
+      ()=>'<div class="ltext truth">'+st.map(line).join('')+'</div>',cast[ans],cast.filter((_,i)=>i!==ans),
+      Z('一個一個假設：如果'+item.zh+'在'+cast[0].zh.split(' ')[1]+'那裡，有幾個說謊？剛好一個才對','Try each one: if '+cast[0].en.split(' ')[1]+' has the '+item.en+', how many are lying? It must be exactly one'),'word');
+  }
+  return qSymbol();
+}
+
 /* 14. 數數比大小（簡易）：哪一種最多／最少、多幾個 */
 const COUNT_EMO=['🍎','🍌','🍇','🍓','🍊','🍒','⭐','🌸','🐟','🐞','🎈','🍪'];
 const emoRow=(e,n)=>'<div class="lrow">'+('<i>'+e+'</i>').repeat(n)+'</div>';
@@ -1337,15 +1551,15 @@ function qWalk(){
 }
 
 const LOGIC={
-  1:[()=>qPattern(['AB','ABC','AAB','ABB']),qDots,()=>qOddEmoji(false),()=>qSeries(1),qCount,qMissing],
+  1:[()=>qPattern(['AB','ABC','AAB','ABB']),qDots,()=>qOddEmoji(false),()=>qSeries(1),qCount,qMissing,qShadow],
   2:[()=>qPattern(['ABCD','AABB','ABBC','ABAC']),()=>qArrow(2),()=>qOddNum(2),()=>qSeries(2),qAnaEmo,qLatin,qBalance,qWalk,()=>qClock(2)],
   3:[()=>qArrow(3),()=>qOddEmoji(true),()=>qOddNum(3),()=>qSeries(3),qAnaWord,()=>qAnaNum(3),
      ()=>qLetters(3),()=>qMatrix(3),()=>qOrder(3),()=>qClock(3),()=>qPyramid(3)],
-  4:[()=>qSeries(4),()=>qOddNum(4),()=>qAnaNum(4),()=>qLetters(4),()=>qMatrix(4),()=>qOrder(4),qSymbol,qSymbol,()=>qPyramid(4)],
+  4:[()=>qSeries(4),()=>qOddNum(4),()=>qAnaNum(4),()=>qLetters(4),()=>qMatrix(4),()=>qOrder(4),qSymbol,qSymbol,()=>qPyramid(4),qTruth],
 };
 function makeLogic(lv){
   let q;
-  for(let k=0;k<8;k++){ q=pk(LOGIC[lv])(); if(q.type!==lastLogic&&q.labels.length===4) break; }
+  for(let k=0;k<8;k++){ q=pk(LOGIC[lv])(); if(q.type!==lastLogic&&q.labels.length>=(q.type==='truth'?3:4)) break; }
   lastLogic=q.type;
   return q;
 }
@@ -1544,6 +1758,89 @@ function drawIntro(now){
   $('bubble').setAttribute('transform','translate('+px.toFixed(1)+','+(GY-47)+')');
 }
 
+/* ---------- 背景音樂 ----------
+   用 Web Audio 即時合成，不需要音樂檔。原創 8 小節小調旋律（約 17 秒一輪）。
+   只在遊戲進行中播放；暫停時停、結束時淡出；大蛇在 4 格內會加快節奏。
+   開關存在瀏覽器裡；外國魔王模式音量降低，避免蓋過英文語音。 */
+const MUS_KEY='snakeEscape.music';
+const Music=(()=>{
+  // 每格是一個八分音符；數字是 MIDI 音高，0 是休止
+  const BASS=[45,0,45,52,45,0,43,40, 45,0,45,52,45,0,48,52, 41,0,41,48,41,0,43,45, 40,0,40,47,40,0,44,47,
+              45,0,45,52,45,0,43,40, 38,0,38,45,38,0,41,45, 40,0,40,47,40,0,44,47, 45,0,45,52,45,45,43,40];
+  const MEL =[69,0,72,76,0,74,72,71, 69,0,64,0,69,71,72,0,  65,69,72,0,71,69,67,0,  64,0,68,0,71,0,76,0,
+              76,0,74,72,74,0,72,71, 74,0,77,74,72,0,69,0,  71,0,68,71,74,0,71,68,  69,0,0,0,64,0,69,0];
+  const N=BASS.length, hz=m=>440*Math.pow(2,(m-69)/12);
+  let ctx=null, master=null, noise=null, timer=null, step=0, next=0, tempo=112, want=false, held=false;
+  let on=true; try{ on=localStorage.getItem(MUS_KEY)!=='0'; }catch(e){}
+  function ensure(){
+    if(ctx) return true;
+    const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return false;
+    try{ ctx=new AC(); }catch(e){ return false; }
+    master=ctx.createGain(); master.gain.value=0; master.connect(ctx.destination);
+    noise=ctx.createBuffer(1,Math.floor(ctx.sampleRate*0.05),ctx.sampleRate);
+    const d=noise.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length);
+    return true;
+  }
+  function tone(c,out,freq,t,dur,type,vol){
+    const o=c.createOscillator(), g=c.createGain();
+    o.type=type; o.frequency.setValueAtTime(freq,t);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+0.012); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(out); o.start(t); o.stop(t+dur+0.03);
+  }
+  function tick(c,out,buf,t){
+    const s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain();
+    s.buffer=buf; f.type='highpass'; f.frequency.value=6000; g.gain.value=0.05;
+    s.connect(f); f.connect(g); g.connect(out); s.start(t);
+  }
+  // 排一格的聲音（遊戲和測試共用）
+  function playStep(c,out,buf,i,t,spb){
+    if(BASS[i]) tone(c,out,hz(BASS[i]),t,spb*0.9,'triangle',0.30);
+    if(MEL[i])  tone(c,out,hz(MEL[i]),t,spb*0.65,'square',0.06);
+    if(i%2===1&&buf) tick(c,out,buf,t);
+  }
+  function pump(){
+    const spb=60/tempo/2;
+    while(next<ctx.currentTime+0.2){ playStep(ctx,master,noise,step%N,next,spb); next+=spb; step++; }
+  }
+  const level=()=>(on&&want&&!held)?(typeof mode!=='undefined'&&mode==='en'?0.12:0.3):0;
+  function apply(){
+    if(!ctx) return;
+    const v=level(), now=ctx.currentTime;
+    master.gain.cancelScheduledValues(now); master.gain.setTargetAtTime(v,now,v?0.08:0.12);
+    if(v&&!timer){ if(ctx.state==='suspended') ctx.resume(); next=Math.max(next,ctx.currentTime+0.05); timer=setInterval(pump,60); pump(); }
+    if(!v&&timer){ clearInterval(timer); timer=null; }
+  }
+  return {
+    play(){ want=true; held=false; step=0; if(on&&ensure()){ next=ctx.currentTime+0.05; } apply(); },
+    stop(){ want=false; held=false; apply(); },
+    hold(p){ held=!!p; apply(); },
+    danger(d){ tempo=d?138:112; },
+    isOn:()=>on,
+    // 短音效：答對、答錯、抽到寶物、通關、失敗
+    sfx(name){
+      if(!on||!ensure()) return;
+      if(ctx.state==='suspended') ctx.resume();
+      if(!this._fx){ this._fx=ctx.createGain(); this._fx.gain.value=0.45; this._fx.connect(ctx.destination); }
+      const out=this._fx, t=ctx.currentTime+0.01;
+      const seq=(notes,step,type,vol,len)=>notes.forEach((m,i)=>tone(ctx,out,hz(m),t+i*step,len||step*1.6,type,vol));
+      if(name==='ok')    seq([76,81],0.08,'square',0.10);
+      else if(name==='no'){ const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine';
+        o.frequency.setValueAtTime(160,t); o.frequency.exponentialRampToValueAtTime(70,t+0.22);
+        g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.35,t+0.015); g.gain.exponentialRampToValueAtTime(0.0001,t+0.26);
+        o.connect(g); g.connect(out); o.start(t); o.stop(t+0.3); }
+      else if(name==='prize') seq([84,88,91],0.06,'triangle',0.12,0.12);
+      else if(name==='win')   seq([72,76,79,84,79,84],0.11,'square',0.09,0.2);
+      else if(name==='lose')  seq([67,64,60,55],0.16,'triangle',0.18,0.3);
+    },
+    toggle(){ on=!on; try{ localStorage.setItem(MUS_KEY,on?'1':'0'); }catch(e){} if(on&&want) ensure(); apply(); return on; },
+    visible(v){ if(!ctx) return; if(!v){ ctx.suspend&&ctx.suspend(); } else if(level()){ ctx.resume&&ctx.resume(); } },
+    _test:{BASS,MEL,playStep,state:()=>({ctx:ctx?ctx.state:null,timer:!!timer,gain:master?master.gain.value:0,want,held,on,tempo,step})},
+  };
+})();
+function updateMusicBtn(){ const b=$('musicBtn'); if(!b) return; const on=Music.isOn();
+  b.textContent=on?'🎵':'🔇'; b.classList.toggle('off',!on); b.setAttribute('aria-pressed',on); b.title=L(on?'musicOn':'musicOff'); b.setAttribute('aria-label',L(on?'musicOn':'musicOff')); }
+document.addEventListener('visibilitychange',()=>Music.visible(!document.hidden));
+
 /* ---------- 英文語音 ---------- */
 let voiceOK=('speechSynthesis' in window);
 function pickVoice(){
@@ -1567,7 +1864,7 @@ function stopEN(){ if(voiceOK){ try{speechSynthesis.cancel();}catch(e){} } }
 
 /* ---------- 抽獎 ---------- */
 const ITEMS=[
-  {k:'coin', e:'🪙', t:'it1', w:36, v:1},
+  {k:'coin', e:'💰', t:'it1', w:36, v:1},
   {k:'ring', e:'💍', t:'it2', w:22, v:3},
   {k:'orb',  e:'🔮', t:'it3', w:16, v:5},
   {k:'gem',  e:'💎', t:'it4', w:14, v:10},
@@ -1606,12 +1903,13 @@ function recordRun(won,sec){                         // 回傳這局破了哪些
 function newRecLine(news){
   return news.length?'<p class="newrec">'+L('newRec',news.map(k=>L(k)).join(L('nrSep')))+'</p>':'';
 }
-const MODE_ORDER=['easy','plain','normal','boss','en','l1','l2','l3','l4'];
+const MODE_ORDER=()=>['easy','plain','normal','boss','en','l1','l2','l3','l4',...UNITS.map(u=>u.id)];
 function recordsHTML(){
-  const names=MODES(), any=REC.runs>0;
+  const names=MODES(), any=REC.runs>0||mistCount()>0;
   const vault='<div class="vault">'+ITEMS.map(i=>'<span'+(REC.vault[i.k]?'':' class="zero"')+'>'+i.e+'<b>'+(REC.vault[i.k]||0)+'</b></span>').join('')+'</div>'+
-    '<p class="recsum">'+L('recVaultP',REC.runs,lootValue(REC.vault))+'</p>';
-  const best=MODE_ORDER.filter(m=>REC.best[m]).map(m=>{ const b=REC.best[m];
+    '<p class="recsum">'+L('recVaultP',REC.runs,lootValue(REC.vault))+'</p>'+
+    '<p class="recsum">'+(mistCount()?L('recMist',mistCount()):L('recMistNone'))+'</p>';
+  const best=MODE_ORDER().filter(m=>REC.best[m]).map(m=>{ const b=REC.best[m];
     const main=b.time!=null?L('bestTime',b.time.toFixed(1)):L('bestDoor',Math.min(TOTAL,(b.door||0)+1));
     return '<div><span>'+names[m]+'</span><span>'+main+' · '+L('bestStars',b.stars||0)+'</span></div>'; }).join('');
   const pad=n=>(n<10?'0':'')+n;
@@ -1634,7 +1932,7 @@ function showRecords(){
   if($('recClear')){ let armed=false;
     $('recClear').onclick=()=>{
       if(!armed){ armed=true; $('recClear').textContent=L('recClear2'); $('recClear').classList.add('newrec'); return; }
-      REC=emptyRec(); saveRec(); showRecords(); }; }
+      REC=emptyRec(); saveRec(); MIST={}; saveMist(); showRecords(); }; }
 }
 function rollItem(){
   let t=Math.random()*ITEMS.reduce((s,i)=>s+i.w,0);
@@ -1674,7 +1972,7 @@ function runSpin(done){
     setTimeout(show,1180);
   }
   function show(){
-    $('prize').innerHTML=L('got',prize.e,L(prize.t));
+    $('prize').innerHTML=L('got',prize.e,L(prize.t)); Music.sfx('prize');
     G.loot[prize.k]=(G.loot[prize.k]||0)+1;
     renderLoot();
     setTimeout(()=>{ $('spin').hidden=true; done(); }, slow?300:750);
@@ -1685,8 +1983,28 @@ function runSpin(done){
 const $=id=>document.getElementById(id);
 const TOTAL=10, START_DIST=10, BACK=5, MAXD=16, PAUSES=3;
 let G=null, rate=0.5, mode='normal', cat='math', last=0, raf=null;
-const modeBy={math:'normal',logic:'l1'};   // rate：大蛇每秒前進幾格
-const MODES=()=>({easy:L('mEasy'),plain:L('mPlain'),normal:L('mNormal'),boss:L('mBoss'),en:L('mEn'),
+/* 單元練習：只出某一種數學題。base 是從哪個難度取題；prog 表示前 3 道門簡易、中間入門、後面普通 */
+const UNITS=[
+  {id:'u_add1',  zh:'個位數加減', en:'1-digit + −', base:'easy',  ok:q=>q.kind==='add'||q.kind==='sub'},
+  {id:'u_blank', zh:'加減填空',   en:'Fill the blank',   base:'easy',  ok:q=>q.kind==='blank'},
+  {id:'u_add3',  zh:'三個數連加', en:'Add 3 numbers', base:'easy',  ok:q=>q.kind==='add3'},
+  {id:'u_plain', zh:'兩位數不進位', en:'2-digit + −', base:'plain', ok:q=>(q.kind==='add'||q.kind==='sub')&&!q.xtra},
+  {id:'u_carry', zh:'進位借位',   en:'Carry & borrow',   base:'normal',ok:q=>(q.kind==='add'||q.kind==='sub')&&!q.xtra},
+  {id:'u_mul',   zh:'九九乘法',   en:'Times tables',     base:'normal',ok:q=>q.kind==='mul'},
+  {id:'u_mulb',  zh:'乘法填空',   en:'× blanks', gen:()=>qMulBlank()},
+  {id:'u_story', zh:'應用題',     en:'Word problems',    gen:(lv)=>qStory(unitBase(lv),lv>=3)},
+  {id:'u_cmp',   zh:'比大小',     en:'Compare',    gen:(lv)=>qCompare(unitBase(lv),lv>=3)},
+  {id:'u_coin',  zh:'錢幣',       en:'Coins',            gen:(lv)=>qCoins(unitBase(lv))},
+];
+const unitBase=lv=>lv<3?'easy':lv<6?'plain':'normal';
+function unitQuestion(level,id){
+  const u=UNITS.find(x=>x.id===id)||UNITS[0];
+  if(u.gen) return u.gen(level);
+  let q; for(let i=0;i<500;i++){ q=makeQuestion(level,u.base); if(u.ok(q)) return q; }
+  return q;
+}
+const modeBy={math:'normal',logic:'l1',unit:'u_mul'};   // rate：大蛇每秒前進幾格
+const MODES=()=>Object.assign(Object.fromEntries(UNITS.map(u=>[u.id,L('unitName')+'・'+(lang==='zh'?u.zh:u.en)])),{easy:L('mEasy'),plain:L('mPlain'),normal:L('mNormal'),boss:L('mBoss'),en:L('mEn'),
   l1:L('logicName')+'・'+L('lv1'),l2:L('logicName')+'・'+L('lv2'),l3:L('logicName')+'・'+L('lv3'),l4:L('logicName')+'・'+L('lv4')});
 
 /* ---------- 不重複出題 ----------
@@ -1704,7 +2022,47 @@ function qKey(q){
   return k;
 }
 function recentSet(){ const s=new Set(); RECENT.forEach(g=>g.forEach(k=>s.add(k))); return s; }
+/* ---------- 錯題本 ----------
+   答錯過的題目存起來（每個難度最多 20 題），之後的局每道門有機會拿出來複習（每局最多 3 題）。
+   複習時一次就答對，就從錯題本移除。題目連同中英文畫面一起存，所以能原樣重出。 */
+const MIST_KEY='snakeEscape.mistakes.v1', MIST_MAX=20, REVIEW_PER_GAME=3, REVIEW_RATE=0.35;
+let MIST={};
+try{ const m=JSON.parse(localStorage.getItem(MIST_KEY)||'{}'); if(m&&typeof m==='object') for(const k in m) if(Array.isArray(m[k])) MIST[k]=m[k].slice(0,MIST_MAX); }catch(e){}
+function saveMist(){ try{ localStorage.setItem(MIST_KEY,JSON.stringify(MIST)); }catch(e){} }
+function snapQ(q){
+  const o={}; const sv=lang;
+  for(const k in q){ const v=q[k]; if(typeof v!=='function'&&k!=='review') o[k]=v; }
+  try{ for(const f of ['body','disp']) if(typeof q[f]==='function'){ lang='zh'; o[f+'Zh']=q[f](); lang='en'; o[f+'En']=q[f](); } }
+  finally{ lang=sv; }
+  return o;
+}
+function unsnapQ(o){
+  const q=JSON.parse(JSON.stringify(o));
+  for(const f of ['body','disp']) if(f+'Zh' in q){ const zh=q[f+'Zh'], en=q[f+'En']; q[f]=()=>lang==='zh'?zh:en; }
+  q.options=shuffle(q.options.slice()); q.review=true;
+  return q;
+}
+function addMistake(q){
+  if(!q||!q.key) return;
+  const list=(MIST[mode]=MIST[mode]||[]);
+  if(list.some(x=>x.key===q.key)) return;
+  list.push(snapQ(q)); if(list.length>MIST_MAX) list.shift();
+  saveMist();
+}
+function removeMistake(key){
+  const list=MIST[mode]; if(!list) return;
+  const i=list.findIndex(x=>x.key===key); if(i<0) return;
+  list.splice(i,1); saveMist();
+}
+function mistCount(){ let n=0; for(const k in MIST) n+=MIST[k].length; return n; }
+function doorLabel(){ return L('door',G.door+1)+' · '+MODES()[mode]+(G.q&&G.q.review?' · '+L('review'):''); }
+
 function pickQuestion(level,md){
+  const list=MIST[md]||[];
+  if(G.reviews<REVIEW_PER_GAME&&RND()<REVIEW_RATE){
+    const cand=list.filter(x=>!G.used.has(x.key));
+    if(cand.length){ const q=unsnapQ(cand[0]); G.used.add(q.key); G.reviews++; lastLogic=q.type||lastLogic; return q; }
+  }
   const used=G.used, recent=G.recent, prevLogic=lastLogic;
   let best=null, bestScore=9, bestType='';
   for(let i=0;i<120;i++){
@@ -1728,9 +2086,10 @@ function saveHistory(){
 
 function newGame(){
   stopEN();
+  Music.play();
   saveHistory();
   G={dist:START_DIST,door:0,stars:0,tries:0,q:null,alive:true,t0:performance.now(),moving:false,
-     paused:false,pauses:PAUSES,snap:null,loot:{},frozen:false,used:new Set(),recent:recentSet(),saved:false};
+     paused:false,pauses:PAUSES,snap:null,loot:{},frozen:false,reviews:0,used:new Set(),recent:recentSet(),saved:false};
   $('loot').innerHTML=''; $('spin').hidden=true;
   $('scene').classList.remove('paused'); updatePause();
   $('doors').innerHTML=Array.from({length:TOTAL},()=>'<i></i>').join('');
@@ -1744,7 +2103,7 @@ function newGame(){
 function nextDoor(){
   G.q=pickQuestion(G.door,mode);
   G.tries=0;
-  $('qlabel').textContent=L('door',G.door+1)+' · '+MODES()[mode];
+  $('qlabel').textContent=doorLabel();
   $('doorNo').textContent='門 '+(G.door+1);
   if(G.q.logic){
     $('enbar').hidden=true;
@@ -1755,18 +2114,26 @@ function nextDoor(){
     if(ok){ $('q').innerHTML='<span class="hear">'+L('listen')+'</span>'; $('q').style.fontSize='clamp(22px,6.5vw,32px)'; }
     else  { $('q').innerHTML=G.q.text+' <small>＝ ？</small>'; $('q').style.fontSize='clamp(19px,5.6vw,28px)';
             $('qlabel').textContent+=L('noVoice'); $('enbar').hidden=true; }
+  }else if(G.q.disp){
+    $('enbar').hidden=true;
+    $('q').style.fontSize='';
+    $('q').innerHTML=G.q.disp();
   }else{
     $('enbar').hidden=true;
     $('q').innerHTML=G.q.eq ? G.q.text.replace('□','<span class="blank">□</span>') : G.q.text+' <small>＝ ？</small>';
     $('q').style.fontSize = G.q.text.length>10 ? 'clamp(27px,8.5vw,42px)' : '';
   }
   $('tip').textContent='';
-  const bs=$('opts').children;
-  G.q.options.forEach((v,i)=>{ const b=bs[i];
+  const bs=$('opts').children, no=G.q.options.length;
+  $('opts').classList.toggle('three',no===3);
+  for(let i=0;i<bs.length;i++){ const b=bs[i];
+    if(i>=no){ b.style.display='none'; b.disabled=true; b.onclick=null; continue; }
+    const v=G.q.options[i];
+    b.style.display='';
     setOpt(b,G.q,v);
     b.disabled=false;
-    b.className = G.q.logic ? G.q.cls : G.q.words ? 'word' : (v>999 ? 'small' : '');
-    b.onclick=()=>answer(v,b); });
+    b.className = G.q.logic ? G.q.cls : G.q.words ? 'word' : G.q.kind==='cmp' ? 'cmp' : (v>999 ? 'small' : '');
+    b.onclick=()=>answer(v,b); }
   const ds=$('doors').children;
   for(let i=0;i<TOTAL;i++) ds[i].className=i<G.door?'on':'';
 }
@@ -1780,8 +2147,8 @@ function renderLogic(){
 function answer(v,btn){
   if(!G||!G.alive||G.moving||G.paused||G.locked) return;
   if(v===G.q.ans){
-    btn.className='ok';
-    if(G.tries===0){ G.stars++; $('stars').textContent=G.stars; }
+    btn.classList.add('ok'); Music.sfx('ok');
+    if(G.tries===0){ G.stars++; $('stars').textContent=G.stars; if(G.q.review) removeMistake(G.q.key); }
     G.dist=Math.min(MAXD,G.dist+BACK);
     G.door++;
     G.moving=true;
@@ -1798,14 +2165,15 @@ function answer(v,btn){
       });
     },420);
   }else{
-    btn.className='no'; btn.disabled=true;
+    btn.classList.add('no'); btn.disabled=true; Music.sfx('no');
     G.tries++; G.dist=Math.max(0,G.dist-1);
+    if(G.tries===1) addMistake(G.q);
     $('scene').classList.add('hitshake');
     setTimeout(()=>$('scene').classList.remove('hitshake'),400);
     if(G.tries>=2){                                // 同一道門答錯兩次：直接輸
       G.locked=true; stopEN();
       const bs=$('opts').children;
-      for(const b of bs){ b.disabled=true; if(+b.dataset.v===G.q.ans) b.className='ok'; }
+      for(const b of bs){ b.disabled=true; if(b.style.display!=='none'&&String(b.dataset.v)===String(G.q.ans)) b.classList.add('ok'); }
       if(G.q.words) revealEN();
       $('tip').textContent='';
       setTimeout(()=>lose('twice'),1100);
@@ -1833,19 +2201,20 @@ function updatePause(){
 function setPaused(p){
   const bs=$('opts').children;
   if(p){ G.snap=[...bs].map(b=>b.disabled); for(const b of bs) b.disabled=true; stopEN(); }
-  else { [...bs].forEach((b,i)=>{ b.disabled = G.snap?G.snap[i]:false; }); }
+  else { [...bs].forEach((b,i)=>{ b.disabled = b.style.display==='none' ? true : (G.snap?G.snap[i]:false); }); }
   G.paused=p;
+  Music.hold(p);
   $('scene').classList.toggle('paused',p);
   $('tip').textContent = p ? L('pausedTip',G.pauses) : '';
   updatePause();
 }
 function quitAsk(){
   if(!G||!G.alive||G.locked||G.intro||$('over').classList.contains('on')) return;
-  G.frozen=true; stopEN();
+  G.frozen=true; stopEN(); Music.hold(true);
   panel('<div class="em">🚪</div><h1>'+L('quitT')+'</h1><p>'+L('quitP')+'</p>'+
     '<div class="row"><button class="btn" id="qNo">'+L('quitNo')+'</button>'+
     '<button class="btn go" id="qYes">'+L('quitYes')+'</button></div>');
-  $('qNo').onclick=()=>{ G.frozen=false; $('over').classList.remove('on'); };
+  $('qNo').onclick=()=>{ G.frozen=false; Music.hold(G.paused); $('over').classList.remove('on'); };
   $('qYes').onclick=()=>{ G.alive=false; saveHistory(); G.frozen=false; stopEN();
     $('scene').classList.remove('paused'); updatePause(); goHome(); };
 }
@@ -1866,6 +2235,7 @@ function loop(now){
   const shown=Math.max(0,Math.ceil(d));
   if($('dist').textContent!=shown) $('dist').textContent=shown;
   $('pDist').className='pill dist'+(d<=4?' warn':'');
+  Music.danger(!!(G&&G.alive&&!G.intro&&G.dist<=4));
   if(G&&G.alive&&!G.locked&&G.dist<=0) lose();
 }
 function homeHTML(){
@@ -1878,10 +2248,11 @@ function homeHTML(){
     '<div class="pickcap">'+L('pickCat')+'</div>'+
     '<div class="catsel" id="catSel">'+
       '<button data-c="math"'+(cat==='math'?' class="sel"':'')+'>'+L('cMath')+'</button>'+
+      '<button data-c="unit"'+(cat==='unit'?' class="sel"':'')+'>'+L('cUnit')+'</button>'+
       '<button data-c="logic"'+(cat==='logic'?' class="sel"':'')+'>'+L('cLogic')+'</button>'+
     '</div>'+
-    '<div class="pickcap">'+L('pickLevel')+'</div>'+
-    '<div class="levels" id="levels">'+levelsHTML()+'</div>'+
+    '<div class="pickcap" id="lvCap">'+L(cat==='unit'?'pickUnit':'pickLevel')+'</div>'+
+    '<div class="levels'+(cat==='unit'?' units':'')+'" id="levels">'+levelsHTML()+'</div>'+
     '<div class="pickcap">'+L('pickSpeed')+'</div>'+
     '<div class="speeds" id="speeds">'+
       spBtn(0.1,'sLearn')+spBtn(0.5,'sNormal')+spBtn(1,'sFast')+spBtn(2,'sWild')+
@@ -1891,6 +2262,7 @@ function homeHTML(){
     '<div class="installtip" id="installTip"></div>';
 }
 function levelsHTML(){
+  if(cat==='unit') return UNITS.map(u=>'<button data-m="'+u.id+'"'+(mode===u.id?' class="sel"':'')+'>'+(lang==='zh'?u.zh:u.en)+'</button>').join('');
   return cat==='math'
     ? lvBtn('easy','mEasy','mEasyS')+lvBtn('plain','mPlain','mPlainS')+lvBtn('normal','mNormal','mNormalS')+
       lvBtn('boss','mBoss','mBossS')+lvBtn('en','mEn','mEnS')
@@ -1917,15 +2289,16 @@ function applyLang(){
   if($('showtxt')) $('showtxt').textContent=L('showTxt');
   if(G&&G.intro){ $('q').innerHTML='<span class="introcap">'+L('introSkip')+'</span>';
     $('bubbleT').textContent=L(G.intro.kind==='full'?'introOops':'introGo'); }
-  else if(G&&G.q) $('qlabel').textContent=L('door',G.door+1)+' · '+MODES()[mode];
+  else if(G&&G.q) $('qlabel').textContent=doorLabel();
   else $('qlabel').textContent=L('door',1);
   if(G&&G.q&&G.q.logic&&G.alive){
     renderLogic();
     const bs=$('opts').children;
     G.q.options.forEach((v,i)=>{ setOpt(bs[i],G.q,v); });
   }
+  if(G&&G.q&&G.q.disp&&G.alive&&!G.intro) $('q').innerHTML=G.q.disp();
   if(G&&G.q&&G.alive&&!G.locked&&!G.moving&&!G.paused&&G.tries===1) $('tip').textContent=wrongLine();
-  updatePause();
+  updatePause(); updateMusicBtn();
   if($('over').classList.contains('on')){ if(view==='rec') showRecords(); else goHome(); }
 }
 function toggleLang(){ lang = lang==='zh'?'en':'zh'; applyLang(); }
@@ -1944,6 +2317,8 @@ function bindHome(){
   $('catSel').onclick=e=>{
     const b=e.target.closest('button'); if(!b||b.dataset.c===cat)return;
     cat=b.dataset.c; mode=modeBy[cat];
+    $('levels').className='levels'+(cat==='unit'?' units':'');
+    if($('lvCap')) $('lvCap').textContent=L(cat==='unit'?'pickUnit':'pickLevel');
     for(const x of $('catSel').children) x.className=x===b?'sel':'';
     $('levels').innerHTML=levelsHTML();
   };
@@ -1957,15 +2332,18 @@ function bindHome(){
   $('recBtn').onclick=showRecords;
 }
 $('pause').onclick=togglePause;
+$('musicBtn').onclick=()=>{ Music.toggle(); updateMusicBtn(); };
+updateMusicBtn();
 $('replay').onclick=()=>{ if(G&&G.q&&G.q.words) speakEN(G.q.text); };
 $('showtxt').onclick=revealEN;
 $('q').onclick=()=>{ if(G&&G.alive&&G.q&&G.q.words) speakEN(G.q.text); };
 let view='';
 function panel(html,cls){ view=cls||''; $('panel').className='panel'+(cls?' '+cls:''); $('panel').innerHTML=html; $('over').classList.add('on'); }
 
-function goHome(){ panel(homeHTML(),'home'); bindHome(); showInstall(); }
+function goHome(){ Music.stop(); panel(homeHTML(),'home'); bindHome(); showInstall(); }
 
 function win(){
+  Music.stop(); Music.sfx('win');
   G.alive=false; saveHistory(); stopEN(); $('scene').classList.remove('paused'); updatePause();
   const secN=Math.round((performance.now()-G.t0)/100)/10, sec=secN.toFixed(1);
   const news=recordRun(true,secN);
@@ -1979,6 +2357,7 @@ function win(){
 }
 function lose(why){
   if(!G.alive) return;
+  Music.stop(); Music.sfx('lose');
   G.alive=false; saveHistory(); stopEN(); $('scene').classList.remove('paused'); updatePause();
   const twice=why==='twice', news=recordRun(false,null);
   panel('<div class="em">'+(twice?'🔒':'🐍')+'</div><h1>'+L(twice?'loseWT':'loseT')+'</h1>'+newRecLine(news)+
